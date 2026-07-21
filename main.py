@@ -132,10 +132,30 @@ st.markdown(
 
     div[data-baseweb="select"] > div,
     div[data-testid="stNumberInput"] input {
-        background: var(--surface);
+        background: var(--surface) !important;
         border-color: var(--line);
         border-radius: 6px;
+        color: var(--ink) !important;
         min-height: 44px;
+    }
+
+    [data-testid="stWidgetLabel"],
+    [data-testid="stWidgetLabel"] p,
+    [data-testid="stWidgetLabel"] label {
+        color: var(--ink) !important;
+    }
+
+    div[data-baseweb="select"] span,
+    div[data-baseweb="select"] input,
+    div[data-testid="stNumberInput"] input {
+        color: var(--ink) !important;
+        -webkit-text-fill-color: var(--ink) !important;
+    }
+
+    div[data-testid="stNumberInput"] button {
+        background: #edf2f1 !important;
+        border-color: var(--line) !important;
+        color: var(--ink) !important;
     }
 
     div[data-baseweb="select"] > div:focus-within,
@@ -144,12 +164,12 @@ st.markdown(
         box-shadow: 0 0 0 1px var(--teal);
     }
 
-    .stButton > button,
-    [data-testid="stFormSubmitButton"] > button {
-        background: var(--teal);
+    .stButton button,
+    [data-testid="stFormSubmitButton"] button {
+        background: var(--teal) !important;
         border: 1px solid var(--teal);
         border-radius: 6px;
-        color: #ffffff;
+        color: #ffffff !important;
         font-size: 0.98rem;
         font-weight: 700;
         min-height: 48px;
@@ -157,9 +177,14 @@ st.markdown(
         width: 100%;
     }
 
-    .stButton > button:hover,
-    [data-testid="stFormSubmitButton"] > button:hover {
-        background: var(--teal-dark);
+    .stButton button p,
+    [data-testid="stFormSubmitButton"] button p {
+        color: #ffffff !important;
+    }
+
+    .stButton button:hover,
+    [data-testid="stFormSubmitButton"] button:hover {
+        background: var(--teal-dark) !important;
         border-color: var(--teal-dark);
         color: #ffffff;
     }
@@ -201,6 +226,19 @@ st.markdown(
         line-height: 1.55;
         margin-top: 2rem;
         padding-top: 1rem;
+    }
+
+    @media (max-width: 900px) {
+        [data-testid="stHorizontalBlock"] {
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+
+        [data-testid="column"] {
+            flex: 1 1 280px !important;
+            min-width: 0 !important;
+            width: 100% !important;
+        }
     }
 
     @media (max-width: 700px) {
