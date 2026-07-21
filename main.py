@@ -228,6 +228,38 @@ st.markdown(
         padding-top: 1rem;
     }
 
+    div[data-baseweb="tab-list"] {
+        border-bottom: 1px solid var(--line);
+        gap: 1.25rem;
+    }
+
+    button[data-baseweb="tab"] {
+        color: var(--muted);
+        font-weight: 680;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    button[data-baseweb="tab"][aria-selected="true"] {
+        color: var(--teal);
+    }
+
+    div[data-testid="stSlider"] [role="slider"] {
+        background: var(--teal) !important;
+    }
+
+    .live-change-positive {
+        color: var(--teal);
+        font-size: 0.86rem;
+        font-weight: 700;
+    }
+
+    .live-change-negative {
+        color: var(--coral);
+        font-size: 0.86rem;
+        font-weight: 700;
+    }
+
     @media (max-width: 900px) {
         [data-testid="stHorizontalBlock"] {
             flex-wrap: wrap;
@@ -349,6 +381,11 @@ def median_value(values: pd.Series, fallback: float) -> float:
     return float(numeric.median()) if not numeric.empty else fallback
 
 
+def predict_price(pipeline: Pipeline, values: dict[str, object]) -> float:
+    sample = pd.DataFrame([values])
+    return max(0.0, float(np.expm1(pipeline.predict(sample[FEATURES])[0])))
+
+
 data = load_data()
 model, model_metrics = train_model()
 
@@ -445,6 +482,28 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+context_column, reset_column = st.columns([3, 1])
+context_column.caption(
+    f"{len(matching_cars):,} matching listing records found for this exact variant."
+)
+if reset_column.button("Reset typical specs", use_container_width=True):
+    st.session_state.update(
+        {
+            "spec_year": typical_specs["year"],
+            "spec_km": typical_specs["km_driven"],
+            "spec_mileage": typical_specs["mileage"],
+            "spec_engine": typical_specs["engine"],
+            "spec_power": typical_specs["max_power"],
+            "spec_seats": typical_specs["seats"],
+            "spec_fuel": typical_specs["fuel"],
+            "spec_seller": typical_specs["seller_type"],
+            "spec_transmission": typical_specs["transmission"],
+            "spec_owner": typical_specs["owner"],
+        }
+    )
+    st.session_state.pop("valuation", None)
+    st.rerun()
+
 with st.form("valuation_form"):
     row_one = st.columns(3)
     with row_one[0]:
@@ -511,24 +570,20 @@ with st.form("valuation_form"):
     )
 
 if submitted:
-    sample = pd.DataFrame(
-        [
-            {
-                "name": selected_model,
-                "fuel": fuel,
-                "seller_type": seller_type,
-                "transmission": transmission,
-                "owner": owner,
-                "year": year,
-                "km_driven": km_driven,
-                "mileage_value": mileage,
-                "engine_value": engine,
-                "max_power_value": max_power,
-                "seats": seats,
-            }
-        ]
-    )
-    prediction = max(0.0, float(np.expm1(model.predict(sample[FEATURES])[0])))
+    input_values = {
+        "name": selected_model,
+        "fuel": fuel,
+        "seller_type": seller_type,
+        "transmission": transmission,
+        "owner": owner,
+        "year": year,
+        "km_driven": km_driven,
+        "mileage_value": mileage,
+        "engine_value": engine,
+        "max_power_value": max_power,
+        "seats": seats,
+    }
+    prediction = predict_price(model, input_values)
 
     comparison = matching_cars
     if len(comparison) < 4:
@@ -541,7 +596,24 @@ if submitted:
         "high": float(comparison["selling_price"].quantile(0.75)),
         "sample_size": int(len(comparison)),
         "model": selected_model,
+        "inputs": input_values,
+        "scenario_token": st.session_state.get("scenario_token", 0) + 1,
     }
+    st.session_state["scenario_token"] = st.session_state["valuation"][
+        "scenario_token"
+    ]
+
+    history = st.session_state.get("estimate_history", [])
+    history.insert(
+        0,
+        {
+            "Vehicle": selected_model,
+            "Year": int(year),
+            "Kilometres": f"{int(km_driven):,}",
+            "Estimate": format_inr(prediction),
+        },
+    )
+    st.session_state["estimate_history"] = history[:6]
 
 valuation = st.session_state.get("valuation")
 if valuation and valuation["model"] == selected_model:
@@ -575,41 +647,118 @@ if valuation and valuation["model"] == selected_model:
     result_columns[2].metric("Comparable listings", f"{valuation['sample_size']:,}")
 
     st.markdown('<div style="height: 1rem"></div>', unsafe_allow_html=True)
-    st.markdown('<div class="section-heading">Market position</div>', unsafe_allow_html=True)
+    market_tab, scenario_tab, history_tab = st.tabs(
+        ["Market view", "What-if explorer", "Recent estimates"]
+    )
 
-    chart_values = [prediction, market_median]
-    chart_labels = ["Your estimate", "Comparable median"]
-    fig, ax = plt.subplots(figsize=(8, 2.35))
-    fig.patch.set_facecolor("#f4f7f6")
-    ax.set_facecolor("#f4f7f6")
-    bars = ax.barh(
-        chart_labels,
-        chart_values,
-        color=["#146c63", "#aebbb8"],
-        height=0.48,
-    )
-    ax.invert_yaxis()
-    ax.spines[["top", "right", "left", "bottom"]].set_visible(False)
-    ax.tick_params(axis="x", colors="#60706c", labelsize=9, length=0)
-    ax.tick_params(axis="y", colors="#16211f", labelsize=10, length=0, pad=10)
-    ax.grid(axis="x", color="#d8e0de", linewidth=0.8)
-    ax.set_axisbelow(True)
-    ax.xaxis.set_major_formatter(
-        FuncFormatter(lambda value, _: f"{value / 100000:.1f}L")
-    )
-    for bar, value in zip(bars, chart_values):
-        ax.text(
-            value,
-            bar.get_y() + bar.get_height() / 2,
-            f"  {format_inr(value)}",
-            va="center",
-            color="#16211f",
-            fontsize=9,
-            fontweight="bold",
+    with market_tab:
+        st.markdown(
+            '<div class="section-heading">Market position</div>',
+            unsafe_allow_html=True,
         )
-    plt.tight_layout()
-    st.pyplot(fig, use_container_width=True)
-    plt.close(fig)
+        st.caption("Compare the model estimate with the closest listing benchmark.")
+
+        chart_values = [prediction, market_median]
+        chart_labels = ["Your estimate", "Comparable median"]
+        fig, ax = plt.subplots(figsize=(8, 2.35))
+        fig.patch.set_facecolor("#f4f7f6")
+        ax.set_facecolor("#f4f7f6")
+        bars = ax.barh(
+            chart_labels,
+            chart_values,
+            color=["#146c63", "#aebbb8"],
+            height=0.48,
+        )
+        ax.invert_yaxis()
+        ax.spines[["top", "right", "left", "bottom"]].set_visible(False)
+        ax.tick_params(axis="x", colors="#60706c", labelsize=9, length=0)
+        ax.tick_params(axis="y", colors="#16211f", labelsize=10, length=0, pad=10)
+        ax.grid(axis="x", color="#d8e0de", linewidth=0.8)
+        ax.set_axisbelow(True)
+        ax.xaxis.set_major_formatter(
+            FuncFormatter(lambda value, _: f"{value / 100000:.1f}L")
+        )
+        for bar, value in zip(bars, chart_values):
+            ax.text(
+                value,
+                bar.get_y() + bar.get_height() / 2,
+                f"  {format_inr(value)}",
+                va="center",
+                color="#16211f",
+                fontsize=9,
+                fontweight="bold",
+            )
+        plt.tight_layout()
+        st.pyplot(fig, use_container_width=True)
+        plt.close(fig)
+
+    with scenario_tab:
+        st.markdown(
+            '<div class="section-heading">Explore another ownership scenario</div>',
+            unsafe_allow_html=True,
+        )
+        st.caption(
+            "Move either control to see how year and kilometres change this model estimate."
+        )
+
+        original_inputs = valuation["inputs"]
+        scenario_columns = st.columns(2)
+        with scenario_columns[0]:
+            scenario_year = st.slider(
+                "Registration year",
+                min_value=1983,
+                max_value=2026,
+                value=int(original_inputs["year"]),
+                key=f"scenario_year_{valuation['scenario_token']}",
+            )
+        with scenario_columns[1]:
+            current_km = int(original_inputs["km_driven"])
+            scenario_km = st.slider(
+                "Kilometres driven",
+                min_value=0,
+                max_value=min(1_500_000, max(300_000, current_km + 100_000)),
+                value=current_km,
+                step=5_000,
+                key=f"scenario_km_{valuation['scenario_token']}",
+            )
+
+        scenario_inputs = dict(original_inputs)
+        scenario_inputs["year"] = scenario_year
+        scenario_inputs["km_driven"] = scenario_km
+        scenario_prediction = predict_price(model, scenario_inputs)
+        scenario_delta = scenario_prediction - prediction
+        scenario_percent = (scenario_delta / prediction * 100) if prediction else 0
+
+        live_columns = st.columns(2)
+        live_columns[0].metric("Scenario estimate", format_inr(scenario_prediction))
+        live_columns[1].metric(
+            "Change from estimate",
+            format_inr(abs(scenario_delta)).replace("INR ", ""),
+            delta=f"{scenario_percent:+.1f}%",
+        )
+        change_class = (
+            "live-change-positive" if scenario_delta >= 0 else "live-change-negative"
+        )
+        direction = "higher" if scenario_delta >= 0 else "lower"
+        st.markdown(
+            f'<div class="{change_class}">This scenario is {abs(scenario_percent):.1f}% {direction} than your submitted estimate.</div>',
+            unsafe_allow_html=True,
+        )
+
+    with history_tab:
+        st.markdown(
+            '<div class="section-heading">Recent estimates</div>',
+            unsafe_allow_html=True,
+        )
+        history = st.session_state.get("estimate_history", [])
+        if history:
+            st.dataframe(
+                pd.DataFrame(history),
+                use_container_width=True,
+                hide_index=True,
+            )
+        else:
+            st.caption("Your recent estimates will appear here during this session.")
 
 st.markdown(
     f"""
