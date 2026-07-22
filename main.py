@@ -358,6 +358,23 @@ st.markdown(
         mask-image: linear-gradient(to right, transparent 0%, #000 30%);
     }
 
+    .vehicle-motion-window.is-3d {
+        align-self: stretch;
+        height: auto;
+    }
+
+    .vehicle-3d-frame {
+        animation: vehicle-viewer-enter 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+        background: #0a1715;
+        border: 0;
+        bottom: -2.1rem;
+        height: calc(100% + 3.65rem);
+        position: absolute;
+        right: -1.7rem;
+        top: -1.55rem;
+        width: calc(100% + 3.4rem);
+    }
+
     .vehicle-image-credit {
         bottom: 0.22rem;
         color: rgba(255, 255, 255, 0.74) !important;
@@ -412,6 +429,11 @@ st.markdown(
         50% { transform: scale(1.055); }
     }
 
+    @keyframes vehicle-viewer-enter {
+        from { opacity: 0; transform: translateX(12%); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+
     @keyframes road-move {
         from { transform: translateX(0); }
         to { transform: translateX(-114px); }
@@ -464,6 +486,15 @@ st.markdown(
             mask-image: linear-gradient(to bottom, transparent 0%, #000 28%);
         }
 
+        .vehicle-3d-frame {
+            bottom: -2.1rem;
+            height: calc(100% + 2.1rem);
+            left: -1.7rem;
+            right: -1.7rem;
+            top: 0;
+            width: calc(100% + 3.4rem);
+        }
+
         @keyframes vehicle-enter {
             from { opacity: 0; transform: translateX(-22%); }
             to { opacity: 1; transform: translateX(-50%); }
@@ -491,7 +522,7 @@ st.markdown(
         }
 
         .vehicle-stage {
-            min-height: 410px;
+            min-height: 520px;
             padding: 1.25rem 1.1rem 1.8rem;
         }
 
@@ -500,12 +531,13 @@ st.markdown(
         }
 
         .vehicle-motion-window {
-            height: 180px;
+            height: 280px;
         }
     }
 
     @media (prefers-reduced-motion: reduce) {
         .vehicle-motion-window img,
+        .vehicle-3d-frame,
         .road-marker-track {
             animation: none !important;
         }
@@ -559,6 +591,78 @@ def plain_metadata(value: str, fallback: str) -> str:
     without_tags = re.sub(r"<[^>]+>", " ", html.unescape(value or ""))
     cleaned = " ".join(without_tags.split())
     return cleaned[:70] or fallback
+
+
+@st.cache_data(ttl=86_400, show_spinner=False)
+def find_vehicle_3d_model(brand: str, model: str) -> dict[str, str] | None:
+    search_name = model_family_name(brand, model)
+    search_tokens = set(re.findall(r"[a-z0-9]+", search_name.lower()))
+    parameters = {
+        "type": "models",
+        "q": search_name,
+        "sort_by": "-relevance",
+        "count": "24",
+    }
+    request = urllib.request.Request(
+        "https://api.sketchfab.com/v3/search?" + urllib.parse.urlencode(parameters),
+        headers={
+            "User-Agent": (
+                "AutoValueIndia/1.0 "
+                "(https://github.com/manishh28/Car-Price-Prediction)"
+            )
+        },
+    )
+    excluded_terms = {
+        "badge", "bodykit", "cabriolet", "dashboard", "diagram", "emblem",
+        "engine", "gauge", "interior", "logo", "mod", "offroad", "pack",
+        "part", "rim", "spoiler", "traffic", "trim", "tuned", "vent", "wheel",
+    }
+
+    try:
+        with urllib.request.urlopen(request, timeout=3.5) as response:
+            result = json.load(response)
+    except (OSError, TimeoutError, ValueError):
+        return None
+
+    matches: list[tuple[tuple[int, int, int], dict[str, str]]] = []
+    for candidate in result.get("results", []):
+        title = str(candidate.get("name", ""))
+        title_tokens = set(re.findall(r"[a-z0-9]+", title.lower()))
+        if not search_tokens.issubset(title_tokens):
+            continue
+        if title_tokens.intersection(excluded_terms):
+            continue
+        license_data = candidate.get("license") or {}
+        uid = candidate.get("uid")
+        if not uid or not license_data.get("label"):
+            continue
+        gltf_archive = (candidate.get("archives") or {}).get("gltf") or {}
+        face_count = int(gltf_archive.get("faceCount") or 0)
+        archive_size = int(gltf_archive.get("size") or 0)
+        if (
+            not face_count
+            or not archive_size
+            or face_count > 100_000
+            or archive_size > 12_000_000
+        ):
+            continue
+        user = candidate.get("user") or {}
+        model_data = {
+            "uid": str(uid),
+            "name": title,
+            "author": str(user.get("displayName") or user.get("username") or "Creator"),
+            "license": str(license_data["label"]),
+            "source_url": str(
+                candidate.get("viewerUrl")
+                or f"https://sketchfab.com/3d-models/{uid}"
+            ),
+        }
+        extra_token_count = len(title_tokens - search_tokens)
+        matches.append(
+            ((extra_token_count, face_count, archive_size), model_data)
+        )
+
+    return min(matches, key=lambda match: match[0])[1] if matches else None
 
 
 @st.cache_data(ttl=86_400, show_spinner=False)
@@ -802,12 +906,39 @@ safe_model = html.escape(selected_model)
 safe_fuel = html.escape(str(typical_specs["fuel"]))
 safe_transmission = html.escape(str(typical_specs["transmission"]))
 road_markers = "".join("<span></span>" for _ in range(14))
-vehicle_image = find_vehicle_image(selected_brand, selected_model)
+vehicle_3d_model = find_vehicle_3d_model(selected_brand, selected_model)
 
-if vehicle_image:
+if vehicle_3d_model:
+    model_uid = html.escape(vehicle_3d_model["uid"], quote=True)
+    viewer_parameters = urllib.parse.urlencode(
+        {
+            "autostart": "1",
+            "autospin": "0.25",
+            "camera": "0",
+            "dnt": "1",
+            "ui_hint": "0",
+            "ui_infos": "1",
+            "ui_controls": "1",
+        }
+    )
+    viewer_url = f"https://sketchfab.com/models/{model_uid}/embed?{viewer_parameters}"
+    motion_window_class = "vehicle-motion-window is-3d"
+    vehicle_visual_markup = (
+        f'<iframe class="vehicle-3d-frame" src="{viewer_url}" '
+        f'title="Interactive 3D model of {safe_model}" '
+        'allow="autoplay; fullscreen; xr-spatial-tracking" allowfullscreen '
+        'loading="eager"></iframe>'
+    )
+    image_credit_markup = ""
+    road_markup = ""
+else:
+    vehicle_image = find_vehicle_image(selected_brand, selected_model)
+
+if not vehicle_3d_model and vehicle_image:
     vehicle_asset_uri = html.escape(vehicle_image["url"], quote=True)
     motion_window_class = "vehicle-motion-window is-photo"
     image_alt = f"Reference photo of {safe_model}"
+    vehicle_visual_markup = f'<img src="{vehicle_asset_uri}" alt="{image_alt}">'
     source_url = html.escape(vehicle_image["source_url"], quote=True)
     artist = html.escape(vehicle_image["artist"])
     license_name = html.escape(vehicle_image["license"])
@@ -815,11 +946,18 @@ if vehicle_image:
         f'<a class="vehicle-image-credit" href="{source_url}" target="_blank" '
         f'rel="noopener noreferrer">Photo: {artist} &middot; {license_name}</a>'
     )
-else:
+    road_markup = (
+        f'<div class="road-marker-track" aria-hidden="true">{road_markers}</div>'
+    )
+elif not vehicle_3d_model:
     vehicle_asset_uri = load_vehicle_asset()
     motion_window_class = "vehicle-motion-window"
     image_alt = f"Stylized vehicle illustration for {safe_model}"
+    vehicle_visual_markup = f'<img src="{vehicle_asset_uri}" alt="{image_alt}">'
     image_credit_markup = ""
+    road_markup = (
+        f'<div class="road-marker-track" aria-hidden="true">{road_markers}</div>'
+    )
 
 st.markdown(
     f"""
@@ -834,9 +972,9 @@ st.markdown(
             </div>
         </div>
         <div class="{motion_window_class}">
-            <img src="{vehicle_asset_uri}" alt="{image_alt}">
+            {vehicle_visual_markup}
         </div>
-        <div class="road-marker-track" aria-hidden="true">{road_markers}</div>
+        {road_markup}
         {image_credit_markup}
     </div>
     """,
