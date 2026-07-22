@@ -1,6 +1,10 @@
 import base64
 import html
+import json
+import re
 from pathlib import Path
+import urllib.parse
+import urllib.request
 
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
@@ -319,15 +323,54 @@ st.markdown(
     }
 
     .vehicle-motion-window img {
+        position: absolute;
+    }
+
+    .vehicle-motion-window:not(.is-photo) img {
         bottom: -0.15rem;
         filter: drop-shadow(0 16px 14px rgba(0, 0, 0, 0.34));
         height: auto;
         max-width: none;
-        position: absolute;
         right: -1.2rem;
         width: min(760px, 112%);
         animation: vehicle-enter 850ms cubic-bezier(0.22, 1, 0.36, 1) both,
                    vehicle-idle 4.2s ease-in-out 900ms infinite;
+    }
+
+    .vehicle-motion-window.is-photo {
+        align-self: stretch;
+        height: auto;
+    }
+
+    .vehicle-motion-window.is-photo img {
+        animation: vehicle-photo-enter 900ms cubic-bezier(0.22, 1, 0.36, 1) both,
+                   vehicle-photo-idle 7s ease-in-out 1s infinite;
+        bottom: -2.1rem;
+        height: calc(100% + 3.65rem);
+        max-width: none;
+        object-fit: cover;
+        object-position: center;
+        opacity: 0.82;
+        right: -1.7rem;
+        top: -1.55rem;
+        width: calc(100% + 5rem);
+        -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 30%);
+        mask-image: linear-gradient(to right, transparent 0%, #000 30%);
+    }
+
+    .vehicle-image-credit {
+        bottom: 0.22rem;
+        color: rgba(255, 255, 255, 0.74) !important;
+        font-size: 0.58rem;
+        position: absolute;
+        right: 0.65rem;
+        text-decoration: none !important;
+        z-index: 4;
+    }
+
+    .vehicle-image-credit:hover {
+        color: #ffffff !important;
+        text-decoration: underline !important;
     }
 
     .road-marker-track {
@@ -338,6 +381,7 @@ st.markdown(
         position: absolute;
         width: 220%;
         animation: road-move 2.2s linear infinite;
+        z-index: 3;
     }
 
     .road-marker-track span {
@@ -356,6 +400,16 @@ st.markdown(
     @keyframes vehicle-idle {
         0%, 100% { transform: translateY(0); }
         50% { transform: translateY(-4px); }
+    }
+
+    @keyframes vehicle-photo-enter {
+        from { opacity: 0; transform: translateX(18%) scale(1.05); }
+        to { opacity: 0.82; transform: translateX(0) scale(1.02); }
+    }
+
+    @keyframes vehicle-photo-idle {
+        0%, 100% { transform: scale(1.02); }
+        50% { transform: scale(1.055); }
     }
 
     @keyframes road-move {
@@ -392,11 +446,22 @@ st.markdown(
             height: 205px;
         }
 
-        .vehicle-motion-window img {
+        .vehicle-motion-window:not(.is-photo) img {
             left: 50%;
             right: auto;
             transform: translateX(-50%);
             width: min(720px, 118%);
+        }
+
+        .vehicle-motion-window.is-photo img {
+            bottom: -2.1rem;
+            height: calc(100% + 2.1rem);
+            left: -1.7rem;
+            right: -1.7rem;
+            top: 0;
+            width: calc(100% + 3.4rem);
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 28%);
+            mask-image: linear-gradient(to bottom, transparent 0%, #000 28%);
         }
 
         @keyframes vehicle-enter {
@@ -462,6 +527,100 @@ def extract_number(series: pd.Series) -> pd.Series:
 def load_vehicle_asset() -> str:
     encoded = base64.b64encode(VEHICLE_ASSET_PATH.read_bytes()).decode("ascii")
     return f"data:image/png;base64,{encoded}"
+
+
+def model_family_name(brand: str, model: str) -> str:
+    variant_markers = {
+        "amt", "asta", "at", "automatic", "crdi", "dct", "diesel", "era",
+        "gdi", "highline", "lxi", "magna", "manual", "mpi", "mt", "petrol",
+        "sportz", "tdi", "tsi", "vdi", "vtec", "vxi", "zdi", "zxi",
+    }
+    model_words = model.split()
+    brand_words = brand.split()
+    remaining = model_words[len(brand_words):]
+    family_words: list[str] = []
+
+    for word in remaining:
+        normalized = re.sub(r"[^a-z0-9.]", "", word.lower())
+        is_engine_size = bool(re.fullmatch(r"\d+(?:\.\d+)?", normalized))
+        is_drive_layout = bool(re.fullmatch(r"\d+x\d+", normalized))
+        if family_words and (
+            normalized in variant_markers or is_engine_size or is_drive_layout
+        ):
+            break
+        family_words.append(word)
+        if len(family_words) == 4:
+            break
+
+    return " ".join([brand, *(family_words or remaining[:1])])
+
+
+def plain_metadata(value: str, fallback: str) -> str:
+    without_tags = re.sub(r"<[^>]+>", " ", html.unescape(value or ""))
+    cleaned = " ".join(without_tags.split())
+    return cleaned[:70] or fallback
+
+
+@st.cache_data(ttl=86_400, show_spinner=False)
+def find_vehicle_image(brand: str, model: str) -> dict[str, str] | None:
+    search_name = model_family_name(brand, model)
+    parameters = {
+        "action": "query",
+        "generator": "search",
+        "gsrsearch": f"{search_name} automobile",
+        "gsrnamespace": "6",
+        "gsrlimit": "8",
+        "prop": "imageinfo",
+        "iiprop": "url|mime|extmetadata",
+        "iiurlwidth": "1000",
+        "format": "json",
+        "formatversion": "2",
+    }
+    request = urllib.request.Request(
+        "https://commons.wikimedia.org/w/api.php?"
+        + urllib.parse.urlencode(parameters),
+        headers={
+            "User-Agent": (
+                "AutoValueIndia/1.0 "
+                "(https://github.com/manishh28/Car-Price-Prediction)"
+            )
+        },
+    )
+    excluded_terms = {
+        "badge", "dashboard", "diagram", "engine", "interior", "logo", "wheel"
+    }
+
+    try:
+        with urllib.request.urlopen(request, timeout=3.5) as response:
+            result = json.load(response)
+    except (OSError, TimeoutError, ValueError):
+        return None
+
+    for page in result.get("query", {}).get("pages", []):
+        title = str(page.get("title", ""))
+        if any(term in title.lower() for term in excluded_terms):
+            continue
+        image_info = page.get("imageinfo", [{}])[0]
+        if image_info.get("mime") not in {"image/jpeg", "image/png", "image/webp"}:
+            continue
+        thumbnail_url = image_info.get("thumburl")
+        source_url = image_info.get("descriptionurl")
+        if not thumbnail_url or not source_url:
+            continue
+        metadata = image_info.get("extmetadata", {})
+        return {
+            "url": thumbnail_url,
+            "source_url": source_url,
+            "artist": plain_metadata(
+                metadata.get("Artist", {}).get("value", ""), "Commons contributor"
+            ),
+            "license": plain_metadata(
+                metadata.get("LicenseShortName", {}).get("value", ""),
+                "Wikimedia Commons",
+            ),
+        }
+
+    return None
 
 
 @st.cache_data(show_spinner=False)
@@ -638,12 +797,29 @@ if st.session_state.get("specs_for_model") != selected_model:
         }
     )
 
-vehicle_asset_uri = load_vehicle_asset()
 safe_brand = html.escape(selected_brand)
 safe_model = html.escape(selected_model)
 safe_fuel = html.escape(str(typical_specs["fuel"]))
 safe_transmission = html.escape(str(typical_specs["transmission"]))
 road_markers = "".join("<span></span>" for _ in range(14))
+vehicle_image = find_vehicle_image(selected_brand, selected_model)
+
+if vehicle_image:
+    vehicle_asset_uri = html.escape(vehicle_image["url"], quote=True)
+    motion_window_class = "vehicle-motion-window is-photo"
+    image_alt = f"Reference photo of {safe_model}"
+    source_url = html.escape(vehicle_image["source_url"], quote=True)
+    artist = html.escape(vehicle_image["artist"])
+    license_name = html.escape(vehicle_image["license"])
+    image_credit_markup = (
+        f'<a class="vehicle-image-credit" href="{source_url}" target="_blank" '
+        f'rel="noopener noreferrer">Photo: {artist} &middot; {license_name}</a>'
+    )
+else:
+    vehicle_asset_uri = load_vehicle_asset()
+    motion_window_class = "vehicle-motion-window"
+    image_alt = f"Stylized vehicle illustration for {safe_model}"
+    image_credit_markup = ""
 
 st.markdown(
     f"""
@@ -657,10 +833,11 @@ st.markdown(
                 <div><strong>{len(matching_cars):,}</strong> exact-match records</div>
             </div>
         </div>
-        <div class="vehicle-motion-window" aria-hidden="true">
-            <img src="{vehicle_asset_uri}" alt="">
+        <div class="{motion_window_class}">
+            <img src="{vehicle_asset_uri}" alt="{image_alt}">
         </div>
         <div class="road-marker-track" aria-hidden="true">{road_markers}</div>
+        {image_credit_markup}
     </div>
     """,
     unsafe_allow_html=True,
