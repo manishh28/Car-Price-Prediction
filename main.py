@@ -1,3 +1,5 @@
+import base64
+import html
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -15,6 +17,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 
 DATA_PATH = Path(__file__).with_name("car details.csv")
+VEHICLE_ASSET_PATH = Path(__file__).with_name("assets") / "vehicle-showcase.png"
 CATEGORICAL_FEATURES = ["name", "fuel", "seller_type", "transmission", "owner"]
 NUMERIC_FEATURES = [
     "year",
@@ -260,6 +263,106 @@ st.markdown(
         font-weight: 700;
     }
 
+    .vehicle-stage {
+        background: #102724;
+        border-bottom: 4px solid var(--coral);
+        color: #ffffff;
+        display: grid;
+        grid-template-columns: minmax(230px, 0.78fr) minmax(380px, 1.45fr);
+        margin: 1.2rem 0 1.8rem;
+        min-height: 285px;
+        overflow: hidden;
+        padding: 1.55rem 1.7rem 2.1rem;
+        position: relative;
+    }
+
+    .vehicle-stage-copy {
+        align-self: center;
+        position: relative;
+        z-index: 2;
+    }
+
+    .vehicle-stage-kicker {
+        color: #8fc2b9;
+        font-size: 0.72rem;
+        font-weight: 750;
+        text-transform: uppercase;
+    }
+
+    .vehicle-stage-name {
+        color: #ffffff;
+        font-size: 1.55rem;
+        font-weight: 750;
+        line-height: 1.2;
+        margin: 0.45rem 0 1rem;
+        max-width: 360px;
+    }
+
+    .vehicle-stage-facts {
+        color: #c4d5d1;
+        display: grid;
+        font-size: 0.78rem;
+        gap: 0.45rem;
+    }
+
+    .vehicle-stage-facts strong {
+        color: #ffffff;
+        font-weight: 700;
+    }
+
+    .vehicle-motion-window {
+        align-self: end;
+        height: 230px;
+        min-width: 0;
+        position: relative;
+        z-index: 2;
+    }
+
+    .vehicle-motion-window img {
+        bottom: -0.15rem;
+        filter: drop-shadow(0 16px 14px rgba(0, 0, 0, 0.34));
+        height: auto;
+        max-width: none;
+        position: absolute;
+        right: -1.2rem;
+        width: min(760px, 112%);
+        animation: vehicle-enter 850ms cubic-bezier(0.22, 1, 0.36, 1) both,
+                   vehicle-idle 4.2s ease-in-out 900ms infinite;
+    }
+
+    .road-marker-track {
+        align-items: center;
+        bottom: 1.05rem;
+        display: flex;
+        left: 0;
+        position: absolute;
+        width: 220%;
+        animation: road-move 2.2s linear infinite;
+    }
+
+    .road-marker-track span {
+        background: rgba(255, 255, 255, 0.42);
+        display: block;
+        height: 3px;
+        margin-right: 46px;
+        width: 68px;
+    }
+
+    @keyframes vehicle-enter {
+        from { opacity: 0; transform: translateX(34%); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes vehicle-idle {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-4px); }
+    }
+
+    @keyframes road-move {
+        from { transform: translateX(0); }
+        to { transform: translateX(-114px); }
+    }
+
     @media (max-width: 900px) {
         [data-testid="stHorizontalBlock"] {
             flex-wrap: wrap;
@@ -270,6 +373,40 @@ st.markdown(
             flex: 1 1 280px !important;
             min-width: 0 !important;
             width: 100% !important;
+        }
+
+        .vehicle-stage {
+            grid-template-columns: 1fr;
+            min-height: 445px;
+        }
+
+        .vehicle-stage-copy {
+            align-self: start;
+        }
+
+        .vehicle-stage-name {
+            max-width: 100%;
+        }
+
+        .vehicle-motion-window {
+            height: 205px;
+        }
+
+        .vehicle-motion-window img {
+            left: 50%;
+            right: auto;
+            transform: translateX(-50%);
+            width: min(720px, 118%);
+        }
+
+        @keyframes vehicle-enter {
+            from { opacity: 0; transform: translateX(-22%); }
+            to { opacity: 1; transform: translateX(-50%); }
+        }
+
+        @keyframes vehicle-idle {
+            0%, 100% { transform: translate(-50%, 0); }
+            50% { transform: translate(-50%, -4px); }
         }
     }
 
@@ -287,6 +424,26 @@ st.markdown(
         .result-panel {
             padding: 1.25rem;
         }
+
+        .vehicle-stage {
+            min-height: 410px;
+            padding: 1.25rem 1.1rem 1.8rem;
+        }
+
+        .vehicle-stage-name {
+            font-size: 1.28rem;
+        }
+
+        .vehicle-motion-window {
+            height: 180px;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .vehicle-motion-window img,
+        .road-marker-track {
+            animation: none !important;
+        }
     }
     </style>
     """,
@@ -299,6 +456,12 @@ def extract_number(series: pd.Series) -> pd.Series:
         series.astype(str).str.extract(r"([0-9]+(?:\.[0-9]+)?)", expand=False),
         errors="coerce",
     )
+
+
+@st.cache_data(show_spinner=False)
+def load_vehicle_asset() -> str:
+    encoded = base64.b64encode(VEHICLE_ASSET_PATH.read_bytes()).decode("ascii")
+    return f"data:image/png;base64,{encoded}"
 
 
 @st.cache_data(show_spinner=False)
@@ -475,8 +638,39 @@ if st.session_state.get("specs_for_model") != selected_model:
         }
     )
 
+vehicle_asset_uri = load_vehicle_asset()
+safe_brand = html.escape(selected_brand)
+safe_model = html.escape(selected_model)
+safe_fuel = html.escape(str(typical_specs["fuel"]))
+safe_transmission = html.escape(str(typical_specs["transmission"]))
+road_markers = "".join("<span></span>" for _ in range(14))
+
+st.markdown(
+    f"""
+    <div class="vehicle-stage">
+        <div class="vehicle-stage-copy">
+            <div class="vehicle-stage-kicker">Selected {safe_brand} profile</div>
+            <div class="vehicle-stage-name">{safe_model}</div>
+            <div class="vehicle-stage-facts">
+                <div><strong>{typical_specs["year"]}</strong> typical listing year</div>
+                <div><strong>{safe_fuel}</strong> &middot; <strong>{safe_transmission}</strong></div>
+                <div><strong>{len(matching_cars):,}</strong> exact-match records</div>
+            </div>
+        </div>
+        <div class="vehicle-motion-window" aria-hidden="true">
+            <img src="{vehicle_asset_uri}" alt="">
+        </div>
+        <div class="road-marker-track" aria-hidden="true">{road_markers}</div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
 st.markdown('<div style="height: 0.8rem"></div>', unsafe_allow_html=True)
-st.markdown('<div class="section-heading">Condition and specifications</div>', unsafe_allow_html=True)
+st.markdown(
+    '<div class="section-heading">Condition and specifications</div>',
+    unsafe_allow_html=True,
+)
 st.markdown(
     '<p class="section-copy">Typical values for the selected variant are filled in automatically.</p>',
     unsafe_allow_html=True,
