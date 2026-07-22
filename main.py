@@ -564,8 +564,9 @@ def load_vehicle_asset() -> str:
 def model_family_name(brand: str, model: str) -> str:
     variant_markers = {
         "amt", "asta", "at", "automatic", "crdi", "dct", "diesel", "era",
-        "gdi", "highline", "lxi", "magna", "manual", "mpi", "mt", "petrol",
-        "sportz", "tdi", "tsi", "vdi", "vtec", "vxi", "zdi", "zxi",
+        "gdi", "highline", "luxury", "lxi", "m", "magna", "manual", "mpi",
+        "mt", "petrol", "prestige", "sedan", "sportline", "sportz", "tdi",
+        "tsi", "vdi", "vtec", "vxi", "xline", "zdi", "zxi",
     }
     model_words = model.split()
     brand_words = brand.split()
@@ -575,9 +576,19 @@ def model_family_name(brand: str, model: str) -> str:
     for word in remaining:
         normalized = re.sub(r"[^a-z0-9.]", "", word.lower())
         is_engine_size = bool(re.fullmatch(r"\d+(?:\.\d+)?", normalized))
+        is_engine_badge = bool(
+            re.fullmatch(r"\d+(?:\.\d+)?[a-z]{1,4}", normalized)
+        )
         is_drive_layout = bool(re.fullmatch(r"\d+x\d+", normalized))
+        is_trim_code = bool(re.fullmatch(r"[vwz]\d{1,2}", normalized))
+        is_drivetrain_badge = normalized.startswith(("sdrive", "xdrive"))
         if family_words and (
-            normalized in variant_markers or is_engine_size or is_drive_layout
+            normalized in variant_markers
+            or is_engine_size
+            or is_engine_badge
+            or is_drive_layout
+            or is_trim_code
+            or is_drivetrain_badge
         ):
             break
         family_words.append(word)
