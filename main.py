@@ -605,8 +605,7 @@ def plain_metadata(value: str, fallback: str) -> str:
 
 
 @st.cache_data(ttl=86_400, show_spinner=False)
-def find_vehicle_3d_model(brand: str, model: str) -> dict[str, str] | None:
-    search_name = model_family_name(brand, model)
+def fetch_vehicle_3d_model(search_name: str) -> dict[str, str] | None:
     search_tokens = set(re.findall(r"[a-z0-9]+", search_name.lower()))
     parameters = {
         "type": "models",
@@ -629,11 +628,8 @@ def find_vehicle_3d_model(brand: str, model: str) -> dict[str, str] | None:
         "part", "rim", "spoiler", "traffic", "trim", "tuned", "vent", "wheel",
     }
 
-    try:
-        with urllib.request.urlopen(request, timeout=3.5) as response:
-            result = json.load(response)
-    except (OSError, TimeoutError, ValueError):
-        return None
+    with urllib.request.urlopen(request, timeout=5.0) as response:
+        result = json.load(response)
 
     matches: list[tuple[tuple[int, int, int], dict[str, str]]] = []
     for candidate in result.get("results", []):
@@ -674,6 +670,13 @@ def find_vehicle_3d_model(brand: str, model: str) -> dict[str, str] | None:
         )
 
     return min(matches, key=lambda match: match[0])[1] if matches else None
+
+
+def find_vehicle_3d_model(brand: str, model: str) -> dict[str, str] | None:
+    try:
+        return fetch_vehicle_3d_model(model_family_name(brand, model))
+    except (OSError, TimeoutError, ValueError):
+        return None
 
 
 @st.cache_data(ttl=86_400, show_spinner=False)
