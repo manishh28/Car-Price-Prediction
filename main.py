@@ -1,4 +1,4 @@
-import re
+import html
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -6,7 +6,6 @@ from matplotlib.ticker import FuncFormatter
 import numpy as np
 import pandas as pd
 import streamlit as st
-import streamlit.components.v1 as components
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import Ridge
@@ -15,7 +14,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
-from vehicle_renderer import render_vehicle_preview
+from vehicle_search import rank_matches
 
 
 DATA_PATH = Path(__file__).with_name("car details.csv")
@@ -139,6 +138,7 @@ st.markdown(
     }
 
     div[data-baseweb="select"] > div,
+    div[data-testid="stTextInput"] input,
     div[data-testid="stNumberInput"] input {
         background: var(--surface) !important;
         border-color: var(--line);
@@ -155,6 +155,7 @@ st.markdown(
 
     div[data-baseweb="select"] span,
     div[data-baseweb="select"] input,
+    div[data-testid="stTextInput"] input,
     div[data-testid="stNumberInput"] input {
         color: var(--ink) !important;
         -webkit-text-fill-color: var(--ink) !important;
@@ -167,9 +168,24 @@ st.markdown(
     }
 
     div[data-baseweb="select"] > div:focus-within,
+    div[data-testid="stTextInput"] input:focus,
     div[data-testid="stNumberInput"] input:focus {
         border-color: var(--teal);
         box-shadow: 0 0 0 1px var(--teal);
+    }
+
+    .search-match {
+        background: #eaf2f0;
+        border-left: 3px solid var(--teal);
+        color: var(--ink);
+        font-size: 0.88rem;
+        line-height: 1.45;
+        margin: 0.25rem 0 1.25rem;
+        padding: 0.7rem 0.85rem;
+    }
+
+    .search-match strong {
+        color: var(--teal-dark);
     }
 
     .stButton button,
@@ -315,7 +331,10 @@ def load_data() -> pd.DataFrame:
     data["mileage_value"] = extract_number(data["mileage"])
     data["engine_value"] = extract_number(data["engine"])
     data["max_power_value"] = extract_number(data["max_power"])
-    data["brand"] = data["name"].astype(str).str.split().str[0]
+    names = data["name"].astype(str)
+    data["brand"] = names.str.split().str[0]
+    data.loc[names.str.startswith("Land Rover "), "brand"] = "Land Rover"
+    data.loc[names.str.startswith("Ashok Leyland "), "brand"] = "Ashok Leyland"
     return data.dropna(subset=["name", "brand", "year", "selling_price"])
 
 
@@ -405,7 +424,7 @@ st.markdown(
     f"""
     <p class="app-intro">
         Estimate a fair resale value using {len(data):,} real used-car listings.
-        Choose the exact variant, add its condition details, and compare the result
+        Search for a vehicle, add its condition details, and compare the result
         with similar cars in the dataset.
     </p>
     <div class="accent-line"></div>
@@ -421,9 +440,9 @@ summary_columns[2].metric(
 )
 
 st.markdown('<div style="height: 1.5rem"></div>', unsafe_allow_html=True)
-st.markdown('<div class="section-heading">Select your vehicle</div>', unsafe_allow_html=True)
+st.markdown('<div class="section-heading">Search for your vehicle</div>', unsafe_allow_html=True)
 st.markdown(
-    '<p class="section-copy">Start with the make, then choose the matching variant.</p>',
+    '<p class="section-copy">Search the brand first, then enter a model or variant.</p>',
     unsafe_allow_html=True,
 )
 
@@ -431,25 +450,64 @@ brand_counts = data["brand"].value_counts()
 brands = sorted(brand_counts.index.tolist())
 default_brand = "Toyota" if "Toyota" in brands else brands[0]
 
-if st.session_state.get("selected_brand") not in brands:
-    st.session_state["selected_brand"] = default_brand
+def clear_model_search() -> None:
+    st.session_state["vehicle_model_search"] = ""
+    st.session_state.pop("valuation", None)
 
 vehicle_columns = st.columns([1, 2])
 with vehicle_columns[0]:
-    selected_brand = st.selectbox("Make", brands, key="selected_brand")
+    brand_query = st.text_input(
+        "Search car brand",
+        value=default_brand,
+        placeholder="e.g. Toyota, BMW, Land Rover",
+        key="vehicle_brand_search",
+        on_change=clear_model_search,
+    )
+with vehicle_columns[1]:
+    model_query = st.text_input(
+        "Search car model",
+        value="Fortuner",
+        placeholder="e.g. Fortuner, 3 Series, Swift",
+        key="vehicle_model_search",
+    )
+
+brand_matches = rank_matches(brands, brand_query, brand_counts.to_dict())
+if not brand_matches:
+    st.warning("No matching brand found. Check the spelling and try again.")
+    st.stop()
+
+selected_brand = brand_matches[0]
 
 available_models = sorted(
     data.loc[data["brand"] == selected_brand, "name"].dropna().unique().tolist()
 )
-fortuner_models = [name for name in available_models if "Fortuner" in name]
-default_model = fortuner_models[0] if fortuner_models else available_models[0]
-if st.session_state.get("selected_model") not in available_models:
-    st.session_state["selected_model"] = default_model
+model_counts = (
+    data.loc[data["brand"] == selected_brand, "name"].value_counts().to_dict()
+)
 
-with vehicle_columns[1]:
-    selected_model = st.selectbox(
-        "Model and variant", available_models, key="selected_model"
+model_matches = rank_matches(available_models, model_query, model_counts)
+if not model_matches:
+    st.info(
+        f"Enter a model name to search the {len(available_models):,} "
+        f"{selected_brand} variants in the dataset."
     )
+    st.stop()
+
+selected_model = model_matches[0]
+match_note = (
+    f"{len(model_matches):,} matches found; showing the closest match."
+    if len(model_matches) > 1
+    else "1 matching variant found."
+)
+st.markdown(
+    f"""
+    <div class="search-match">
+        <strong>Matched vehicle:</strong> {html.escape(selected_model)}
+        &nbsp;&middot;&nbsp; {match_note}
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 matching_cars = data[data["name"] == selected_model]
 
@@ -483,24 +541,12 @@ if st.session_state.get("specs_for_model") != selected_model:
         }
     )
 
-vehicle_preview = render_vehicle_preview(
-    brand=selected_brand,
-    model=selected_model,
-    year=typical_specs["year"],
-    fuel=str(typical_specs["fuel"]),
-    transmission=str(typical_specs["transmission"]),
-    matching_records=len(matching_cars),
-    seats=typical_specs["seats"],
-)
-components.html(vehicle_preview, height=434, scrolling=False)
-
-st.markdown('<div style="height: 0.8rem"></div>', unsafe_allow_html=True)
 st.markdown(
     '<div class="section-heading">Condition and specifications</div>',
     unsafe_allow_html=True,
 )
 st.markdown(
-    '<p class="section-copy">Typical values for the selected variant are filled in automatically.</p>',
+    '<p class="section-copy">Typical values for the matched vehicle are filled in automatically.</p>',
     unsafe_allow_html=True,
 )
 
