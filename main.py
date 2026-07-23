@@ -69,6 +69,10 @@ st.markdown(
         padding-bottom: 4rem;
     }
 
+    header[data-testid="stHeader"] {
+        display: none;
+    }
+
     h1, h2, h3, p, label, div {
         letter-spacing: 0 !important;
     }
