@@ -357,8 +357,8 @@ st.markdown(
         animation: vehicle-viewer-enter 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
         background: #0a1715;
         border: 0;
-        bottom: calc(-2.1rem - 120px);
-        height: calc(100% + 3.65rem + 174px);
+        bottom: calc(-2.1rem - 160px);
+        height: calc(100% + 3.65rem + 214px);
         position: absolute;
         right: calc(-1.7rem - 5%);
         top: calc(-1.55rem - 54px);
@@ -441,8 +441,8 @@ st.markdown(
         }
 
         .vehicle-3d-frame {
-            bottom: calc(-2.1rem - 110px);
-            height: calc(100% + 2.1rem + 152px);
+            bottom: calc(-2.1rem - 150px);
+            height: calc(100% + 2.1rem + 192px);
             left: calc(-1.7rem - 4%);
             right: calc(-1.7rem - 4%);
             top: -42px;
@@ -569,7 +569,7 @@ def fetch_vehicle_3d_model(search_name: str) -> dict[str, str] | None:
     with urllib.request.urlopen(request, timeout=5.0) as response:
         result = json.load(response)
 
-    matches: list[tuple[tuple[int, int, int], dict[str, str]]] = []
+    matches: list[tuple[tuple[int, int, int, int], dict[str, str]]] = []
     for candidate in result.get("results", []):
         title = str(candidate.get("name", ""))
         title_tokens = set(re.findall(r"[a-z0-9]+", title.lower()))
@@ -603,8 +603,17 @@ def fetch_vehicle_3d_model(search_name: str) -> dict[str, str] | None:
             ),
         }
         extra_token_count = len(title_tokens - search_tokens)
+        like_count = int(candidate.get("likeCount") or 0)
         matches.append(
-            ((extra_token_count, face_count, archive_size), model_data)
+            (
+                (
+                    extra_token_count,
+                    -archive_size,
+                    -face_count,
+                    -like_count,
+                ),
+                model_data,
+            )
         )
 
     return min(matches, key=lambda match: match[0])[1] if matches else None
