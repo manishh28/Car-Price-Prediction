@@ -587,7 +587,7 @@ def fetch_vehicle_3d_model(search_name: str) -> dict[str, str] | None:
         if (
             not face_count
             or not archive_size
-            or face_count > 300_000
+            or face_count > 400_000
             or archive_size > 12_000_000
         ):
             continue
@@ -607,10 +607,10 @@ def fetch_vehicle_3d_model(search_name: str) -> dict[str, str] | None:
         matches.append(
             (
                 (
+                    -like_count,
                     extra_token_count,
                     -archive_size,
                     -face_count,
-                    -like_count,
                 ),
                 model_data,
             )
