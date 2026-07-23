@@ -442,9 +442,11 @@ st.markdown(
 
 brands = sorted(data["brand"].unique().tolist())
 
+
 def clear_model_selection() -> None:
     st.session_state.pop("vehicle_model_choice", None)
     st.session_state.pop("valuation", None)
+
 
 vehicle_columns = st.columns([1, 2])
 with vehicle_columns[0]:
@@ -482,27 +484,29 @@ with vehicle_columns[1]:
         disabled=not selected_brand,
     )
 
+vehicle_ready = selected_brand is not None and selected_model is not None
+
 if not selected_brand:
     st.info("Choose a brand to load its model suggestions.")
-    st.stop()
-
-if not selected_model:
+elif not selected_model:
     st.info(
         f"Start typing to search the {len(available_models):,} "
         f"{selected_brand} models and variants."
     )
-    st.stop()
 
-st.markdown(
-    f"""
-    <div class="search-match">
-        <strong>Matched vehicle:</strong> {html.escape(selected_model)}
-    </div>
-    """,
-    unsafe_allow_html=True,
+if vehicle_ready:
+    st.markdown(
+        f"""
+        <div class="search-match">
+            <strong>Matched vehicle:</strong> {html.escape(selected_model)}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+matching_cars = (
+    data[data["name"] == selected_model] if vehicle_ready else data.iloc[0:0]
 )
-
-matching_cars = data[data["name"] == selected_model]
 
 typical_specs = {
     "year": int(median_value(matching_cars["year"], 2018)),
@@ -517,7 +521,20 @@ typical_specs = {
     "owner": common_value(matching_cars["owner"], "First Owner"),
 }
 
-if st.session_state.get("specs_for_model") != selected_model:
+spec_state_keys = [
+    "spec_year",
+    "spec_km",
+    "spec_mileage",
+    "spec_engine",
+    "spec_power",
+    "spec_seats",
+    "spec_fuel",
+    "spec_seller",
+    "spec_transmission",
+    "spec_owner",
+]
+spec_state_missing = any(key not in st.session_state for key in spec_state_keys)
+if spec_state_missing or st.session_state.get("specs_for_model") != selected_model:
     st.session_state.update(
         {
             "spec_year": typical_specs["year"],
@@ -539,15 +556,27 @@ st.markdown(
     unsafe_allow_html=True,
 )
 st.markdown(
-    '<p class="section-copy">Typical values for the matched vehicle are filled in automatically.</p>',
+    (
+        '<p class="section-copy">Typical values for the matched vehicle are filled in automatically.</p>'
+        if vehicle_ready
+        else '<p class="section-copy">Choose a brand and model to enable these fields.</p>'
+    ),
     unsafe_allow_html=True,
 )
 
 context_column, reset_column = st.columns([3, 1])
 context_column.caption(
-    f"{len(matching_cars):,} matching listing records found for this exact variant."
+    (
+        f"{len(matching_cars):,} matching listing records found for this exact variant."
+        if vehicle_ready
+        else "Vehicle specifications will appear here after you choose a model."
+    )
 )
-if reset_column.button("Reset typical specs", use_container_width=True):
+if reset_column.button(
+    "Reset typical specs",
+    use_container_width=True,
+    disabled=not vehicle_ready,
+):
     st.session_state.update(
         {
             "spec_year": typical_specs["year"],
@@ -569,7 +598,12 @@ with st.form("valuation_form"):
     row_one = st.columns(3)
     with row_one[0]:
         year = st.number_input(
-            "Registration year", min_value=1980, max_value=2030, step=1, key="spec_year"
+            "Registration year",
+            min_value=1980,
+            max_value=2030,
+            step=1,
+            key="spec_year",
+            disabled=not vehicle_ready,
         )
     with row_one[1]:
         km_driven = st.number_input(
@@ -578,6 +612,7 @@ with st.form("valuation_form"):
             max_value=1_500_000,
             step=5_000,
             key="spec_km",
+            disabled=not vehicle_ready,
         )
     with row_one[2]:
         owner = st.selectbox(
@@ -590,47 +625,77 @@ with st.form("valuation_form"):
                 "Test Drive Car",
             ],
             key="spec_owner",
+            disabled=not vehicle_ready,
         )
 
     row_two = st.columns(3)
     with row_two[0]:
         fuel = st.selectbox(
-            "Fuel", ["Petrol", "Diesel", "CNG", "LPG"], key="spec_fuel"
+            "Fuel",
+            ["Petrol", "Diesel", "CNG", "LPG"],
+            key="spec_fuel",
+            disabled=not vehicle_ready,
         )
     with row_two[1]:
         transmission = st.selectbox(
-            "Transmission", ["Manual", "Automatic"], key="spec_transmission"
+            "Transmission",
+            ["Manual", "Automatic"],
+            key="spec_transmission",
+            disabled=not vehicle_ready,
         )
     with row_two[2]:
         seller_type = st.selectbox(
             "Seller",
             ["Individual", "Dealer", "Trustmark Dealer"],
             key="spec_seller",
+            disabled=not vehicle_ready,
         )
 
     row_three = st.columns(4)
     with row_three[0]:
         mileage = st.number_input(
-            "Mileage (km/l)", min_value=1.0, max_value=60.0, step=0.5, key="spec_mileage"
+            "Mileage (km/l)",
+            min_value=1.0,
+            max_value=60.0,
+            step=0.5,
+            key="spec_mileage",
+            disabled=not vehicle_ready,
         )
     with row_three[1]:
         engine = st.number_input(
-            "Engine (cc)", min_value=300, max_value=7000, step=50, key="spec_engine"
+            "Engine (cc)",
+            min_value=300,
+            max_value=7000,
+            step=50,
+            key="spec_engine",
+            disabled=not vehicle_ready,
         )
     with row_three[2]:
         max_power = st.number_input(
-            "Power (bhp)", min_value=10.0, max_value=1000.0, step=5.0, key="spec_power"
+            "Power (bhp)",
+            min_value=10.0,
+            max_value=1000.0,
+            step=5.0,
+            key="spec_power",
+            disabled=not vehicle_ready,
         )
     with row_three[3]:
         seats = st.number_input(
-            "Seats", min_value=2, max_value=14, step=1, key="spec_seats"
+            "Seats",
+            min_value=2,
+            max_value=14,
+            step=1,
+            key="spec_seats",
+            disabled=not vehicle_ready,
         )
 
     submitted = st.form_submit_button(
-        "Estimate resale value", use_container_width=True
+        "Estimate resale value",
+        use_container_width=True,
+        disabled=not vehicle_ready,
     )
 
-if submitted:
+if submitted and vehicle_ready:
     input_values = {
         "name": selected_model,
         "fuel": fuel,
