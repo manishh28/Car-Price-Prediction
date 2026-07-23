@@ -273,7 +273,7 @@ st.markdown(
         grid-template-columns: minmax(0, 35%) minmax(0, 65%);
         margin: 1.2rem 0 1.8rem;
         min-height: 330px;
-        overflow: hidden;
+        overflow: clip;
         padding: 1.55rem 1.7rem 2.1rem;
         position: relative;
     }
@@ -357,8 +357,8 @@ st.markdown(
         animation: vehicle-viewer-enter 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
         background: #0a1715;
         border: 0;
-        bottom: calc(-2.1rem - 54px);
-        height: calc(100% + 3.65rem + 108px);
+        bottom: calc(-2.1rem - 120px);
+        height: calc(100% + 3.65rem + 174px);
         position: absolute;
         right: calc(-1.7rem - 5%);
         top: calc(-1.55rem - 54px);
@@ -441,8 +441,8 @@ st.markdown(
         }
 
         .vehicle-3d-frame {
-            bottom: calc(-2.1rem - 46px);
-            height: calc(100% + 2.1rem + 88px);
+            bottom: calc(-2.1rem - 110px);
+            height: calc(100% + 2.1rem + 152px);
             left: calc(-1.7rem - 4%);
             right: calc(-1.7rem - 4%);
             top: -42px;
