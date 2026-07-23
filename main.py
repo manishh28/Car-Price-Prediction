@@ -1,4 +1,3 @@
-import base64
 import html
 import json
 import re
@@ -21,7 +20,6 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 
 DATA_PATH = Path(__file__).with_name("car details.csv")
-VEHICLE_ASSET_PATH = Path(__file__).with_name("assets") / "vehicle-showcase.png"
 CATEGORICAL_FEATURES = ["name", "fuel", "seller_type", "transmission", "owner"]
 NUMERIC_FEATURES = [
     "year",
@@ -272,9 +270,9 @@ st.markdown(
         border-bottom: 4px solid var(--coral);
         color: #ffffff;
         display: grid;
-        grid-template-columns: minmax(230px, 0.78fr) minmax(380px, 1.45fr);
+        grid-template-columns: minmax(0, 35%) minmax(0, 65%);
         margin: 1.2rem 0 1.8rem;
-        min-height: 285px;
+        min-height: 330px;
         overflow: hidden;
         padding: 1.55rem 1.7rem 2.1rem;
         position: relative;
@@ -282,6 +280,9 @@ st.markdown(
 
     .vehicle-stage-copy {
         align-self: center;
+        min-width: 0;
+        overflow: hidden;
+        padding-right: 1.25rem;
         position: relative;
         z-index: 2;
     }
@@ -295,11 +296,12 @@ st.markdown(
 
     .vehicle-stage-name {
         color: #ffffff;
-        font-size: 1.55rem;
+        font-size: 1.35rem;
         font-weight: 750;
         line-height: 1.2;
         margin: 0.45rem 0 1rem;
-        max-width: 360px;
+        max-width: 100%;
+        overflow-wrap: anywhere;
     }
 
     .vehicle-stage-facts {
@@ -326,31 +328,19 @@ st.markdown(
         position: absolute;
     }
 
-    .vehicle-motion-window:not(.is-photo) img {
-        bottom: -0.15rem;
-        filter: drop-shadow(0 16px 14px rgba(0, 0, 0, 0.34));
-        height: auto;
-        max-width: none;
-        right: -1.2rem;
-        width: min(760px, 112%);
-        animation: vehicle-enter 850ms cubic-bezier(0.22, 1, 0.36, 1) both,
-                   vehicle-idle 4.2s ease-in-out 900ms infinite;
-    }
-
     .vehicle-motion-window.is-photo {
         align-self: stretch;
         height: auto;
     }
 
     .vehicle-motion-window.is-photo img {
-        animation: vehicle-photo-enter 900ms cubic-bezier(0.22, 1, 0.36, 1) both,
-                   vehicle-photo-idle 7s ease-in-out 1s infinite;
+        animation: none;
         bottom: -2.1rem;
         height: calc(100% + 3.65rem);
         max-width: none;
         object-fit: cover;
         object-position: center;
-        opacity: 0.82;
+        opacity: 0.9;
         right: -1.7rem;
         top: -1.55rem;
         width: calc(100% + 5rem);
@@ -367,12 +357,25 @@ st.markdown(
         animation: vehicle-viewer-enter 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
         background: #0a1715;
         border: 0;
-        bottom: -2.1rem;
-        height: calc(100% + 3.65rem);
+        bottom: calc(-2.1rem - 54px);
+        height: calc(100% + 3.65rem + 108px);
         position: absolute;
-        right: -1.7rem;
-        top: -1.55rem;
-        width: calc(100% + 3.4rem);
+        right: calc(-1.7rem - 5%);
+        top: calc(-1.55rem - 54px);
+        width: calc(110% + 3.4rem);
+    }
+
+    .vehicle-motion-window.is-unavailable {
+        align-items: center;
+        display: flex;
+        justify-content: center;
+    }
+
+    .vehicle-unavailable {
+        color: #9eb9b3;
+        font-size: 0.82rem;
+        max-width: 240px;
+        text-align: center;
     }
 
     .vehicle-image-credit {
@@ -390,53 +393,9 @@ st.markdown(
         text-decoration: underline !important;
     }
 
-    .road-marker-track {
-        align-items: center;
-        bottom: 1.05rem;
-        display: flex;
-        left: 0;
-        position: absolute;
-        width: 220%;
-        animation: road-move 2.2s linear infinite;
-        z-index: 3;
-    }
-
-    .road-marker-track span {
-        background: rgba(255, 255, 255, 0.42);
-        display: block;
-        height: 3px;
-        margin-right: 46px;
-        width: 68px;
-    }
-
-    @keyframes vehicle-enter {
-        from { opacity: 0; transform: translateX(34%); }
-        to { opacity: 1; transform: translateX(0); }
-    }
-
-    @keyframes vehicle-idle {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-4px); }
-    }
-
-    @keyframes vehicle-photo-enter {
-        from { opacity: 0; transform: translateX(18%) scale(1.05); }
-        to { opacity: 0.82; transform: translateX(0) scale(1.02); }
-    }
-
-    @keyframes vehicle-photo-idle {
-        0%, 100% { transform: scale(1.02); }
-        50% { transform: scale(1.055); }
-    }
-
     @keyframes vehicle-viewer-enter {
         from { opacity: 0; transform: translateX(12%); }
         to { opacity: 1; transform: translateX(0); }
-    }
-
-    @keyframes road-move {
-        from { transform: translateX(0); }
-        to { transform: translateX(-114px); }
     }
 
     @media (max-width: 900px) {
@@ -458,6 +417,8 @@ st.markdown(
 
         .vehicle-stage-copy {
             align-self: start;
+            overflow: visible;
+            padding-right: 0;
         }
 
         .vehicle-stage-name {
@@ -466,13 +427,6 @@ st.markdown(
 
         .vehicle-motion-window {
             height: 205px;
-        }
-
-        .vehicle-motion-window:not(.is-photo) img {
-            left: 50%;
-            right: auto;
-            transform: translateX(-50%);
-            width: min(720px, 118%);
         }
 
         .vehicle-motion-window.is-photo img {
@@ -487,23 +441,14 @@ st.markdown(
         }
 
         .vehicle-3d-frame {
-            bottom: -2.1rem;
-            height: calc(100% + 2.1rem);
-            left: -1.7rem;
-            right: -1.7rem;
-            top: 0;
-            width: calc(100% + 3.4rem);
+            bottom: calc(-2.1rem - 46px);
+            height: calc(100% + 2.1rem + 88px);
+            left: calc(-1.7rem - 4%);
+            right: calc(-1.7rem - 4%);
+            top: -42px;
+            width: calc(108% + 3.4rem);
         }
 
-        @keyframes vehicle-enter {
-            from { opacity: 0; transform: translateX(-22%); }
-            to { opacity: 1; transform: translateX(-50%); }
-        }
-
-        @keyframes vehicle-idle {
-            0%, 100% { transform: translate(-50%, 0); }
-            50% { transform: translate(-50%, -4px); }
-        }
     }
 
     @media (max-width: 700px) {
@@ -537,8 +482,7 @@ st.markdown(
 
     @media (prefers-reduced-motion: reduce) {
         .vehicle-motion-window img,
-        .vehicle-3d-frame,
-        .road-marker-track {
+        .vehicle-3d-frame {
             animation: none !important;
         }
     }
@@ -553,12 +497,6 @@ def extract_number(series: pd.Series) -> pd.Series:
         series.astype(str).str.extract(r"([0-9]+(?:\.[0-9]+)?)", expand=False),
         errors="coerce",
     )
-
-
-@st.cache_data(show_spinner=False)
-def load_vehicle_asset() -> str:
-    encoded = base64.b64encode(VEHICLE_ASSET_PATH.read_bytes()).decode("ascii")
-    return f"data:image/png;base64,{encoded}"
 
 
 def model_family_name(brand: str, model: str) -> str:
@@ -649,7 +587,7 @@ def fetch_vehicle_3d_model(search_name: str) -> dict[str, str] | None:
         if (
             not face_count
             or not archive_size
-            or face_count > 100_000
+            or face_count > 300_000
             or archive_size > 12_000_000
         ):
             continue
@@ -919,7 +857,6 @@ safe_brand = html.escape(selected_brand)
 safe_model = html.escape(selected_model)
 safe_fuel = html.escape(str(typical_specs["fuel"]))
 safe_transmission = html.escape(str(typical_specs["transmission"]))
-road_markers = "".join("<span></span>" for _ in range(14))
 vehicle_3d_model = find_vehicle_3d_model(selected_brand, selected_model)
 
 if vehicle_3d_model:
@@ -930,9 +867,20 @@ if vehicle_3d_model:
             "autospin": "0.25",
             "camera": "0",
             "dnt": "1",
+            "ui_annotations": "0",
+            "ui_animations": "0",
+            "ui_ar": "0",
+            "ui_controls": "0",
+            "ui_fullscreen": "0",
+            "ui_general_controls": "0",
+            "ui_help": "0",
             "ui_hint": "0",
-            "ui_infos": "1",
-            "ui_controls": "1",
+            "ui_infos": "0",
+            "ui_inspector": "0",
+            "ui_settings": "0",
+            "ui_stop": "0",
+            "ui_vr": "0",
+            "ui_watermark": "0",
         }
     )
     viewer_url = f"https://sketchfab.com/models/{model_uid}/embed?{viewer_parameters}"
@@ -944,7 +892,6 @@ if vehicle_3d_model:
         'loading="eager"></iframe>'
     )
     image_credit_markup = ""
-    road_markup = ""
 else:
     vehicle_image = find_vehicle_image(selected_brand, selected_model)
 
@@ -960,18 +907,14 @@ if not vehicle_3d_model and vehicle_image:
         f'<a class="vehicle-image-credit" href="{source_url}" target="_blank" '
         f'rel="noopener noreferrer">Photo: {artist} &middot; {license_name}</a>'
     )
-    road_markup = (
-        f'<div class="road-marker-track" aria-hidden="true">{road_markers}</div>'
-    )
 elif not vehicle_3d_model:
-    vehicle_asset_uri = load_vehicle_asset()
-    motion_window_class = "vehicle-motion-window"
-    image_alt = f"Stylized vehicle illustration for {safe_model}"
-    vehicle_visual_markup = f'<img src="{vehicle_asset_uri}" alt="{image_alt}">'
-    image_credit_markup = ""
-    road_markup = (
-        f'<div class="road-marker-track" aria-hidden="true">{road_markers}</div>'
+    motion_window_class = "vehicle-motion-window is-unavailable"
+    vehicle_visual_markup = (
+        '<div class="vehicle-unavailable">'
+        "No reliable model-specific visual is available for this vehicle."
+        "</div>"
     )
+    image_credit_markup = ""
 
 st.markdown(
     f"""
@@ -988,7 +931,6 @@ st.markdown(
         <div class="{motion_window_class}">
             {vehicle_visual_markup}
         </div>
-        {road_markup}
         {image_credit_markup}
     </div>
     """,
