@@ -1,15 +1,12 @@
-import html
-import json
 import re
 from pathlib import Path
-import urllib.parse
-import urllib.request
 
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 import numpy as np
 import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import Ridge
@@ -17,6 +14,8 @@ from sklearn.metrics import mean_absolute_error, r2_score
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
+
+from vehicle_renderer import render_vehicle_preview
 
 
 DATA_PATH = Path(__file__).with_name("car details.csv")
@@ -269,139 +268,6 @@ st.markdown(
         font-weight: 700;
     }
 
-    .vehicle-stage {
-        background: #102724;
-        border-bottom: 4px solid var(--coral);
-        color: #ffffff;
-        display: grid;
-        grid-template-columns: minmax(0, 35%) minmax(0, 65%);
-        margin: 1.2rem 0 1.8rem;
-        min-height: 330px;
-        overflow: clip;
-        padding: 1.55rem 1.7rem 2.1rem;
-        position: relative;
-    }
-
-    .vehicle-stage-copy {
-        align-self: center;
-        min-width: 0;
-        overflow: hidden;
-        padding-right: 1.25rem;
-        position: relative;
-        z-index: 2;
-    }
-
-    .vehicle-stage-kicker {
-        color: #8fc2b9;
-        font-size: 0.72rem;
-        font-weight: 750;
-        text-transform: uppercase;
-    }
-
-    .vehicle-stage-name {
-        color: #ffffff;
-        font-size: 1.35rem;
-        font-weight: 750;
-        line-height: 1.2;
-        margin: 0.45rem 0 1rem;
-        max-width: 100%;
-        overflow-wrap: anywhere;
-    }
-
-    .vehicle-stage-facts {
-        color: #c4d5d1;
-        display: grid;
-        font-size: 0.78rem;
-        gap: 0.45rem;
-    }
-
-    .vehicle-stage-facts strong {
-        color: #ffffff;
-        font-weight: 700;
-    }
-
-    .vehicle-motion-window {
-        align-self: end;
-        height: 230px;
-        min-width: 0;
-        position: relative;
-        z-index: 2;
-    }
-
-    .vehicle-motion-window img {
-        position: absolute;
-    }
-
-    .vehicle-motion-window.is-photo {
-        align-self: stretch;
-        height: auto;
-    }
-
-    .vehicle-motion-window.is-photo img {
-        animation: none;
-        bottom: -2.1rem;
-        height: calc(100% + 3.65rem);
-        max-width: none;
-        object-fit: cover;
-        object-position: center;
-        opacity: 0.9;
-        right: -1.7rem;
-        top: -1.55rem;
-        width: calc(100% + 5rem);
-        -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 30%);
-        mask-image: linear-gradient(to right, transparent 0%, #000 30%);
-    }
-
-    .vehicle-motion-window.is-3d {
-        align-self: stretch;
-        height: auto;
-    }
-
-    .vehicle-3d-frame {
-        animation: vehicle-viewer-enter 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
-        background: #0a1715;
-        border: 0;
-        bottom: calc(-2.1rem - 160px);
-        height: calc(100% + 3.65rem + 214px);
-        position: absolute;
-        right: calc(-1.7rem - 5%);
-        top: calc(-1.55rem - 54px);
-        width: calc(110% + 3.4rem);
-    }
-
-    .vehicle-motion-window.is-unavailable {
-        align-items: center;
-        display: flex;
-        justify-content: center;
-    }
-
-    .vehicle-unavailable {
-        color: #9eb9b3;
-        font-size: 0.82rem;
-        max-width: 240px;
-        text-align: center;
-    }
-
-    .vehicle-image-credit {
-        bottom: 0.22rem;
-        color: rgba(255, 255, 255, 0.74) !important;
-        font-size: 0.58rem;
-        position: absolute;
-        right: 0.65rem;
-        text-decoration: none !important;
-        z-index: 4;
-    }
-
-    .vehicle-image-credit:hover {
-        color: #ffffff !important;
-        text-decoration: underline !important;
-    }
-
-    @keyframes vehicle-viewer-enter {
-        from { opacity: 0; transform: translateX(12%); }
-        to { opacity: 1; transform: translateX(0); }
-    }
-
     @media (max-width: 900px) {
         [data-testid="stHorizontalBlock"] {
             flex-wrap: wrap;
@@ -413,46 +279,6 @@ st.markdown(
             min-width: 0 !important;
             width: 100% !important;
         }
-
-        .vehicle-stage {
-            grid-template-columns: 1fr;
-            min-height: 445px;
-        }
-
-        .vehicle-stage-copy {
-            align-self: start;
-            overflow: visible;
-            padding-right: 0;
-        }
-
-        .vehicle-stage-name {
-            max-width: 100%;
-        }
-
-        .vehicle-motion-window {
-            height: 205px;
-        }
-
-        .vehicle-motion-window.is-photo img {
-            bottom: -2.1rem;
-            height: calc(100% + 2.1rem);
-            left: -1.7rem;
-            right: -1.7rem;
-            top: 0;
-            width: calc(100% + 3.4rem);
-            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 28%);
-            mask-image: linear-gradient(to bottom, transparent 0%, #000 28%);
-        }
-
-        .vehicle-3d-frame {
-            bottom: calc(-2.1rem - 150px);
-            height: calc(100% + 2.1rem + 192px);
-            left: calc(-1.7rem - 4%);
-            right: calc(-1.7rem - 4%);
-            top: -42px;
-            width: calc(108% + 3.4rem);
-        }
-
     }
 
     @media (max-width: 700px) {
@@ -469,26 +295,6 @@ st.markdown(
         .result-panel {
             padding: 1.25rem;
         }
-
-        .vehicle-stage {
-            min-height: 520px;
-            padding: 1.25rem 1.1rem 1.8rem;
-        }
-
-        .vehicle-stage-name {
-            font-size: 1.28rem;
-        }
-
-        .vehicle-motion-window {
-            height: 280px;
-        }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        .vehicle-motion-window img,
-        .vehicle-3d-frame {
-            animation: none !important;
-        }
     }
     </style>
     """,
@@ -501,195 +307,6 @@ def extract_number(series: pd.Series) -> pd.Series:
         series.astype(str).str.extract(r"([0-9]+(?:\.[0-9]+)?)", expand=False),
         errors="coerce",
     )
-
-
-def model_family_name(brand: str, model: str) -> str:
-    variant_markers = {
-        "amt", "asta", "at", "automatic", "crdi", "dct", "diesel", "era",
-        "gdi", "highline", "luxury", "lxi", "m", "magna", "manual", "mpi",
-        "mt", "petrol", "prestige", "sedan", "sportline", "sportz", "tdi",
-        "tsi", "vdi", "vtec", "vxi", "xline", "zdi", "zxi",
-    }
-    model_words = model.split()
-    brand_words = brand.split()
-    remaining = model_words[len(brand_words):]
-    family_words: list[str] = []
-
-    for word in remaining:
-        normalized = re.sub(r"[^a-z0-9.]", "", word.lower())
-        is_engine_size = bool(re.fullmatch(r"\d+(?:\.\d+)?", normalized))
-        is_engine_badge = bool(
-            re.fullmatch(r"\d+(?:\.\d+)?[a-z]{1,4}", normalized)
-        )
-        is_drive_layout = bool(re.fullmatch(r"\d+x\d+", normalized))
-        is_trim_code = bool(re.fullmatch(r"[vwz]\d{1,2}", normalized))
-        is_drivetrain_badge = normalized.startswith(("sdrive", "xdrive"))
-        if family_words and (
-            normalized in variant_markers
-            or is_engine_size
-            or is_engine_badge
-            or is_drive_layout
-            or is_trim_code
-            or is_drivetrain_badge
-        ):
-            break
-        family_words.append(word)
-        if len(family_words) == 4:
-            break
-
-    return " ".join([brand, *(family_words or remaining[:1])])
-
-
-def plain_metadata(value: str, fallback: str) -> str:
-    without_tags = re.sub(r"<[^>]+>", " ", html.unescape(value or ""))
-    cleaned = " ".join(without_tags.split())
-    return cleaned[:70] or fallback
-
-
-@st.cache_data(ttl=86_400, show_spinner=False)
-def fetch_vehicle_3d_model(search_name: str) -> dict[str, str] | None:
-    search_tokens = set(re.findall(r"[a-z0-9]+", search_name.lower()))
-    parameters = {
-        "type": "models",
-        "q": search_name,
-        "sort_by": "-relevance",
-        "count": "24",
-    }
-    request = urllib.request.Request(
-        "https://api.sketchfab.com/v3/search?" + urllib.parse.urlencode(parameters),
-        headers={
-            "User-Agent": (
-                "AutoValueIndia/1.0 "
-                "(https://github.com/manishh28/Car-Price-Prediction)"
-            )
-        },
-    )
-    excluded_terms = {
-        "badge", "bodykit", "cabriolet", "dashboard", "diagram", "emblem",
-        "engine", "gauge", "interior", "logo", "mod", "offroad", "pack",
-        "part", "rim", "spoiler", "traffic", "trim", "tuned", "vent", "wheel",
-    }
-
-    with urllib.request.urlopen(request, timeout=5.0) as response:
-        result = json.load(response)
-
-    matches: list[tuple[tuple[int, int, int, int], dict[str, str]]] = []
-    for candidate in result.get("results", []):
-        title = str(candidate.get("name", ""))
-        title_tokens = set(re.findall(r"[a-z0-9]+", title.lower()))
-        if not search_tokens.issubset(title_tokens):
-            continue
-        if title_tokens.intersection(excluded_terms):
-            continue
-        license_data = candidate.get("license") or {}
-        uid = candidate.get("uid")
-        if not uid or not license_data.get("label"):
-            continue
-        gltf_archive = (candidate.get("archives") or {}).get("gltf") or {}
-        face_count = int(gltf_archive.get("faceCount") or 0)
-        archive_size = int(gltf_archive.get("size") or 0)
-        if (
-            not face_count
-            or not archive_size
-            or face_count > 400_000
-            or archive_size > 12_000_000
-        ):
-            continue
-        user = candidate.get("user") or {}
-        model_data = {
-            "uid": str(uid),
-            "name": title,
-            "author": str(user.get("displayName") or user.get("username") or "Creator"),
-            "license": str(license_data["label"]),
-            "source_url": str(
-                candidate.get("viewerUrl")
-                or f"https://sketchfab.com/3d-models/{uid}"
-            ),
-        }
-        extra_token_count = len(title_tokens - search_tokens)
-        like_count = int(candidate.get("likeCount") or 0)
-        matches.append(
-            (
-                (
-                    -like_count,
-                    extra_token_count,
-                    -archive_size,
-                    -face_count,
-                ),
-                model_data,
-            )
-        )
-
-    return min(matches, key=lambda match: match[0])[1] if matches else None
-
-
-def find_vehicle_3d_model(brand: str, model: str) -> dict[str, str] | None:
-    try:
-        return fetch_vehicle_3d_model(model_family_name(brand, model))
-    except (OSError, TimeoutError, ValueError):
-        return None
-
-
-@st.cache_data(ttl=86_400, show_spinner=False)
-def find_vehicle_image(brand: str, model: str) -> dict[str, str] | None:
-    search_name = model_family_name(brand, model)
-    parameters = {
-        "action": "query",
-        "generator": "search",
-        "gsrsearch": f"{search_name} automobile",
-        "gsrnamespace": "6",
-        "gsrlimit": "8",
-        "prop": "imageinfo",
-        "iiprop": "url|mime|extmetadata",
-        "iiurlwidth": "1000",
-        "format": "json",
-        "formatversion": "2",
-    }
-    request = urllib.request.Request(
-        "https://commons.wikimedia.org/w/api.php?"
-        + urllib.parse.urlencode(parameters),
-        headers={
-            "User-Agent": (
-                "AutoValueIndia/1.0 "
-                "(https://github.com/manishh28/Car-Price-Prediction)"
-            )
-        },
-    )
-    excluded_terms = {
-        "badge", "dashboard", "diagram", "engine", "interior", "logo", "wheel"
-    }
-
-    try:
-        with urllib.request.urlopen(request, timeout=3.5) as response:
-            result = json.load(response)
-    except (OSError, TimeoutError, ValueError):
-        return None
-
-    for page in result.get("query", {}).get("pages", []):
-        title = str(page.get("title", ""))
-        if any(term in title.lower() for term in excluded_terms):
-            continue
-        image_info = page.get("imageinfo", [{}])[0]
-        if image_info.get("mime") not in {"image/jpeg", "image/png", "image/webp"}:
-            continue
-        thumbnail_url = image_info.get("thumburl")
-        source_url = image_info.get("descriptionurl")
-        if not thumbnail_url or not source_url:
-            continue
-        metadata = image_info.get("extmetadata", {})
-        return {
-            "url": thumbnail_url,
-            "source_url": source_url,
-            "artist": plain_metadata(
-                metadata.get("Artist", {}).get("value", ""), "Commons contributor"
-            ),
-            "license": plain_metadata(
-                metadata.get("LicenseShortName", {}).get("value", ""),
-                "Wikimedia Commons",
-            ),
-        }
-
-    return None
 
 
 @st.cache_data(show_spinner=False)
@@ -866,89 +483,16 @@ if st.session_state.get("specs_for_model") != selected_model:
         }
     )
 
-safe_brand = html.escape(selected_brand)
-safe_model = html.escape(selected_model)
-safe_fuel = html.escape(str(typical_specs["fuel"]))
-safe_transmission = html.escape(str(typical_specs["transmission"]))
-vehicle_3d_model = find_vehicle_3d_model(selected_brand, selected_model)
-
-if vehicle_3d_model:
-    model_uid = html.escape(vehicle_3d_model["uid"], quote=True)
-    viewer_parameters = urllib.parse.urlencode(
-        {
-            "autostart": "1",
-            "autospin": "0.25",
-            "camera": "0",
-            "dnt": "1",
-            "ui_annotations": "0",
-            "ui_animations": "0",
-            "ui_ar": "0",
-            "ui_controls": "0",
-            "ui_fullscreen": "0",
-            "ui_general_controls": "0",
-            "ui_help": "0",
-            "ui_hint": "0",
-            "ui_infos": "0",
-            "ui_inspector": "0",
-            "ui_settings": "0",
-            "ui_stop": "0",
-            "ui_vr": "0",
-            "ui_watermark": "0",
-        }
-    )
-    viewer_url = f"https://sketchfab.com/models/{model_uid}/embed?{viewer_parameters}"
-    motion_window_class = "vehicle-motion-window is-3d"
-    vehicle_visual_markup = (
-        f'<iframe class="vehicle-3d-frame" src="{viewer_url}" '
-        f'title="Interactive 3D model of {safe_model}" '
-        'allow="autoplay; fullscreen; xr-spatial-tracking" allowfullscreen '
-        'loading="eager"></iframe>'
-    )
-    image_credit_markup = ""
-else:
-    vehicle_image = find_vehicle_image(selected_brand, selected_model)
-
-if not vehicle_3d_model and vehicle_image:
-    vehicle_asset_uri = html.escape(vehicle_image["url"], quote=True)
-    motion_window_class = "vehicle-motion-window is-photo"
-    image_alt = f"Reference photo of {safe_model}"
-    vehicle_visual_markup = f'<img src="{vehicle_asset_uri}" alt="{image_alt}">'
-    source_url = html.escape(vehicle_image["source_url"], quote=True)
-    artist = html.escape(vehicle_image["artist"])
-    license_name = html.escape(vehicle_image["license"])
-    image_credit_markup = (
-        f'<a class="vehicle-image-credit" href="{source_url}" target="_blank" '
-        f'rel="noopener noreferrer">Photo: {artist} &middot; {license_name}</a>'
-    )
-elif not vehicle_3d_model:
-    motion_window_class = "vehicle-motion-window is-unavailable"
-    vehicle_visual_markup = (
-        '<div class="vehicle-unavailable">'
-        "No reliable model-specific visual is available for this vehicle."
-        "</div>"
-    )
-    image_credit_markup = ""
-
-st.markdown(
-    f"""
-    <div class="vehicle-stage">
-        <div class="vehicle-stage-copy">
-            <div class="vehicle-stage-kicker">Selected {safe_brand} profile</div>
-            <div class="vehicle-stage-name">{safe_model}</div>
-            <div class="vehicle-stage-facts">
-                <div><strong>{typical_specs["year"]}</strong> typical listing year</div>
-                <div><strong>{safe_fuel}</strong> &middot; <strong>{safe_transmission}</strong></div>
-                <div><strong>{len(matching_cars):,}</strong> exact-match records</div>
-            </div>
-        </div>
-        <div class="{motion_window_class}">
-            {vehicle_visual_markup}
-        </div>
-        {image_credit_markup}
-    </div>
-    """,
-    unsafe_allow_html=True,
+vehicle_preview = render_vehicle_preview(
+    brand=selected_brand,
+    model=selected_model,
+    year=typical_specs["year"],
+    fuel=str(typical_specs["fuel"]),
+    transmission=str(typical_specs["transmission"]),
+    matching_records=len(matching_cars),
+    seats=typical_specs["seats"],
 )
+components.html(vehicle_preview, height=334, scrolling=False)
 
 st.markdown('<div style="height: 0.8rem"></div>', unsafe_allow_html=True)
 st.markdown(
