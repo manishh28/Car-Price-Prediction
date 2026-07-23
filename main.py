@@ -14,9 +14,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
-from vehicle_search import rank_matches
-
-
 DATA_PATH = Path(__file__).with_name("car details.csv")
 CATEGORICAL_FEATURES = ["name", "fuel", "seller_type", "transmission", "owner"]
 NUMERIC_FEATURES = [
@@ -138,7 +135,6 @@ st.markdown(
     }
 
     div[data-baseweb="select"] > div,
-    div[data-testid="stTextInput"] input,
     div[data-testid="stNumberInput"] input {
         background: var(--surface) !important;
         border-color: var(--line);
@@ -155,7 +151,6 @@ st.markdown(
 
     div[data-baseweb="select"] span,
     div[data-baseweb="select"] input,
-    div[data-testid="stTextInput"] input,
     div[data-testid="stNumberInput"] input {
         color: var(--ink) !important;
         -webkit-text-fill-color: var(--ink) !important;
@@ -168,7 +163,6 @@ st.markdown(
     }
 
     div[data-baseweb="select"] > div:focus-within,
-    div[data-testid="stTextInput"] input:focus,
     div[data-testid="stNumberInput"] input:focus {
         border-color: var(--teal);
         box-shadow: 0 0 0 1px var(--teal);
@@ -442,68 +436,67 @@ summary_columns[2].metric(
 st.markdown('<div style="height: 1.5rem"></div>', unsafe_allow_html=True)
 st.markdown('<div class="section-heading">Search for your vehicle</div>', unsafe_allow_html=True)
 st.markdown(
-    '<p class="section-copy">Search the brand first, then enter a model or variant.</p>',
+    '<p class="section-copy">Start typing to filter the brand and model suggestions.</p>',
     unsafe_allow_html=True,
 )
 
-brand_counts = data["brand"].value_counts()
-brands = sorted(brand_counts.index.tolist())
-default_brand = "Toyota" if "Toyota" in brands else brands[0]
+brands = sorted(data["brand"].unique().tolist())
 
-def clear_model_search() -> None:
-    st.session_state["vehicle_model_search"] = ""
+def clear_model_selection() -> None:
+    st.session_state.pop("vehicle_model_choice", None)
     st.session_state.pop("valuation", None)
 
 vehicle_columns = st.columns([1, 2])
 with vehicle_columns[0]:
-    brand_query = st.text_input(
+    selected_brand = st.selectbox(
         "Search car brand",
-        value=default_brand,
-        placeholder="e.g. Toyota, BMW, Land Rover",
-        key="vehicle_brand_search",
-        on_change=clear_model_search,
+        brands,
+        index=None,
+        placeholder="Type to search brands",
+        key="vehicle_brand_choice",
+        on_change=clear_model_selection,
     )
+
+available_models = (
+    sorted(
+        data.loc[data["brand"] == selected_brand, "name"]
+        .dropna()
+        .unique()
+        .tolist()
+    )
+    if selected_brand
+    else []
+)
+
 with vehicle_columns[1]:
-    model_query = st.text_input(
+    selected_model = st.selectbox(
         "Search car model",
-        value="Fortuner",
-        placeholder="e.g. Fortuner, 3 Series, Swift",
-        key="vehicle_model_search",
+        available_models,
+        index=None,
+        placeholder=(
+            "Type to search models"
+            if selected_brand
+            else "Choose a brand first"
+        ),
+        key="vehicle_model_choice",
+        disabled=not selected_brand,
     )
 
-brand_matches = rank_matches(brands, brand_query, brand_counts.to_dict())
-if not brand_matches:
-    st.warning("No matching brand found. Check the spelling and try again.")
+if not selected_brand:
+    st.info("Choose a brand to load its model suggestions.")
     st.stop()
 
-selected_brand = brand_matches[0]
-
-available_models = sorted(
-    data.loc[data["brand"] == selected_brand, "name"].dropna().unique().tolist()
-)
-model_counts = (
-    data.loc[data["brand"] == selected_brand, "name"].value_counts().to_dict()
-)
-
-model_matches = rank_matches(available_models, model_query, model_counts)
-if not model_matches:
+if not selected_model:
     st.info(
-        f"Enter a model name to search the {len(available_models):,} "
-        f"{selected_brand} variants in the dataset."
+        f"Start typing to search the {len(available_models):,} "
+        f"{selected_brand} models and variants."
     )
     st.stop()
 
-selected_model = model_matches[0]
-match_note = (
-    f"{len(model_matches):,} matches found; showing the closest match."
-    if len(model_matches) > 1
-    else "1 matching variant found."
-)
 st.markdown(
     f"""
     <div class="search-match">
         <strong>Matched vehicle:</strong> {html.escape(selected_model)}
-        &nbsp;&middot;&nbsp; {match_note}
     </div>
     """,
     unsafe_allow_html=True,

@@ -4,7 +4,7 @@ A Streamlit app that estimates the resale value of a used car from 8,000+ listin
 
 ## Features
 
-- Two-field brand and model search with relevance-ranked matching
+- Two searchable suggestion dropdowns for brand and model
 - Correct handling for multi-word brands such as Land Rover and Ashok Leyland
 - Typical specifications filled from comparable listings
 - Cached preprocessing and model training
