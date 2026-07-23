@@ -268,7 +268,7 @@ VEHICLE_PREVIEW_TEMPLATE = Template(
         color: #ffffff;
         display: grid;
         grid-template-columns: minmax(260px, 35%) minmax(0, 65%);
-        height: 334px;
+        height: 434px;
         overflow: hidden;
         width: 100%;
     }
@@ -342,8 +342,8 @@ VEHICLE_PREVIEW_TEMPLATE = Template(
     @media (max-width: 680px) {
         .vehicle-stage {
             grid-template-columns: minmax(0, 1fr);
-            grid-template-rows: 220px 340px;
-            height: 564px;
+            grid-template-rows: 210px 220px;
+            height: 434px;
         }
 
         .vehicle-copy {
@@ -387,17 +387,6 @@ const config = $config_json;
 const view = document.getElementById("vehicle-view");
 const status = document.getElementById("vehicle-status");
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-function sendHeight() {
-    const height = window.innerWidth <= 680 ? 564 : 334;
-    window.parent.postMessage(
-        {isStreamlitMessage: true, type: "streamlit:setFrameHeight", height},
-        "*"
-    );
-}
-
-sendHeight();
-window.addEventListener("resize", sendHeight);
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xdfe7e5);

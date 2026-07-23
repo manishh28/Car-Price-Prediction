@@ -492,7 +492,7 @@ vehicle_preview = render_vehicle_preview(
     matching_records=len(matching_cars),
     seats=typical_specs["seats"],
 )
-components.html(vehicle_preview, height=334, scrolling=False)
+components.html(vehicle_preview, height=434, scrolling=False)
 
 st.markdown('<div style="height: 0.8rem"></div>', unsafe_allow_html=True)
 st.markdown(
