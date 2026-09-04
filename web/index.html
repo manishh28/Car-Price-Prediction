@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Used Car Value Estimator</title>
+<style>
+  :root { --ink:#16211f; --muted:#60706c; --canvas:#f4f7f6; --line:#d8e0de;
+          --teal:#146c63; --teal-dark:#0f514b; --coral:#e7604f; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: system-ui,-apple-system,sans-serif;
+         background:var(--canvas); color:var(--ink); }
+  .wrap { max-width:900px; margin:0 auto; padding:40px 16px 64px; }
+  .kicker { color:var(--teal); font-size:.78rem; font-weight:750;
+            text-transform:uppercase; margin-bottom:.55rem; }
+  h1 { font-size:clamp(2rem,4vw,3.2rem); line-height:1.08; margin:0; max-width:760px; }
+  .intro { color:var(--muted); font-size:1.05rem; line-height:1.65; max-width:720px; }
+  .accent { background:linear-gradient(90deg,var(--teal) 0 72%,var(--coral) 72% 82%,transparent 82%);
+            height:4px; margin:1.2rem 0 1.9rem; }
+  .card { background:#fff; border:1px solid var(--line); border-radius:8px;
+          padding:20px; margin-top:16px; }
+  h2 { font-size:1.05rem; margin:.2rem 0 .15rem; }
+  .copy { color:var(--muted); font-size:.86rem; margin:0 0 .9rem; }
+  label { display:flex; flex-direction:column; font-size:.82rem; font-weight:600; gap:4px; }
+  input,select { padding:10px; border:1px solid var(--line); border-radius:6px;
+                 font-size:.95rem; min-height:44px; background:#fff; color:var(--ink); }
+  input:focus,select:focus { border-color:var(--teal); outline:1px solid var(--teal); }
+  .grid2 { display:grid; grid-template-columns:1fr 2fr; gap:12px; }
+  .grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  .grid4 { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  button.go { width:100%; background:var(--teal); color:#fff; border:1px solid var(--teal);
+              border-radius:6px; font-size:.98rem; font-weight:700; min-height:48px;
+              cursor:pointer; margin-top:12px; }
+  button.go:hover { background:var(--teal-dark); }
+  button.go:disabled { opacity:.45; cursor:not-allowed; }
+  .match { background:#eaf2f0; border-left:3px solid var(--teal);
+           padding:.7rem .85rem; font-size:.88rem; margin:.6rem 0 0; }
+  .result { background:var(--ink); border-top:5px solid var(--coral); color:#fff;
+            margin:2rem 0 1.3rem; padding:1.6rem 1.8rem; }
+  .result .lbl { color:#b8c8c4; font-size:.75rem; font-weight:750; text-transform:uppercase; }
+  .result .price { font-size:clamp(2rem,5vw,3.2rem); font-weight:760; margin:.35rem 0 .55rem; }
+  .result .note { color:#d9e2e0; font-size:.9rem; margin:0; }
+  .metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:12px; }
+  .metric { border-left:3px solid var(--line); padding-left:.85rem; }
+  .metric .k { color:var(--muted); font-size:.78rem; }
+  .metric .v { font-size:1.2rem; font-weight:700; }
+  .bar-row { margin:10px 0; font-size:.9rem; }
+  .bar { height:20px; border-radius:4px; margin-top:4px; }
+  .note { border-top:1px solid var(--line); color:var(--muted); font-size:.78rem;
+          margin-top:2rem; padding-top:1rem; line-height:1.55; }
+  .err { color:#b3261e; }
+  @media (max-width:700px){ .grid2,.grid3,.grid4,.metrics{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kicker">AutoValue India</div>
+  <h1>Used car value estimator</h1>
+  <p class="intro" id="intro">Loading listings…</p>
+  <div class="accent"></div>
+
+  <div class="card">
+    <h2>Search for your vehicle</h2>
+    <p class="copy">Start typing to filter the brand and model suggestions.</p>
+    <div class="grid2">
+      <label>Car brand<input id="brand" list="brandList" placeholder="Type to search brands" autocomplete="off" /></label>
+      <label>Car model<input id="model" list="modelList" placeholder="Choose a brand first" autocomplete="off" disabled /></label>
+    </div>
+    <datalist id="brandList"></datalist>
+    <datalist id="modelList"></datalist>
+    <p class="match" id="match" hidden></p>
+  </div>
+
+  <div class="card">
+    <h2>Condition and specifications</h2>
+    <p class="copy" id="specCopy">Choose a brand and model to enable these fields.</p>
+    <div class="grid3">
+      <label>Registration year<input id="year" type="number" disabled /></label>
+      <label>Kilometres driven<input id="km_driven" type="number" disabled /></label>
+      <label>Ownership<select id="owner" disabled></select></label>
+    </div><br/>
+    <div class="grid3">
+      <label>Fuel<select id="fuel" disabled></select></label>
+      <label>Transmission<select id="transmission" disabled></select></label>
+      <label>Seller<select id="seller_type" disabled></select></label>
+    </div><br/>
+    <div class="grid4">
+      <label>Mileage (km/l)<input id="mileage_value" type="number" step="0.5" disabled /></label>
+      <label>Engine (cc)<input id="engine_value" type="number" step="50" disabled /></label>
+      <label>Power (bhp)<input id="max_power_value" type="number" step="5" disabled /></label>
+      <label>Seats<input id="seats" type="number" disabled /></label>
+    </div>
+    <button class="go" id="go" disabled>Estimate resale value</button>
+  </div>
+
+  <div id="out"></div>
+  <div class="note" id="footnote"></div>
+</div>
+
+<script>
+let DB = null;
+const $ = id => document.getElementById(id);
+const fmtIN = n => "INR " + Math.round(n).toLocaleString("en-IN");
+const SPEC_IDS = ["year","km_driven","owner","fuel","transmission","seller_type",
+                  "mileage_value","engine_value","max_power_value","seats"];
+
+function fillSpecs(spec) {
+  for (const k of SPEC_IDS) $(k).value = spec[k];
+}
+function enableSpecs(on) { SPEC_IDS.forEach(k => $(k).disabled = !on); $("go").disabled = !on; }
+
+fetch("data.json").then(r => r.json()).then(db => {
+  DB = db;
+  $("intro").textContent =
+    `Estimate a fair resale value using ${db.n_listings.toLocaleString("en-IN")} real used-car listings.`;
+  $("brandList").innerHTML = db.brands.map(b => `<option value="${b}">`).join("");
+  const fill = (id, items) => $(id).innerHTML = items.map(v => `<option>${v}</option>`).join("");
+  fill("fuel", ["Petrol","Diesel","CNG","LPG"]);
+  fill("transmission", ["Manual","Automatic"]);
+  fill("seller_type", ["Individual","Dealer","Trustmark Dealer"]);
+  fill("owner", ["First Owner","Second Owner","Third Owner","Fourth & Above Owner","Test Drive Car"]);
+  $("footnote").textContent =
+    `Estimates are generated from the repository dataset and may not reflect location, service history, ` +
+    `accident history, modifications, or current local demand. Holdout model score: R² ${db.metrics.r2.toFixed(2)}; ` +
+    `median absolute error benchmark: ${fmtIN(db.metrics.mae)}.`;
+});
+
+$("brand").addEventListener("change", () => {
+  const b = $("brand").value;
+  const models = (DB && DB.models_by_brand[b]) || [];
+  $("modelList").innerHTML = models.map(m => `<option value="${m}">`).join("");
+  $("model").value = ""; $("model").disabled = !models.length;
+  $("model").placeholder = models.length ? `Type to search ${models.length} ${b} models` : "Choose a brand first";
+  $("match").hidden = true; $("out").innerHTML = ""; enableSpecs(false);
+});
+
+$("model").addEventListener("change", () => {
+  const entry = DB && DB.models[ $("model").value ];
+  if (!entry) { $("match").hidden = true; $("out").innerHTML = ""; enableSpecs(false); return; }
+  const spec = {};
+  DB.spec_keys.forEach((k, i) => spec[k] = entry.s[i]);
+  fillSpecs(spec); enableSpecs(true);
+  $("match").hidden = false;
+  $("match").innerHTML = `<strong>Matched vehicle:</strong> ${$("model").value}`;
+  $("specCopy").textContent = "Typical values for the matched vehicle are filled in automatically.";
+  $("out").innerHTML = "";
+});
+
+$("go").addEventListener("click", async () => {
+  const car = { name: $("model").value };
+  SPEC_IDS.forEach(k => {
+    car[k] = (k === "year" || k === "km_driven" || k === "engine_value" || k === "seats")
+      ? +$(k).value : (isNaN(+$(k).value) ? $(k).value : +$(k).value);
+  });
+  // keep categorical strings as strings
+  ["fuel","seller_type","transmission","owner"].forEach(k => car[k] = $(k).value);
+  let res;
+  try {
+    const r = await fetch("/api/predict", { method:"POST",
+      headers:{"Content-Type":"application/json"}, body: JSON.stringify(car) });
+    res = await r.json();
+    if (!r.ok) throw new Error(res.error || "prediction failed");
+  } catch (e) { $("out").innerHTML = `<p class="err">${e.message}</p>`; return; }
+
+  const entry = DB.models[car.name];
+  let comp = entry.p, label = "closest comparable listings";
+  if (comp.n < 4) { comp = DB.brand_stats[entry.b]; label = `${entry.b} listings`; }
+  const med = comp.median, d = (res.predicted_price - med) / med * 100;
+  const rel = d >= 0 ? "above" : "below";
+  const max = Math.max(res.predicted_price, med, 1);
+  $("out").innerHTML = `
+    <div class="result"><div class="lbl">Estimated resale value</div>
+      <div class="price">${fmtIN(res.predicted_price)}</div>
+      <p class="note">${Math.abs(d).toFixed(1)}% ${rel} the median of the ${label}.
+      Use this as a negotiation benchmark, not a guaranteed sale price.</p></div>
+    <div class="metrics">
+      <div class="metric"><div class="k">Comparable median</div><div class="v">${fmtIN(med)}</div></div>
+      <div class="metric"><div class="k">Middle market range</div><div class="v">${fmtIN(comp.low).replace("INR ","")} - ${fmtIN(comp.high).replace("INR ","")}</div></div>
+      <div class="metric"><div class="k">Comparable listings</div><div class="v">${comp.n.toLocaleString("en-IN")}</div></div>
+    </div>
+    <div class="card"><h2>Market position</h2>
+      <div class="bar-row">Your estimate — ${fmtIN(res.predicted_price)}
+        <div class="bar" style="width:${100*res.predicted_price/max}%;background:#146c63"></div></div>
+      <div class="bar-row">Comparable median — ${fmtIN(med)}
+        <div class="bar" style="width:${100*med/max}%;background:#aebbb8"></div></div>
+    </div>
+    <div class="card"><h2>What-if explorer</h2>
+      <p class="copy">Move either control to see how year and kilometres change this estimate.</p>
+      <div class="grid2">
+        <label>Registration year<input id="wYear" type="range" min="1983" max="2026" value="${car.year}" /></label>
+        <label>Kilometres driven<input id="wKm" type="range" min="0" max="${Math.min(1500000, Math.max(300000, car.km_driven + 100000))}" step="5000" value="${car.km_driven}" /></label>
+      </div>
+      <p id="wOut"></p>
+    </div>`;
+  const upd = async () => {
+    const c2 = {...car, year:+$("wYear").value, km_driven:+$("wKm").value};
+    const r = await (await fetch("/api/predict", { method:"POST",
+      headers:{"Content-Type":"application/json"}, body:JSON.stringify(c2) })).json();
+    const dd = (r.predicted_price - res.predicted_price) / res.predicted_price * 100;
+    $("wOut").textContent =
+      `Scenario estimate: ${fmtIN(r.predicted_price)} (${dd >= 0 ? "+" : ""}${dd.toFixed(1)}% vs submitted estimate)`;
+  };
+  $("wYear").addEventListener("input", upd); $("wKm").addEventListener("input", upd); upd();
+});
+</script>
+</body>
+</html>
