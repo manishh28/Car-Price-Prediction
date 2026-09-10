@@ -11,7 +11,6 @@
   html { scroll-behavior: smooth; }
   body { margin:0; font-family: system-ui,-apple-system,"Segoe UI",sans-serif;
          background:var(--canvas); color:var(--ink); overflow-x:hidden; }
-  /* Haikei-style animated background blobs */
   .bg { position:fixed; inset:0; z-index:-1; overflow:hidden; }
   .bg svg { position:absolute; }
   .blob-a { top:-140px; right:-120px; width:560px; animation:drift 26s ease-in-out infinite alternate; }
@@ -40,7 +39,6 @@
          padding:13px 26px; border-radius:8px; font-weight:750; text-decoration:none;
          transition:transform .2s ease, background .2s ease; }
   .cta:hover { background:#c74e40; transform:translateY(-2px); }
-  /* scroll reveal */
   .rv { opacity:0; transform:translateY(22px); transition:opacity .7s ease, transform .7s ease; }
   .rv.in { opacity:1; transform:none; }
   .card { background:#fff; border:1px solid var(--line); border-radius:10px;
@@ -63,7 +61,6 @@
            padding:.7rem .85rem; font-size:.88rem; margin:.6rem 0 0;
            animation:slidein .4s ease; }
   @keyframes slidein { from { opacity:0; transform:translateX(-12px); } to { opacity:1; transform:none; } }
-  /* 3D showroom */
   #stage { position:relative; border-radius:10px; overflow:hidden; background:#0e1514;
            border:1px solid var(--line); margin-top:18px; }
   #stage canvas { display:block; width:100%; height:400px; touch-action:none; cursor:grab; }
@@ -73,13 +70,46 @@
   .stage-hint { position:absolute; bottom:12px; right:12px; background:rgba(0,0,0,.55); color:#cfd8d6;
                 font-size:.72rem; padding:6px 10px; border-radius:20px; pointer-events:none; }
   .stage-fallback { padding:40px 20px; text-align:center; color:#cfd8d6; }
-  /* result */
-  .result { background:var(--ink); border-top:5px solid var(--coral); color:#fff;
-            margin:2rem 0 1.3rem; padding:1.6rem 1.8rem; border-radius:0 0 10px 10px;
-            animation:slidein .5s ease; }
-  .result .lbl { color:#b8c8c4; font-size:.75rem; font-weight:750; text-transform:uppercase; }
-  .result .price { font-size:clamp(2rem,5vw,3.2rem); font-weight:760; margin:.35rem 0 .55rem; }
-  .result .note { color:#d9e2e0; font-size:.9rem; margin:0; }
+  /* Cars24-style listing card */
+  .listing { background:#fff; border:1px solid var(--line); border-radius:16px;
+             margin-top:22px; overflow:hidden; animation:slidein .5s ease;
+             box-shadow:0 8px 28px rgba(22,33,31,.10); }
+  .listing-head { display:flex; justify-content:space-between; align-items:flex-start;
+                  padding:20px 20px 0; gap:12px; }
+  .listing-title { font-size:1.45rem; font-weight:780; margin:0; }
+  .listing-variant { color:var(--muted); margin:.25rem 0 0; font-size:.95rem; }
+  .heart { border:1px solid var(--line); background:#fff; border-radius:50%;
+           width:44px; height:44px; font-size:1.3rem; cursor:pointer; flex:none;
+           transition:transform .15s ease; color:var(--ink); }
+  .heart:hover { transform:scale(1.1); }
+  .heart.saved { color:#e0245e; border-color:#e0245e; }
+  .spec-row { display:flex; flex-wrap:wrap; gap:8px 0; padding:12px 20px 0;
+              color:#3c4a47; font-size:.95rem; }
+  .spec-row span + span::before { content:"|"; color:var(--line); margin:0 10px; }
+  .pill-row { display:flex; flex-wrap:wrap; gap:8px; padding:14px 20px 0; }
+  .pill { font-size:.8rem; font-weight:700; padding:6px 12px; border-radius:20px; }
+  .pill.good { background:#16a34a; color:#fff; }
+  .pill.high { background:var(--coral); color:#fff; }
+  .pill.flat { background:#eaf2f0; color:var(--teal-dark); }
+  .price-row { display:flex; align-items:center; gap:10px; padding:10px 20px 18px; }
+  .price-big { font-size:1.9rem; font-weight:800; }
+  .tag { font-size:.75rem; font-weight:700; color:#5b4bc4; background:#eceaff;
+         padding:4px 10px; border-radius:8px; }
+  /* tabs */
+  .tabs { display:flex; gap:6px; padding:0 20px; border-bottom:1px solid var(--line); }
+  .tab { border:none; background:none; padding:12px 14px; font-size:.92rem; font-weight:700;
+         color:var(--muted); cursor:pointer; border-bottom:3px solid transparent; }
+  .tab.active { color:var(--ink); border-bottom-color:var(--teal); }
+  .tabpane { padding:18px 20px 20px; }
+  .tabpane[hidden] { display:none; }
+  .cam-btns { display:flex; flex-wrap:wrap; gap:8px; }
+  .cam-btns button { border:1px solid var(--line); background:#fff; border-radius:20px;
+                     padding:9px 16px; font-size:.85rem; font-weight:700; cursor:pointer; }
+  .cam-btns button:hover { border-color:var(--teal); color:var(--teal-dark); }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .chip { background:var(--canvas); border:1px solid var(--line); border-radius:8px;
+          padding:8px 12px; font-size:.83rem; }
+  .chip b { display:block; font-size:.7rem; color:var(--muted); font-weight:600; }
   .metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:12px; }
   .metric { border-left:3px solid var(--line); padding-left:.85rem; }
   .metric .k { color:var(--muted); font-size:.78rem; }
@@ -91,7 +121,7 @@
           margin-top:2rem; padding-top:1rem; line-height:1.55; }
   .err { color:#b3261e; }
   @media (max-width:700px){ .grid2,.grid3,.grid4,.metrics,.stats{grid-template-columns:1fr;}
-    #stage canvas{height:300px;} }
+    #stage canvas{height:300px;} .price-big{font-size:1.6rem;} }
   @media (prefers-reduced-motion:reduce){
     *{animation-duration:.001s !important; transition-duration:.001s !important;}
     .rv{opacity:1; transform:none;} }
@@ -167,15 +197,18 @@
 let DB = null;
 const $ = id => document.getElementById(id);
 const fmtIN = n => "INR " + Math.round(n).toLocaleString("en-IN");
+const fmtLakh = n => {
+  if (n >= 1e7) return "₹" + (n / 1e7).toFixed(2).replace(/\.?0+$/, "") + " crore";
+  if (n >= 1e5) return "₹" + (n / 1e5).toFixed(2).replace(/\.?0+$/, "") + " lakh";
+  return "₹" + Math.round(n).toLocaleString("en-IN");
+};
 const SPEC_IDS = ["year","km_driven","owner","fuel","transmission","seller_type",
                   "mileage_value","engine_value","max_power_value","seats"];
 
-// hero word-rise
 (function(){
   const h = $("hero"), words = h.textContent.trim().split(/\s+/);
   h.innerHTML = words.map((w,i)=>`<span class="w" style="animation-delay:${.08*i+.1}s">${w}</span>`).join(" ");
 })();
-// scroll reveal
 const io = new IntersectionObserver(es => es.forEach(e => {
   if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
 }), { threshold: .12 });
@@ -190,6 +223,7 @@ function countUp(el, to, fmt) {
   })(t0);
 }
 function enableSpecs(on) { SPEC_IDS.forEach(k => $(k).disabled = !on); $("go").disabled = !on; }
+function wishlistKey(name) { return "wishlist:" + name; }
 
 fetch("data.json").then(r => r.json()).then(db => {
   DB = db;
@@ -220,6 +254,10 @@ function currentSpec() {
 function pushToShowroom() {
   const c = currentSpec();
   if (c && window.updateShowroom) window.updateShowroom(c.spec, c.brand, $("model").value);
+}
+function showroomView(v) {
+  if (window.showroomView) window.showroomView(v);
+  document.getElementById("stage").scrollIntoView({ behavior:"smooth", block:"center" });
 }
 
 $("brand").addEventListener("change", () => {
@@ -261,45 +299,89 @@ $("go").addEventListener("click", async () => {
   let comp = entry.p, label = "closest comparable listings";
   if (comp.n < 4) { comp = DB.brand_stats[entry.b]; label = `${entry.b} listings`; }
   const med = comp.median, d = (res.predicted_price - med) / med * 100;
-  const rel = d >= 0 ? "above" : "below";
+  const pill = d <= -2 ? `<span class="pill good">▼ ${Math.abs(d).toFixed(1)}% below median · Good deal</span>`
+    : d >= 2 ? `<span class="pill high">▲ ${d.toFixed(1)}% above median</span>`
+    : `<span class="pill flat">At market median</span>`;
+  const saved = localStorage.getItem(wishlistKey(car.name)) === "1";
   const max = Math.max(res.predicted_price, med, 1);
   $("out").innerHTML = `
-    <div class="result"><div class="lbl">Estimated resale value</div>
-      <div class="price" id="priceOut">…</div>
-      <p class="note">${Math.abs(d).toFixed(1)}% ${rel} the median of the ${label}.
-      Use this as a negotiation benchmark, not a guaranteed sale price.</p></div>
-    <div class="metrics">
-      <div class="metric"><div class="k">Comparable median</div><div class="v">${fmtIN(med)}</div></div>
-      <div class="metric"><div class="k">Middle market range</div><div class="v">${fmtIN(comp.low).replace("INR ","")} – ${fmtIN(comp.high).replace("INR ","")}</div></div>
-      <div class="metric"><div class="k">Comparable listings</div><div class="v">${comp.n.toLocaleString("en-IN")}</div></div>
-    </div>
-    <div class="card"><h2>Market position</h2>
-      <div class="bar-row">Your estimate — ${fmtIN(res.predicted_price)}
-        <div class="bar" id="bar1" style="background:#146c63"></div></div>
-      <div class="bar-row">Comparable median — ${fmtIN(med)}
-        <div class="bar" id="bar2" style="background:#aebbb8"></div></div>
-    </div>
-    <div class="card"><h2>What-if explorer</h2>
-      <p class="copy">Move either control to see how year and kilometres change this estimate.</p>
-      <div class="grid2">
-        <label>Registration year<input id="wYear" type="range" min="1983" max="2026" value="${car.year}" /></label>
-        <label>Kilometres driven<input id="wKm" type="range" min="0" max="${Math.min(1500000, Math.max(300000, car.km_driven + 100000))}" step="5000" value="${car.km_driven}" /></label>
+    <div class="listing">
+      <div class="listing-head">
+        <div><p class="listing-title">${car.year} ${car.name}</p>
+        <p class="listing-variant">${car.fuel} · ${car.transmission} · ${car.seats} seater</p></div>
+        <button class="heart ${saved ? "saved" : ""}" id="heart" title="Save to wishlist">♥</button>
       </div>
-      <p id="wOut"></p>
+      <div class="spec-row"><span>${car.km_driven.toLocaleString("en-IN")} km</span><span>${car.fuel}</span><span>${car.transmission}</span></div>
+      <div class="pill-row">${pill}</div>
+      <div class="price-row"><span class="price-big" id="priceOut">…</span><span class="tag">Negotiable</span></div>
+      <div class="tabs">
+        <button class="tab active" data-t="tExt">Exterior</button>
+        <button class="tab" data-t="tHl">Highlights</button>
+        <button class="tab" data-t="tMkt">Market</button>
+      </div>
+      <div class="tabpane" id="tExt">
+        <p class="copy">Stylized 3D preview of your pick — jump the showroom camera:</p>
+        <div class="cam-btns">
+          <button data-v="front">Front ¾</button><button data-v="side">Side</button>
+          <button data-v="rear">Rear</button><button data-v="spin">Auto-spin</button>
+        </div>
+      </div>
+      <div class="tabpane" id="tHl" hidden>
+        <div class="chips">
+          <div class="chip"><b>Year</b>${car.year}</div>
+          <div class="chip"><b>Driven</b>${car.km_driven.toLocaleString("en-IN")} km</div>
+          <div class="chip"><b>Fuel</b>${car.fuel}</div>
+          <div class="chip"><b>Gearbox</b>${car.transmission}</div>
+          <div class="chip"><b>Owner</b>${car.owner}</div>
+          <div class="chip"><b>Mileage</b>${car.mileage_value} km/l</div>
+          <div class="chip"><b>Engine</b>${car.engine_value} cc</div>
+          <div class="chip"><b>Power</b>${car.max_power_value} bhp</div>
+        </div>
+      </div>
+      <div class="tabpane" id="tMkt" hidden>
+        <div class="metrics">
+          <div class="metric"><div class="k">Comparable median</div><div class="v">${fmtLakh(med)}</div></div>
+          <div class="metric"><div class="k">Market range</div><div class="v">${fmtLakh(comp.low).replace("₹","")} – ${fmtLakh(comp.high).replace("₹","")}</div></div>
+          <div class="metric"><div class="k">Comparables</div><div class="v">${comp.n.toLocaleString("en-IN")}</div></div>
+        </div>
+        <div class="bar-row">Your estimate — ${fmtLakh(res.predicted_price)}
+          <div class="bar" id="bar1" style="background:#146c63"></div></div>
+        <div class="bar-row">Comparable median — ${fmtLakh(med)}
+          <div class="bar" id="bar2" style="background:#aebbb8"></div></div>
+        <h2 style="margin-top:18px">What-if explorer</h2>
+        <p class="copy">Move either control to see how year and kilometres change this estimate.</p>
+        <div class="grid2">
+          <label>Registration year<input id="wYear" type="range" min="1983" max="2026" value="${car.year}" /></label>
+          <label>Kilometres driven<input id="wKm" type="range" min="0" max="${Math.min(1500000, Math.max(300000, car.km_driven + 100000))}" step="5000" value="${car.km_driven}" /></label>
+        </div>
+        <p id="wOut"></p>
+      </div>
     </div>`;
-  countUp($("priceOut"), res.predicted_price, fmtIN);
+  countUp($("priceOut"), res.predicted_price, fmtLakh);
   requestAnimationFrame(() => requestAnimationFrame(() => {
     $("bar1").style.width = (100 * res.predicted_price / max) + "%";
     $("bar2").style.width = (100 * med / max) + "%";
   }));
   $("out").scrollIntoView({ behavior:"smooth", block:"start" });
+  $("heart").addEventListener("click", () => {
+    const on = localStorage.getItem(wishlistKey(car.name)) === "1";
+    if (on) { localStorage.removeItem(wishlistKey(car.name)); $("heart").classList.remove("saved"); }
+    else { localStorage.setItem(wishlistKey(car.name), "1"); $("heart").classList.add("saved"); }
+  });
+  document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
+    t.classList.add("active");
+    ["tExt","tHl","tMkt"].forEach(id => $(id).hidden = id !== t.dataset.t);
+  }));
+  document.querySelectorAll(".cam-btns button").forEach(b =>
+    b.addEventListener("click", () => showroomView(b.dataset.v)));
   const upd = async () => {
     const c2 = {...car, year:+$("wYear").value, km_driven:+$("wKm").value};
     const r = await (await fetch("/api/predict", { method:"POST",
       headers:{"Content-Type":"application/json"}, body:JSON.stringify(c2) })).json();
     const dd = (r.predicted_price - res.predicted_price) / res.predicted_price * 100;
     $("wOut").textContent =
-      `Scenario estimate: ${fmtIN(r.predicted_price)} (${dd >= 0 ? "+" : ""}${dd.toFixed(1)}% vs submitted estimate)`;
+      `Scenario estimate: ${fmtLakh(r.predicted_price)} (${dd >= 0 ? "+" : ""}${dd.toFixed(1)}% vs submitted estimate)`;
   };
   $("wYear").addEventListener("input", upd); $("wKm").addEventListener("input", upd); upd();
 });
@@ -338,7 +420,6 @@ rim.position.set(-6, 5, -5); scene.add(rim);
 const fill = new THREE.DirectionalLight(0xe7604f, 0.5);
 fill.position.set(-4, 2, 6); scene.add(fill);
 
-// turntable platform
 const rig = new THREE.Group(); scene.add(rig);
 const disc = new THREE.Mesh(
   new THREE.CylinderGeometry(3.1, 3.3, 0.18, 64),
@@ -374,10 +455,10 @@ function buildCar({ suv }) {
   wheels = [];
   car = new THREE.Group();
   const L = suv ? 4.5 : 3.9, H = suv ? 0.78 : 0.62, cabH = suv ? 0.72 : 0.55;
-  car.add(box(L, H, 1.85, M.paint, 0, 0.68, 0));                       // body
-  car.add(box(L * 0.52, cabH, 1.65, M.glass, suv ? -0.2 : -0.1, 0.68 + H / 2 + cabH / 2 - 0.06, 0)); // glasshouse
-  car.add(box(L * 0.56, 0.1, 1.7, M.paint, suv ? -0.2 : -0.1, 0.68 + H / 2 + cabH - 0.08, 0));       // roof
-  car.add(box(L + 0.12, 0.22, 1.9, M.trim, 0, 0.32, 0));                // skirt/bumpers
+  car.add(box(L, H, 1.85, M.paint, 0, 0.68, 0));
+  car.add(box(L * 0.52, cabH, 1.65, M.glass, suv ? -0.2 : -0.1, 0.68 + H / 2 + cabH / 2 - 0.06, 0));
+  car.add(box(L * 0.56, 0.1, 1.7, M.paint, suv ? -0.2 : -0.1, 0.68 + H / 2 + cabH - 0.08, 0));
+  car.add(box(L + 0.12, 0.22, 1.9, M.trim, 0, 0.32, 0));
   const wg = new THREE.CylinderGeometry(0.36, 0.36, 0.28, 24);
   const rg = new THREE.CylinderGeometry(0.2, 0.2, 0.3, 18);
   for (const [x, z] of [[-L/2 + 0.85, 0.95],[L/2 - 0.85, 0.95],[-L/2 + 0.85, -0.95],[L/2 - 0.85, -0.95]]) {
@@ -386,10 +467,10 @@ function buildCar({ suv }) {
     const r = new THREE.Mesh(rg, M.rimM); r.rotation.x = Math.PI / 2;
     w.add(t, r); w.position.set(x, 0.36, z); car.add(w); wheels.push(w);
   }
-  car.add(box(0.1, 0.16, 0.5, M.head, L / 2 + 0.01, 0.72, 0.55));       // headlights
+  car.add(box(0.1, 0.16, 0.5, M.head, L / 2 + 0.01, 0.72, 0.55));
   car.add(box(0.1, 0.16, 0.5, M.head, L / 2 + 0.01, 0.72, -0.55));
-  car.add(box(0.08, 0.14, 1.5, M.tail, -L / 2 - 0.01, 0.74, 0));        // taillight bar
-  car.add(box(0.3, 0.1, 1.2, M.trim, L / 2 - 0.1, 0.62, 0));            // grille
+  car.add(box(0.08, 0.14, 1.5, M.tail, -L / 2 - 0.01, 0.74, 0));
+  car.add(box(0.3, 0.1, 1.2, M.trim, L / 2 - 0.1, 0.62, 0));
   rig.add(car);
 }
 buildCar({ suv:false });
@@ -400,7 +481,6 @@ function size() {
 }
 new ResizeObserver(size).observe(canvas); size();
 
-// orbit: auto-turntable + drag
 let az = 0.6, azT = 0.6, el = 0.42, dragging = false, px = 0, py = 0, idle = 0;
 canvas.addEventListener("pointerdown", e => { dragging = true; px = e.clientX; py = e.clientY; canvas.setPointerCapture(e.pointerId); });
 canvas.addEventListener("pointermove", e => {
@@ -430,6 +510,14 @@ window.updateShowroom = function(spec, brand, model) {
   buildCar({ suv });
   targetPaint.set(paintFor(brand + "|" + (spec.fuel || "")));
   tag.textContent = `3D showroom · ${brand} ${suv ? "SUV" : "hatch"} styling · stylized preview`;
+};
+// Exterior-tab camera presets (car nose points +X): front=+X, side=+Z, rear=−X
+window.showroomView = function(v) {
+  idle = -8;
+  if (v === "front") { azT = Math.PI / 2; el = 0.32; }
+  else if (v === "side") { azT = 0; el = 0.3; }
+  else if (v === "rear") { azT = -Math.PI / 2; el = 0.36; }
+  else { idle = 999; }
 };
 window.dispatchEvent(new Event("showroom-ready"));
 </script>
