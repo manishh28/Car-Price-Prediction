@@ -68,6 +68,8 @@
   #carPhoto { max-height:420px; object-fit:cover; }
   .vis-tag { position:absolute; top:12px; left:12px; background:rgba(0,0,0,.55); color:#fff;
              font-size:.75rem; padding:6px 10px; border-radius:20px; pointer-events:none; }
+  .photo-credit { position:absolute; bottom:12px; left:12px; background:rgba(0,0,0,.55); color:#cfd8d6;
+                  font-size:.68rem; padding:5px 9px; border-radius:14px; pointer-events:none; }
   .listing { background:#fff; border:1px solid var(--line); border-radius:16px;
              margin-top:22px; overflow:hidden; animation:slidein .5s ease;
              box-shadow:0 8px 28px rgba(22,33,31,.10); }
@@ -208,6 +210,7 @@
     </svg>
     <img id="carPhoto" alt="Photo of the selected car" style="display:none" />
     <div class="vis-tag" id="visTag">Studio preview · pick a car below</div>
+    <div class="photo-credit" id="photoCredit" hidden></div>
   </div>
 
   <div class="card rv" id="estimator">
@@ -297,10 +300,14 @@ function wishlistKey(name) { return "wishlist:" + name; }
 function setVisual(spec, brand, model) {
   // Real photo wins when a per-model `img` URL exists in data.json; else studio art.
   const entry = DB && DB.models[model];
-  const photo = $("carPhoto"), svg = $("carSvg");
+  const photo = $("carPhoto"), svg = $("carSvg"), cred = $("photoCredit");
   if (entry && entry.img) {
     svg.style.display = "none"; photo.style.display = "block"; photo.src = entry.img;
+    cred.hidden = false; cred.textContent = entry.credit || "Representative photo";
+    $("visTag").textContent = "Representative photo · " + brand;
+    return;
   } else {
+    cred.hidden = true;
     photo.style.display = "none"; svg.style.display = "block";
     const body = bodyFor(model || "", spec || {});
     ["Hatch","Sedan","Suv"].forEach(b => $("v" + b).style.display = b === body ? "block" : "none");
