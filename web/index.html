@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Used Car Value Estimator — 3D Showroom</title>
+<title>Used Car Value Estimator</title>
 <style>
   :root { --ink:#16211f; --muted:#60706c; --canvas:#f4f7f6; --line:#d8e0de;
           --teal:#146c63; --teal-dark:#0f514b; --coral:#e7604f; }
@@ -61,16 +61,13 @@
            padding:.7rem .85rem; font-size:.88rem; margin:.6rem 0 0;
            animation:slidein .4s ease; }
   @keyframes slidein { from { opacity:0; transform:translateX(-12px); } to { opacity:1; transform:none; } }
-  #stage { position:relative; border-radius:10px; overflow:hidden; background:#0e1514;
-           border:1px solid var(--line); margin-top:18px; }
-  #stage canvas { display:block; width:100%; height:400px; touch-action:none; cursor:grab; }
-  #stage canvas:active { cursor:grabbing; }
-  .stage-tag { position:absolute; top:12px; left:12px; background:rgba(0,0,0,.55); color:#fff;
-               font-size:.75rem; padding:6px 10px; border-radius:20px; pointer-events:none; }
-  .stage-hint { position:absolute; bottom:12px; right:12px; background:rgba(0,0,0,.55); color:#cfd8d6;
-                font-size:.72rem; padding:6px 10px; border-radius:20px; pointer-events:none; }
-  .stage-fallback { padding:40px 20px; text-align:center; color:#cfd8d6; }
-  /* Cars24-style listing card */
+  /* studio visual panel */
+  #visual { position:relative; border-radius:12px; overflow:hidden; margin-top:18px;
+            border:1px solid var(--line); background:#fff; }
+  #visual svg, #carPhoto { display:block; width:100%; height:auto; }
+  #carPhoto { max-height:420px; object-fit:cover; }
+  .vis-tag { position:absolute; top:12px; left:12px; background:rgba(0,0,0,.55); color:#fff;
+             font-size:.75rem; padding:6px 10px; border-radius:20px; pointer-events:none; }
   .listing { background:#fff; border:1px solid var(--line); border-radius:16px;
              margin-top:22px; overflow:hidden; animation:slidein .5s ease;
              box-shadow:0 8px 28px rgba(22,33,31,.10); }
@@ -95,17 +92,16 @@
   .price-big { font-size:1.9rem; font-weight:800; }
   .tag { font-size:.75rem; font-weight:700; color:#5b4bc4; background:#eceaff;
          padding:4px 10px; border-radius:8px; }
-  /* tabs */
   .tabs { display:flex; gap:6px; padding:0 20px; border-bottom:1px solid var(--line); }
   .tab { border:none; background:none; padding:12px 14px; font-size:.92rem; font-weight:700;
          color:var(--muted); cursor:pointer; border-bottom:3px solid transparent; }
   .tab.active { color:var(--ink); border-bottom-color:var(--teal); }
   .tabpane { padding:18px 20px 20px; }
   .tabpane[hidden] { display:none; }
-  .cam-btns { display:flex; flex-wrap:wrap; gap:8px; }
-  .cam-btns button { border:1px solid var(--line); background:#fff; border-radius:20px;
-                     padding:9px 16px; font-size:.85rem; font-weight:700; cursor:pointer; }
-  .cam-btns button:hover { border-color:var(--teal); color:var(--teal-dark); }
+  .swatches { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+  .sw { width:38px; height:38px; border-radius:50%; border:2px solid #fff;
+        box-shadow:0 0 0 1px var(--line); cursor:pointer; }
+  .sw:hover { transform:scale(1.12); }
   .chips { display:flex; flex-wrap:wrap; gap:8px; }
   .chip { background:var(--canvas); border:1px solid var(--line); border-radius:8px;
           padding:8px 12px; font-size:.83rem; }
@@ -121,14 +117,11 @@
           margin-top:2rem; padding-top:1rem; line-height:1.55; }
   .err { color:#b3261e; }
   @media (max-width:700px){ .grid2,.grid3,.grid4,.metrics,.stats{grid-template-columns:1fr;}
-    #stage canvas{height:300px;} .price-big{font-size:1.6rem;} }
+    .price-big{font-size:1.6rem;} }
   @media (prefers-reduced-motion:reduce){
     *{animation-duration:.001s !important; transition-duration:.001s !important;}
     .rv{opacity:1; transform:none;} }
 </style>
-<script type="importmap">
-  { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
-</script>
 </head>
 <body>
 <div class="bg" aria-hidden="true">
@@ -148,10 +141,73 @@
   </div>
   <a class="cta rv" href="#estimator">Estimate my car ↓</a>
 
-  <div id="stage" class="rv">
-    <canvas id="gl"></canvas>
-    <div class="stage-tag" id="stageTag">3D showroom · stylized preview</div>
-    <div class="stage-hint">drag to rotate · auto-spins</div>
+  <div id="visual" class="rv">
+    <svg id="carSvg" viewBox="0 0 640 360" role="img" aria-label="Studio illustration of the selected car">
+      <defs>
+        <linearGradient id="studio" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e7edec"/>
+        </linearGradient>
+        <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur stdDeviation="10"/>
+        </filter>
+      </defs>
+      <rect width="640" height="360" fill="url(#studio)"/>
+      <ellipse cx="320" cy="298" rx="245" ry="20" fill="#000" opacity="0.16" filter="url(#soft)"/>
+      <!-- HATCHBACK -->
+      <g id="vHatch">
+        <circle cx="190" cy="258" r="52" fill="#20262b"/>
+        <circle cx="450" cy="258" r="52" fill="#20262b"/>
+        <path class="paint" fill="#146c63" d="M70,262 L70,205 Q70,192 85,190 L140,182 L200,148 Q205,144 215,143 L360,143 Q370,143 378,149 L450,185 L540,196 Q562,199 562,214 L562,250 Q562,262 550,262 Z"/>
+        <path fill="#10222b" d="M150,178 L205,150 Q208,147 216,146 L355,146 Q363,146 369,151 L425,182 Z"/>
+        <rect class="paint" x="150" y="176" width="275" height="8" fill="#146c63"/>
+        <rect x="70" y="248" width="492" height="14" fill="#000" opacity="0.18"/>
+        <ellipse cx="84" cy="226" rx="12" ry="9" fill="#fff8dd"/>
+        <rect x="548" y="214" width="12" height="22" rx="4" fill="#d33"/>
+        <rect x="200" y="200" width="3" height="52" fill="#000" opacity="0.15"/>
+        <rect x="330" y="200" width="3" height="52" fill="#000" opacity="0.15"/>
+        <rect x="228" y="212" width="26" height="7" rx="3.5" fill="#000" opacity="0.3"/>
+        <rect x="358" y="212" width="26" height="7" rx="3.5" fill="#000" opacity="0.3"/>
+        <g><circle cx="190" cy="262" r="42" fill="#14181b"/><circle cx="190" cy="262" r="22" fill="#b9c2c4"/><circle cx="190" cy="262" r="7" fill="#5b636a"/></g>
+        <g><circle cx="450" cy="262" r="42" fill="#14181b"/><circle cx="450" cy="262" r="22" fill="#b9c2c4"/><circle cx="450" cy="262" r="7" fill="#5b636a"/></g>
+      </g>
+      <!-- SEDAN -->
+      <g id="vSedan" style="display:none">
+        <circle cx="200" cy="258" r="52" fill="#20262b"/>
+        <circle cx="470" cy="258" r="52" fill="#20262b"/>
+        <path class="paint" fill="#146c63" d="M60,262 L60,212 Q60,200 74,198 L170,190 L250,152 Q256,148 266,147 L380,147 Q390,147 398,153 L470,188 L560,198 Q580,201 580,216 L580,250 Q580,262 568,262 Z"/>
+        <path fill="#10222b" d="M180,186 L255,155 Q259,151 267,150 L375,150 Q383,150 389,155 L460,184 Z"/>
+        <rect class="paint" x="180" y="182" width="280" height="8" fill="#146c63"/>
+        <rect x="60" y="248" width="520" height="14" fill="#000" opacity="0.18"/>
+        <ellipse cx="72" cy="228" rx="12" ry="9" fill="#fff8dd"/>
+        <rect x="566" y="216" width="12" height="22" rx="4" fill="#d33"/>
+        <rect x="215" y="202" width="3" height="50" fill="#000" opacity="0.15"/>
+        <rect x="345" y="202" width="3" height="50" fill="#000" opacity="0.15"/>
+        <rect x="243" y="214" width="26" height="7" rx="3.5" fill="#000" opacity="0.3"/>
+        <rect x="373" y="214" width="26" height="7" rx="3.5" fill="#000" opacity="0.3"/>
+        <g><circle cx="200" cy="262" r="42" fill="#14181b"/><circle cx="200" cy="262" r="22" fill="#b9c2c4"/><circle cx="200" cy="262" r="7" fill="#5b636a"/></g>
+        <g><circle cx="470" cy="262" r="42" fill="#14181b"/><circle cx="470" cy="262" r="22" fill="#b9c2c4"/><circle cx="470" cy="262" r="7" fill="#5b636a"/></g>
+      </g>
+      <!-- SUV -->
+      <g id="vSuv" style="display:none">
+        <circle cx="190" cy="254" r="58" fill="#20262b"/>
+        <circle cx="460" cy="254" r="58" fill="#20262b"/>
+        <path class="paint" fill="#146c63" d="M70,262 L70,150 Q70,138 84,136 L120,132 L150,100 Q154,94 164,93 L400,93 Q410,93 416,99 L470,132 L545,142 Q565,145 565,160 L565,250 Q565,262 553,262 Z"/>
+        <path fill="#10222b" d="M130,128 L158,102 Q161,97 168,96 L395,96 Q403,96 408,101 L455,128 Z"/>
+        <rect class="paint" x="250" y="98" width="10" height="32" fill="#146c63"/>
+        <rect class="paint" x="340" y="98" width="10" height="32" fill="#146c63"/>
+        <rect x="70" y="246" width="495" height="16" fill="#000" opacity="0.18"/>
+        <ellipse cx="82" cy="210" rx="13" ry="10" fill="#fff8dd"/>
+        <rect x="551" y="196" width="12" height="26" rx="4" fill="#d33"/>
+        <rect x="215" y="180" width="3" height="66" fill="#000" opacity="0.15"/>
+        <rect x="375" y="180" width="3" height="66" fill="#000" opacity="0.15"/>
+        <rect x="243" y="192" width="26" height="7" rx="3.5" fill="#000" opacity="0.3"/>
+        <rect x="403" y="192" width="26" height="7" rx="3.5" fill="#000" opacity="0.3"/>
+        <g><circle cx="190" cy="258" r="46" fill="#14181b"/><circle cx="190" cy="258" r="24" fill="#b9c2c4"/><circle cx="190" cy="258" r="8" fill="#5b636a"/></g>
+        <g><circle cx="460" cy="258" r="46" fill="#14181b"/><circle cx="460" cy="258" r="24" fill="#b9c2c4"/><circle cx="460" cy="258" r="8" fill="#5b636a"/></g>
+      </g>
+    </svg>
+    <img id="carPhoto" alt="Photo of the selected car" style="display:none" />
+    <div class="vis-tag" id="visTag">Studio preview · pick a car below</div>
   </div>
 
   <div class="card rv" id="estimator">
@@ -204,6 +260,19 @@ const fmtLakh = n => {
 };
 const SPEC_IDS = ["year","km_driven","owner","fuel","transmission","seller_type",
                   "mileage_value","engine_value","max_power_value","seats"];
+const PAINTS = ["#e8e9eb","#b9c0c7","#1c1f24","#b3282d","#1f4e8c","#146c63",
+                "#8a6d3b","#6e1423","#6b7280","#1f3350","#2e6b4f","#c9bfae"];
+const paintFor = s => { let h = 0; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  return PAINTS[h % PAINTS.length]; };
+const SUV_RE = /innova|fortuner|scorpio|xuv|safari|thar|bolero|endeavour|pajero|terrano|duster|creta|brezza|vitara|nexon|hector|seltos|xylo|tuv|kuv|ertiga|marazzo|lodgy|trailblazer|hexa|aria|sumo|winger|xenon|mobilio|brv|go\+|redi/i;
+const SEDAN_RE = /city|ciaz|verna|vento|rapid|fiesta|linea|sunny|sail|accent|tigor|aura|xcent|etios|logan|scala|manza|indigo/i;
+function bodyFor(model, spec) {
+  if ((spec.seats || 5) >= 7 || (spec.engine_value || 0) >= 2000) return "Suv";
+  if (SUV_RE.test(model)) return "Suv";
+  if (SEDAN_RE.test(model) || (spec.engine_value || 0) >= 1400) return "Sedan";
+  return "Hatch";
+}
+let paintOverride = null;
 
 (function(){
   const h = $("hero"), words = h.textContent.trim().split(/\s+/);
@@ -225,10 +294,29 @@ function countUp(el, to, fmt) {
 function enableSpecs(on) { SPEC_IDS.forEach(k => $(k).disabled = !on); $("go").disabled = !on; }
 function wishlistKey(name) { return "wishlist:" + name; }
 
+function setVisual(spec, brand, model) {
+  // Real photo wins when a per-model `img` URL exists in data.json; else studio art.
+  const entry = DB && DB.models[model];
+  const photo = $("carPhoto"), svg = $("carSvg");
+  if (entry && entry.img) {
+    svg.style.display = "none"; photo.style.display = "block"; photo.src = entry.img;
+  } else {
+    photo.style.display = "none"; svg.style.display = "block";
+    const body = bodyFor(model || "", spec || {});
+    ["Hatch","Sedan","Suv"].forEach(b => $("v" + b).style.display = b === body ? "block" : "none");
+    const paint = paintOverride || paintFor(brand + "|" + ((spec && spec.fuel) || ""));
+    document.querySelectorAll("#v" + body + " .paint").forEach(el => el.setAttribute("fill", paint));
+  }
+  const label = bodyFor(model || "", spec || {}).toLowerCase();
+  $("visTag").textContent = model
+    ? `Studio preview · ${brand} · ${label} · illustration`
+    : "Studio preview · pick a car below";
+}
+
 fetch("data.json").then(r => r.json()).then(db => {
   DB = db;
   $("intro").textContent =
-    `Estimate a fair resale value using ${db.n_listings.toLocaleString("en-IN")} real used-car listings. The 3D showroom above restyles itself around whichever car you pick.`;
+    `Estimate a fair resale value using ${db.n_listings.toLocaleString("en-IN")} real used-car listings.`;
   $("brandList").innerHTML = db.brands.map(b => `<option value="${b}">`).join("");
   const fill = (id, items) => $(id).innerHTML = items.map(v => `<option>${v}</option>`).join("");
   fill("fuel", ["Petrol","Diesel","CNG","LPG"]);
@@ -241,7 +329,9 @@ fetch("data.json").then(r => r.json()).then(db => {
   $("footnote").textContent =
     `Estimates are generated from the repository dataset and may not reflect location, service history, ` +
     `accident history, modifications, or current local demand. Holdout model score: R² ${db.metrics.r2.toFixed(2)}; ` +
-    `median absolute error benchmark: ${fmtIN(db.metrics.mae)}. 3D car is a stylized preview, not the exact variant.`;
+    `median absolute error benchmark: ${fmtIN(db.metrics.mae)}. ` +
+    `Vehicle image is a studio illustration, not a photograph of the actual car.`;
+  setVisual({ seats: 5, engine_value: 1200, fuel: "Petrol" }, "Maruti", "");
 });
 
 function currentSpec() {
@@ -251,14 +341,6 @@ function currentSpec() {
   DB.spec_keys.forEach((k, i) => spec[k] = entry.s[i]);
   return { spec, brand: entry.b };
 }
-function pushToShowroom() {
-  const c = currentSpec();
-  if (c && window.updateShowroom) window.updateShowroom(c.spec, c.brand, $("model").value);
-}
-function showroomView(v) {
-  if (window.showroomView) window.showroomView(v);
-  document.getElementById("stage").scrollIntoView({ behavior:"smooth", block:"center" });
-}
 
 $("brand").addEventListener("change", () => {
   const models = (DB && DB.models_by_brand[$("brand").value]) || [];
@@ -266,27 +348,29 @@ $("brand").addEventListener("change", () => {
   $("model").value = ""; $("model").disabled = !models.length;
   $("model").placeholder = models.length ? `Type to search ${models.length} models` : "Choose a brand first";
   $("match").hidden = true; $("out").innerHTML = ""; enableSpecs(false);
+  paintOverride = null;
 });
 $("model").addEventListener("change", () => {
   const c = currentSpec();
   if (!c) { $("match").hidden = true; $("out").innerHTML = ""; enableSpecs(false); return; }
   SPEC_IDS.forEach(k => $(k).value = c.spec[k]);
   enableSpecs(true);
+  paintOverride = null;
   $("match").hidden = false;
   $("match").innerHTML = `<strong>Matched vehicle:</strong> ${$("model").value}`;
   $("specCopy").textContent = "Typical values for the matched vehicle are filled in automatically.";
   $("out").innerHTML = "";
-  pushToShowroom();
-  document.getElementById("stage").scrollIntoView({ behavior:"smooth", block:"nearest" });
+  setVisual(c.spec, c.brand, $("model").value);
+  document.getElementById("visual").scrollIntoView({ behavior:"smooth", block:"nearest" });
 });
-window.addEventListener("showroom-ready", pushToShowroom);
 
 $("go").addEventListener("click", async () => {
   const car = { name: $("model").value };
   ["year","km_driven","engine_value","seats"].forEach(k => car[k] = +$(k).value);
   ["mileage_value","max_power_value"].forEach(k => car[k] = +$(k).value);
   ["fuel","seller_type","transmission","owner"].forEach(k => car[k] = $(k).value);
-  pushToShowroom();
+  const entry = DB.models[car.name];
+  setVisual(car, entry.b, car.name);
   let res;
   try {
     const r = await fetch("/api/predict", { method:"POST",
@@ -295,7 +379,6 @@ $("go").addEventListener("click", async () => {
     if (!r.ok) throw new Error(res.error || "prediction failed");
   } catch (e) { $("out").innerHTML = `<p class="err">${e.message}</p>`; return; }
 
-  const entry = DB.models[car.name];
   let comp = entry.p, label = "closest comparable listings";
   if (comp.n < 4) { comp = DB.brand_stats[entry.b]; label = `${entry.b} listings`; }
   const med = comp.median, d = (res.predicted_price - med) / med * 100;
@@ -320,11 +403,8 @@ $("go").addEventListener("click", async () => {
         <button class="tab" data-t="tMkt">Market</button>
       </div>
       <div class="tabpane" id="tExt">
-        <p class="copy">Stylized 3D preview of your pick — jump the showroom camera:</p>
-        <div class="cam-btns">
-          <button data-v="front">Front ¾</button><button data-v="side">Side</button>
-          <button data-v="rear">Rear</button><button data-v="spin">Auto-spin</button>
-        </div>
+        <p class="copy">Studio finish for this car — pick a paint:</p>
+        <div class="swatches" id="swatches"></div>
       </div>
       <div class="tabpane" id="tHl" hidden>
         <div class="chips">
@@ -363,6 +443,14 @@ $("go").addEventListener("click", async () => {
     $("bar2").style.width = (100 * med / max) + "%";
   }));
   $("out").scrollIntoView({ behavior:"smooth", block:"start" });
+  const PAINT_CHOICES = ["#e8e9eb","#1c1f24","#b3282d","#1f4e8c","#146c63","#8a6d3b"];
+  $("swatches").innerHTML = PAINT_CHOICES.map(p =>
+    `<button class="sw" data-p="${p}" style="background:${p}" title="${p}"></button>`).join("");
+  document.querySelectorAll(".sw").forEach(b => b.addEventListener("click", () => {
+    paintOverride = b.dataset.p;
+    setVisual(car, entry.b, car.name);
+    document.getElementById("visual").scrollIntoView({ behavior:"smooth", block:"center" });
+  }));
   $("heart").addEventListener("click", () => {
     const on = localStorage.getItem(wishlistKey(car.name)) === "1";
     if (on) { localStorage.removeItem(wishlistKey(car.name)); $("heart").classList.remove("saved"); }
@@ -373,8 +461,6 @@ $("go").addEventListener("click", async () => {
     t.classList.add("active");
     ["tExt","tHl","tMkt"].forEach(id => $(id).hidden = id !== t.dataset.t);
   }));
-  document.querySelectorAll(".cam-btns button").forEach(b =>
-    b.addEventListener("click", () => showroomView(b.dataset.v)));
   const upd = async () => {
     const c2 = {...car, year:+$("wYear").value, km_driven:+$("wKm").value};
     const r = await (await fetch("/api/predict", { method:"POST",
@@ -385,141 +471,6 @@ $("go").addEventListener("click", async () => {
   };
   $("wYear").addEventListener("input", upd); $("wKm").addEventListener("input", upd); upd();
 });
-</script>
-
-<script type="module">
-/* ---------- 3D showroom (Three.js, procedural stylized car) ---------- */
-const tag = document.getElementById("stageTag");
-let THREE;
-try {
-  THREE = await import("three");
-} catch (e) {
-  document.getElementById("stage").innerHTML =
-    `<div class="stage-fallback">3D preview unavailable offline — the price estimator below works fully without it.</div>`;
-  window.dispatchEvent(new Event("showroom-ready"));
-  throw e;
-}
-const canvas = document.getElementById("gl");
-const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x0e1514);
-scene.fog = new THREE.Fog(0x0e1514, 12, 26);
-const camera = new THREE.PerspectiveCamera(38, 2, 0.1, 100);
-
-scene.add(new THREE.HemisphereLight(0xdfeae6, 0x1a2422, 0.9));
-const key = new THREE.DirectionalLight(0xffffff, 2.2);
-key.position.set(5, 8, 4); key.castShadow = true;
-key.shadow.mapSize.set(1024, 1024);
-scene.add(key);
-const rim = new THREE.SpotLight(0x7fd4c1, 60, 30, Math.PI / 5);
-rim.position.set(-6, 5, -5); scene.add(rim);
-const fill = new THREE.DirectionalLight(0xe7604f, 0.5);
-fill.position.set(-4, 2, 6); scene.add(fill);
-
-const rig = new THREE.Group(); scene.add(rig);
-const disc = new THREE.Mesh(
-  new THREE.CylinderGeometry(3.1, 3.3, 0.18, 64),
-  new THREE.MeshStandardMaterial({ color:0x1c2624, roughness:.6, metalness:.3 }));
-disc.position.y = -0.09; disc.receiveShadow = true; rig.add(disc);
-const ring = new THREE.Mesh(
-  new THREE.TorusGeometry(3.1, 0.035, 12, 90),
-  new THREE.MeshStandardMaterial({ color:0x146c63, emissive:0x146c63, emissiveIntensity:1.6 }));
-ring.rotation.x = Math.PI / 2; ring.position.y = 0.01; rig.add(ring);
-const grid = new THREE.GridHelper(30, 30, 0x24403c, 0x16211f);
-grid.position.y = -0.2; scene.add(grid);
-
-const PAINTS = [0xe7604f,0x146c63,0x2f6f9f,0xc9a227,0x7a5fb5,0xd8d8d8,0x22282b,
-                0x2e9e6b,0xb5542d,0x3fa7c4,0x8c2f39,0x4a6741];
-const paintFor = s => { let h = 0; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) >>> 0;
-  return PAINTS[h % PAINTS.length]; };
-
-const M = {
-  paint: new THREE.MeshStandardMaterial({ color:0x146c63, roughness:.32, metalness:.65 }),
-  glass: new THREE.MeshStandardMaterial({ color:0x0d1b22, roughness:.12, metalness:.9 }),
-  trim: new THREE.MeshStandardMaterial({ color:0x22282b, roughness:.7, metalness:.2 }),
-  tire: new THREE.MeshStandardMaterial({ color:0x111314, roughness:.95 }),
-  rimM: new THREE.MeshStandardMaterial({ color:0xb9c2c4, roughness:.3, metalness:.9 }),
-  head: new THREE.MeshStandardMaterial({ color:0xffffff, emissive:0xfff6d8, emissiveIntensity:2.4 }),
-  tail: new THREE.MeshStandardMaterial({ color:0x7a0f0f, emissive:0xff2a2a, emissiveIntensity:1.6 }),
-};
-const box = (w,h,d,mat,x,y,z) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), mat);
-  m.position.set(x,y,z); m.castShadow = true; return m; };
-
-let car = null, wheels = [], targetPaint = new THREE.Color(0x146c63);
-function buildCar({ suv }) {
-  if (car) rig.remove(car);
-  wheels = [];
-  car = new THREE.Group();
-  const L = suv ? 4.5 : 3.9, H = suv ? 0.78 : 0.62, cabH = suv ? 0.72 : 0.55;
-  car.add(box(L, H, 1.85, M.paint, 0, 0.68, 0));
-  car.add(box(L * 0.52, cabH, 1.65, M.glass, suv ? -0.2 : -0.1, 0.68 + H / 2 + cabH / 2 - 0.06, 0));
-  car.add(box(L * 0.56, 0.1, 1.7, M.paint, suv ? -0.2 : -0.1, 0.68 + H / 2 + cabH - 0.08, 0));
-  car.add(box(L + 0.12, 0.22, 1.9, M.trim, 0, 0.32, 0));
-  const wg = new THREE.CylinderGeometry(0.36, 0.36, 0.28, 24);
-  const rg = new THREE.CylinderGeometry(0.2, 0.2, 0.3, 18);
-  for (const [x, z] of [[-L/2 + 0.85, 0.95],[L/2 - 0.85, 0.95],[-L/2 + 0.85, -0.95],[L/2 - 0.85, -0.95]]) {
-    const w = new THREE.Group();
-    const t = new THREE.Mesh(wg, M.tire); t.rotation.x = Math.PI / 2; t.castShadow = true;
-    const r = new THREE.Mesh(rg, M.rimM); r.rotation.x = Math.PI / 2;
-    w.add(t, r); w.position.set(x, 0.36, z); car.add(w); wheels.push(w);
-  }
-  car.add(box(0.1, 0.16, 0.5, M.head, L / 2 + 0.01, 0.72, 0.55));
-  car.add(box(0.1, 0.16, 0.5, M.head, L / 2 + 0.01, 0.72, -0.55));
-  car.add(box(0.08, 0.14, 1.5, M.tail, -L / 2 - 0.01, 0.74, 0));
-  car.add(box(0.3, 0.1, 1.2, M.trim, L / 2 - 0.1, 0.62, 0));
-  rig.add(car);
-}
-buildCar({ suv:false });
-
-function size() {
-  const w = canvas.clientWidth, h = canvas.clientHeight || 400;
-  renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
-}
-new ResizeObserver(size).observe(canvas); size();
-
-let az = 0.6, azT = 0.6, el = 0.42, dragging = false, px = 0, py = 0, idle = 0;
-canvas.addEventListener("pointerdown", e => { dragging = true; px = e.clientX; py = e.clientY; canvas.setPointerCapture(e.pointerId); });
-canvas.addEventListener("pointermove", e => {
-  if (!dragging) return;
-  azT += (e.clientX - px) * 0.008; el = Math.min(1.1, Math.max(0.15, el - (e.clientY - py) * 0.004));
-  px = e.clientX; py = e.clientY; idle = 0;
-});
-addEventListener("pointerup", () => dragging = false);
-const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-const clock = new THREE.Clock();
-(function loop() {
-  requestAnimationFrame(loop);
-  const t = clock.getElapsedTime();
-  if (!dragging && !reduced) { idle += 1 / 60; if (idle > 2) azT += 0.004; }
-  az += (azT - az) * 0.08;
-  const R = 7.2;
-  camera.position.set(Math.sin(az) * R * Math.cos(el), 1.2 + R * Math.sin(el) * 0.55, Math.cos(az) * R * Math.cos(el));
-  camera.lookAt(0, 0.55, 0);
-  wheels.forEach(w => w.rotation.z -= 0.03);
-  if (car && !reduced) car.position.y = Math.sin(t * 1.6) * 0.012;
-  M.paint.color.lerp(targetPaint, 0.06);
-  renderer.render(scene, camera);
-})();
-
-window.updateShowroom = function(spec, brand, model) {
-  const suv = (spec.seats || 5) >= 7 || (spec.engine_value || 0) >= 2000;
-  buildCar({ suv });
-  targetPaint.set(paintFor(brand + "|" + (spec.fuel || "")));
-  tag.textContent = `3D showroom · ${brand} ${suv ? "SUV" : "hatch"} styling · stylized preview`;
-};
-// Exterior-tab camera presets (car nose points +X): front=+X, side=+Z, rear=−X
-window.showroomView = function(v) {
-  idle = -8;
-  if (v === "front") { azT = Math.PI / 2; el = 0.32; }
-  else if (v === "side") { azT = 0; el = 0.3; }
-  else if (v === "rear") { azT = -Math.PI / 2; el = 0.36; }
-  else { idle = 999; }
-};
-window.dispatchEvent(new Event("showroom-ready"));
 </script>
 </body>
 </html>
