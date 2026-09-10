@@ -70,6 +70,26 @@
              font-size:.75rem; padding:6px 10px; border-radius:20px; pointer-events:none; }
   .photo-credit { position:absolute; bottom:12px; left:12px; background:rgba(0,0,0,.55); color:#cfd8d6;
                   font-size:.68rem; padding:5px 9px; border-radius:14px; pointer-events:none; }
+  /* white studio carousel (Cars24-style) */
+  #visual { background:#fff; }
+  .vp { position:relative; overflow:hidden; border-radius:12px; }
+  .track { display:flex; transition:transform .55s cubic-bezier(.2,.7,.2,1); }
+  .slide { flex:0 0 100%; background:#fff; min-height:300px; position:relative;
+           display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .slide img.photo, .slide svg { width:100%; height:auto; max-height:420px; object-fit:cover; }
+  @keyframes slidein-photo { from { opacity:0; transform:translateX(90px); }
+                             to { opacity:1; transform:none; } }
+  .slide-in { animation:slidein-photo .6s cubic-bezier(.2,.7,.2,1); }
+  .dots { position:absolute; bottom:12px; left:0; right:0; display:flex; gap:6px; justify-content:center; }
+  .dots button { width:22px; height:5px; border-radius:3px; border:none; background:#c9d4d1; cursor:pointer; padding:0; }
+  .dots button.on { background:var(--ink); }
+  .arrow { position:absolute; top:50%; transform:translateY(-50%); width:38px; height:38px;
+           border-radius:50%; border:1px solid var(--line); background:rgba(255,255,255,.9);
+           font-size:1.1rem; cursor:pointer; color:var(--ink); }
+  .arrow.prev { left:10px; } .arrow.next { right:10px; }
+  .slide-cap { font-size:.8rem; color:var(--muted); padding:10px 4px 2px; text-align:center; }
+  .mini-bars { width:min(420px,88%); padding:6px 0 16px; }
+  .hl-tiles { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; padding:18px 14px; }
   .listing { background:#fff; border:1px solid var(--line); border-radius:16px;
              margin-top:22px; overflow:hidden; animation:slidein .5s ease;
              box-shadow:0 8px 28px rgba(22,33,31,.10); }
@@ -144,6 +164,9 @@
   <a class="cta rv" href="#estimator">Estimate my car ↓</a>
 
   <div id="visual" class="rv">
+    <div class="vp" id="vp">
+      <div class="track" id="track">
+        <div class="slide" id="slidePhoto">
     <svg id="carSvg" viewBox="0 0 640 360" role="img" aria-label="Studio illustration of the selected car">
       <defs>
         <linearGradient id="studio" x1="0" y1="0" x2="0" y2="1">
@@ -211,6 +234,14 @@
     <img id="carPhoto" alt="Photo of the selected car" style="display:none" />
     <div class="vis-tag" id="visTag">Studio preview · pick a car below</div>
     <div class="photo-credit" id="photoCredit" hidden></div>
+        </div>
+        <div class="slide"><div class="hl-tiles" id="slideHl"><span class="copy">Pick a car to see highlights.</span></div></div>
+        <div class="slide"><div class="mini-bars" id="slideMkt"><p class="copy" style="text-align:center">Estimate a car to see its market position.</p></div></div>
+      </div>
+      <button class="arrow prev" id="prevS">‹</button>
+      <button class="arrow next" id="nextS">›</button>
+      <div class="dots" id="dots"><button data-i="0" class="on"></button><button data-i="1"></button><button data-i="2"></button></div>
+    </div>
   </div>
 
   <div class="card rv" id="estimator">
@@ -297,6 +328,32 @@ function countUp(el, to, fmt) {
 function enableSpecs(on) { SPEC_IDS.forEach(k => $(k).disabled = !on); $("go").disabled = !on; }
 function wishlistKey(name) { return "wishlist:" + name; }
 
+/* white-studio swipe carousel */
+let slideI = 0;
+function goSlide(i) {
+  slideI = ((i % 3) + 3) % 3;
+  $("track").style.transform = `translateX(-${100 * slideI}%)`;
+  document.querySelectorAll("#dots button").forEach((b, j) => b.classList.toggle("on", j === slideI));
+}
+function slideIn() {
+  const sp = $("slidePhoto");
+  sp.classList.remove("slide-in"); void sp.offsetWidth; sp.classList.add("slide-in");
+  goSlide(0);
+}
+document.querySelectorAll("#dots button").forEach(b => b.addEventListener("click", () => goSlide(+b.dataset.i)));
+$("prevS").addEventListener("click", () => goSlide(slideI - 1));
+$("nextS").addEventListener("click", () => goSlide(slideI + 1));
+(function(){
+  let sx = null;
+  const vp = $("vp");
+  vp.addEventListener("pointerdown", e => { sx = e.clientX; });
+  vp.addEventListener("pointerup", e => {
+    if (sx === null) return;
+    const dx = e.clientX - sx; sx = null;
+    if (dx < -50) goSlide(slideI + 1); else if (dx > 50) goSlide(slideI - 1);
+  });
+})();
+
 function setVisual(spec, brand, model) {
   // Real photo wins when a per-model `img` URL exists in data.json; else studio art.
   const entry = DB && DB.models[model];
@@ -305,6 +362,7 @@ function setVisual(spec, brand, model) {
     svg.style.display = "none"; photo.style.display = "block"; photo.src = entry.img;
     cred.hidden = false; cred.textContent = entry.credit || "Representative photo";
     $("visTag").textContent = "Representative photo · " + brand;
+    slideIn();
     return;
   } else {
     cred.hidden = true;
@@ -318,6 +376,7 @@ function setVisual(spec, brand, model) {
   $("visTag").textContent = model
     ? `Studio preview · ${brand} · ${label} · illustration`
     : "Studio preview · pick a car below";
+  slideIn();
 }
 
 fetch("data.json").then(r => r.json()).then(db => {
@@ -368,6 +427,11 @@ $("model").addEventListener("change", () => {
   $("specCopy").textContent = "Typical values for the matched vehicle are filled in automatically.";
   $("out").innerHTML = "";
   setVisual(c.spec, c.brand, $("model").value);
+  $("slideHl").innerHTML = ["year|Year", "km_driven|Driven km", "fuel|Fuel", "transmission|Gearbox",
+    "owner|Owner", "mileage_value|Mileage", "engine_value|Engine cc", "max_power_value|Power bhp"]
+    .map(s => { const [k, l] = s.split("|");
+      const v = k === "km_driven" ? (+c.spec[k]).toLocaleString("en-IN") : c.spec[k];
+      return `<div class="chip"><b>${l}</b>${v}</div>`; }).join("");
   document.getElementById("visual").scrollIntoView({ behavior:"smooth", block:"nearest" });
 });
 
@@ -445,9 +509,16 @@ $("go").addEventListener("click", async () => {
       </div>
     </div>`;
   countUp($("priceOut"), res.predicted_price, fmtLakh);
+  $("slideMkt").innerHTML = `
+    <div class="bar-row">Your estimate — ${fmtLakh(res.predicted_price)}
+      <div class="bar" id="mbar1" style="background:#146c63"></div></div>
+    <div class="bar-row">Median — ${fmtLakh(med)}
+      <div class="bar" id="mbar2" style="background:#aebbb8"></div></div>`;
   requestAnimationFrame(() => requestAnimationFrame(() => {
     $("bar1").style.width = (100 * res.predicted_price / max) + "%";
     $("bar2").style.width = (100 * med / max) + "%";
+    $("mbar1").style.width = (100 * res.predicted_price / max) + "%";
+    $("mbar2").style.width = (100 * med / max) + "%";
   }));
   $("out").scrollIntoView({ behavior:"smooth", block:"start" });
   const PAINT_CHOICES = ["#e8e9eb","#1c1f24","#b3282d","#1f4e8c","#146c63","#8a6d3b"];
