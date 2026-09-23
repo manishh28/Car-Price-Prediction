@@ -519,71 +519,58 @@
                     transition: background var(--dur-1) var(--ease-out), width var(--dur-2) var(--ease-spring); }
   .gal-dot.on::after { background: var(--ink); width: 30px; }
   .gal-cap { min-height: 2.6em; }
-  /* scenic drive banner: layered CSS/SVG scenery, transform+opacity only */
+  /* sunset ocean highway: layered scene, transform+opacity only */
   .drive { position: relative; border-radius: 10px; overflow: hidden;
-           aspect-ratio: 16/8; min-height: 280px; background: #87b5d9;
-           --car-paint: #146c63; }
+    aspect-ratio: 16/8; min-height: 300px; --hero-paint: #146c63;
+    background: linear-gradient(180deg,#2e2350 0%,#8a3f63 30%,#e56b4e 52%,#f7b95c 62%,#2e6a8f 63%,#16324a 100%); }
   .drive > div { position: absolute; }
-  .sky { inset: 0; }
-  .sky-day { background: linear-gradient(180deg,#7ec3ee 0%,#cfe9f7 62%,#f7e8c9 100%); }
-  .sky-sunset { background: linear-gradient(180deg,#3b2d5c 0%,#c65b7c 48%,#ff9e5e 72%,#ffd9a0 100%);
-    animation: sceneA 24s ease-in-out infinite; }
-  .sky-night { background: linear-gradient(180deg,#060a18 0%,#101c3f 60%,#1d2f57 100%);
-    animation: sceneB 24s ease-in-out infinite; }
-  @keyframes sceneA { 0%,28% { opacity: 0; } 38%,62% { opacity: 1; } 72%,100% { opacity: 0; } }
-  @keyframes sceneB { 0%,62% { opacity: 0; } 74%,94% { opacity: 1; } 100% { opacity: 0; } }
-  .stars { inset: 0; opacity: 0; animation: stars 24s ease-in-out infinite;
-    background-image:
-      radial-gradient(1.5px 1.5px at 12% 22%, #fff, transparent),
-      radial-gradient(1px 1px at 32% 12%, #fff, transparent),
-      radial-gradient(1.5px 1.5px at 55% 28%, #fff, transparent),
-      radial-gradient(1px 1px at 71% 15%, #fff, transparent),
-      radial-gradient(1.5px 1.5px at 86% 30%, #fff, transparent),
-      radial-gradient(1px 1px at 44% 8%, #fff, transparent); }
-  @keyframes stars { 0%,64% { opacity: 0; } 76%,94% { opacity: .9; } 100% { opacity: 0; } }
-  .sun { width: 64px; height: 64px; border-radius: 50%; left: 12%; top: 20%;
-    background: radial-gradient(circle,#fff8d8 0%,#ffe98a 55%,rgba(255,233,138,0) 72%);
-    animation: sunride 24s ease-in-out infinite; }
-  @keyframes sunride {
-    0%,30% { transform: translate(0,0); opacity: 1; }
-    45%,60% { transform: translate(60%,90%); opacity: 1; }
-    70%,78% { transform: translate(120%,220%); opacity: 0; }
-    100% { transform: translate(0,0); opacity: 1; } }
-  .sea { position: absolute; left: 0; right: 0; bottom: 17%; height: 27%; width: 100%; }
-  .wave.w1 { fill: #3f7fae; animation: slideL 11s linear infinite; }
-  .wave.w2 { fill: #2f6a94; animation: slideL 17s linear infinite; }
-  @keyframes slideL { from { transform: translateX(0); } to { transform: translateX(-300px); } }
-  .mountains { left: 0; right: 0; bottom: 33%; height: 27%; background: #3d5a6c; opacity: .85;
-    clip-path: polygon(0 100%,0 55%,8% 30%,16% 52%,26% 22%,36% 55%,48% 35%,60% 60%,72% 28%,84% 55%,93% 40%,100% 58%,100% 100%); }
-  .road { left: 0; right: 0; bottom: 0; height: 19%; background: #2b3136; }
-  .dash { position: absolute; top: 50%; left: 0; width: 200%; height: 5px; margin-top: -2.5px;
-    background: repeating-linear-gradient(90deg,#ffd75e 0 46px,transparent 46px 92px);
-    animation: dashmove .9s linear infinite; }
-  @keyframes dashmove { to { transform: translateX(-92px); } }
-  .car-svg { position: absolute; left: 8%; bottom: 11%; width: min(46%,380px); overflow: visible; }
-  .car-bob { animation: bob 1.6s ease-in-out infinite; }
-  @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
-  .car-paint { fill: var(--car-paint); transition: fill .6s ease; }
-  .car-glass { fill: #10222b; }
-  .car-light { fill: #fff6d8; } .car-tail { fill: #ff3b30; }
-  .tire { fill: #14181b; } .rim { fill: #b9c2c4; } .spoke { stroke: #5b636a; stroke-width: 2.5; }
-  .wheel { transform-box: fill-box; transform-origin: center; animation: spin .9s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .drive.suv .car-svg { transform: scaleY(1.07); }
-  .palms { bottom: 5%; width: 120px; height: 150px; opacity: .9;
-    background: radial-gradient(ellipse 60px 90px at 50% 100%, #16352b 62%, transparent 63%); }
-  .p1 { left: -140px; animation: fg 7s linear infinite; }
-  .p2 { left: -140px; width: 90px; height: 110px; animation: fg 11s linear infinite; animation-delay: -4s; }
-  @keyframes fg { to { transform: translateX(110vw); } }
-  .gal-empty { border: 2px dashed var(--line); border-radius: 10px; background: #fff;
-               padding: 44px 20px; text-align: center; color: var(--muted);
-               animation: emptyin var(--dur-2) var(--ease-out); }
-  .gal-empty svg { width: 64px; height: 64px; opacity: .7; }
-  .gal-empty p { margin: 12px 0 0; font-size: .92rem; font-weight: 600; }
-  @keyframes emptyin { from { opacity: 0; } to { opacity: 1; } }
-  .gal-play { position: absolute; top: 12px; right: 12px; min-width: 44px; min-height: 44px;
-              border-radius: 22px; border: 1px solid var(--line); background: rgba(255,255,255,.92);
-              font-size: .8rem; font-weight: 700; cursor: pointer; padding: 0 14px; color: var(--ink); }
+  .dsky { inset: 0 0 37% 0;
+    background: linear-gradient(180deg,#2e2350 0%,#7a3f66 34%,#e56b4e 62%,#ffc46b 100%); }
+  .dsun { left: 50%; top: 30%; width: 72px; height: 72px; margin-left: 130px;
+    border-radius: 50%;
+    background: radial-gradient(circle,#fffbe8 0%,#ffedb0 42%,rgba(255,220,130,.55) 62%,transparent 72%);
+    animation: sunglow 5s ease-in-out infinite; }
+  @keyframes sunglow { 0%,100% { transform: scale(1); opacity: .95; } 50% { transform: scale(1.12); opacity: 1; } }
+  .dcity { left: 0; right: 0; top: 30%; height: 16%; background: #241f3d;
+    clip-path: polygon(0 100%,0 45%,3% 45%,3% 20%,6% 20%,6% 45%,9% 45%,9% 5%,11% 5%,11% 45%,15% 45%,15% 30%,19% 30%,19% 45%,23% 45%,23% 12%,26% 12%,26% 45%,31% 45%,31% 35%,36% 35%,36% 45%,41% 45%,41% 18%,44% 18%,44% 45%,48% 45%,48% 32%,53% 32%,53% 45%,58% 45%,58% 8%,61% 8%,61% 45%,66% 45%,66% 28%,71% 28%,71% 45%,76% 45%,76% 15%,79% 15%,79% 45%,84% 45%,84% 38%,89% 38%,89% 45%,94% 45%,94% 25%,97% 25%,97% 45%,100% 45%,100% 100%);
+    opacity: .9; }
+  .dsea { left: 0; right: 0; top: 44%; height: 19%;
+    background: linear-gradient(180deg,#3f88ad 0%,#2a5f86 55%,#1b4769 100%); overflow: hidden; }
+  .dsea::before, .dsea::after { content: ""; position: absolute; left: -20%; width: 140%; height: 3px;
+    background: rgba(255,255,255,.4); border-radius: 2px; animation: slideL 9s linear infinite; }
+  .dsea::before { top: 30%; } .dsea::after { top: 62%; animation-duration: 14s; }
+  @keyframes slideL { from { transform: translateX(0); } to { transform: translateX(-12%); } }
+  .glitter { left: 50%; top: -8%; width: 120px; height: 116%; margin-left: 70px;
+    background: linear-gradient(180deg,rgba(255,236,170,.75),rgba(255,236,170,0) 85%);
+    filter: blur(7px); animation: shimmer 3.4s ease-in-out infinite; }
+  @keyframes shimmer { 0%,100% { opacity: .55; transform: scaleX(1); } 50% { opacity: .95; transform: scaleX(1.35); } }
+  .dhwy { left: 0; right: 0; bottom: 0; height: 38%;
+    background: linear-gradient(180deg,#3a4046 0%,#2b3136 30%,#23282d 100%); }
+  .lane { position: absolute; left: 0; width: 200%; height: 4px;
+    background: repeating-linear-gradient(90deg,#ffd75e 0 40px,transparent 40px 84px);
+    animation: dashmove 1s linear infinite; }
+  .l1 { top: 24%; } .l2 { top: 52%; animation-duration: .8s; } .l3 { top: 79%; animation-duration: .65s; }
+  @keyframes dashmove { to { transform: translateX(-84px); } }
+  .car { position: absolute; top: var(--t); left: 0; width: 84px; height: 32px;
+    background: var(--c); border-radius: 15px 20px 9px 9px;
+    box-shadow: 0 6px 10px rgba(0,0,0,.35);
+    animation: drive var(--d) linear infinite; animation-delay: var(--dl, 0s); }
+  .car::before { content: ""; position: absolute; left: 22px; top: -11px; width: 36px; height: 13px;
+    background: linear-gradient(180deg,#cfe8f5,#5b7b8c); border-radius: 7px 9px 0 0; }
+  .car::after { content: ""; position: absolute; left: 0; right: 0; bottom: -7px; height: 14px;
+    background:
+      radial-gradient(circle 7px at 22px 7px,#1b1e22 6px,#8b939b 6.5px 7px,transparent 7.5px),
+      radial-gradient(circle 7px at 62px 7px,#1b1e22 6px,#8b939b 6.5px 7px,transparent 7.5px); }
+  @keyframes drive { from { transform: translateX(-130px); } to { transform: translateX(110vw); } }
+  .car.hero { width: 104px; height: 38px; --c: var(--hero-paint);
+    box-shadow: 0 8px 16px rgba(0,0,0,.45), 0 0 22px rgba(255,215,110,.35); z-index: 5; }
+  .car.hero::before { left: 27px; width: 44px; }
+  .car.hero::after {
+    background:
+      radial-gradient(circle 8px at 26px 7px,#1b1e22 7px,#aeb6bd 7.5px 8px,transparent 8.5px),
+      radial-gradient(circle 8px at 76px 7px,#1b1e22 7px,#aeb6bd 7.5px 8px,transparent 8.5px); }
+  .dshade { left: 0; right: 0; bottom: 0; height: 10%;
+    background: linear-gradient(180deg,transparent,rgba(6,10,24,.45)); }
   /* custom combobox */
   .combo { position: relative; }
   .combo-box { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: #fff;
@@ -668,38 +655,28 @@
       <div class="c24-elite">COMPCARS VERIFIED</div>
     </div>
 
-    <!-- Scenic drive banner: pure CSS/SVG animated scenery, no photos -->
+    <!-- Sunset ocean highway: pure-CSS animated traffic scene, no photos -->
     <div class="drive" id="drive" aria-hidden="true">
-      <div class="sky sky-day"></div>
-      <div class="sky sky-sunset"></div>
-      <div class="sky sky-night"></div>
-      <div class="stars"></div>
-      <div class="sun"></div>
-      <div class="mountains"></div>
-      <svg class="sea" viewBox="0 0 1200 120" preserveAspectRatio="none" aria-hidden="true">
-        <path class="wave w1" d="M0,60 Q75,30 150,60 T300,60 T450,60 T600,60 T750,60 T900,60 T1050,60 T1200,60 T1350,60 T1500,60 L1500,120 L0,120 Z"/>
-        <path class="wave w2" d="M0,75 Q100,50 200,75 T400,75 T600,75 T800,75 T1000,75 T1200,75 T1400,75 T1600,75 L1600,120 L0,120 Z"/>
-      </svg>
-      <div class="road"><div class="dash"></div></div>
-      <svg class="car-svg" viewBox="0 0 320 140" aria-hidden="true">
-        <g class="car-bob">
-          <path class="car-paint" d="M20,100 L28,72 Q30,66 38,65 L70,60 L95,38 Q98,34 105,34 L190,34 Q198,34 203,39 L228,62 L285,68 Q297,70 297,80 L297,96 Q297,102 290,102 L30,102 Q22,102 20,100 Z"/>
-          <path class="car-glass" d="M100,58 L118,40 L185,40 L205,58 Z"/>
-          <rect class="car-light" x="22" y="78" width="10" height="8" rx="3"/>
-          <rect class="car-tail" x="288" y="76" width="8" height="10" rx="3"/>
-          <g class="wheel" transform="translate(75,100)">
-            <circle r="17" class="tire"/><circle r="8" class="rim"/>
-            <path class="spoke" d="M0,-8 L0,8 M-8,0 L8,0"/>
-          </g>
-          <g class="wheel" transform="translate(235,100)">
-            <circle r="17" class="tire"/><circle r="8" class="rim"/>
-            <path class="spoke" d="M0,-8 L0,8 M-8,0 L8,0"/>
-          </g>
-        </g>
-      </svg>
-      <div class="palms p1"></div>
-      <div class="palms p2"></div>
-      <div class="vis-tag" id="sceneTag">Scenic drive · pick a car to personalize</div>
+      <div class="dsky"></div>
+      <div class="dsun"></div>
+      <div class="dcity"></div>
+      <div class="dsea"><div class="glitter"></div></div>
+      <div class="dhwy">
+        <div class="lane l1"></div>
+        <div class="lane l2"></div>
+        <div class="lane l3"></div>
+        <div class="car" style="--c:#3b82c4;--t:6%;--d:11s;--dl:-2s;"></div>
+        <div class="car" style="--c:#e0a32e;--t:2%;--d:14s;--dl:-7s;"></div>
+        <div class="car" style="--c:#c43d2e;--t:10%;--d:9s;--dl:-4s;"></div>
+        <div class="car" style="--c:#e8e9eb;--t:38%;--d:12s;--dl:-1s;"></div>
+        <div class="car" style="--c:#2e9e6b;--t:34%;--d:15s;--dl:-9s;"></div>
+        <div class="car" style="--c:#1f4e8c;--t:42%;--d:10s;--dl:-6s;"></div>
+        <div class="car" style="--c:#8a6d3b;--t:68%;--d:13s;--dl:-3s;"></div>
+        <div class="car" style="--c:#b9c0c7;--t:64%;--d:16s;--dl:-11s;"></div>
+        <div class="car hero" id="heroCar" style="--t:72%;--d:8s;--dl:-5s;"></div>
+      </div>
+      <div class="dshade"></div>
+      <div class="vis-tag" id="sceneTag">Sunset drive · pick a car to personalize</div>
     </div>
 
     <!-- Vehicle Details & Specs -->
@@ -846,12 +823,10 @@ function paintFor(s) {
 function setScene(spec, brand, modelName) {
   const d = $("drive");
   if (!d) return;
-  d.style.setProperty("--car-paint", paintFor(brand + "|" + ((spec && spec.fuel) || "")));
-  const suv = !!(spec && ((spec.seats || 5) >= 7 || (spec.engine_value || 0) >= 2000));
-  d.classList.toggle("suv", suv);
+  d.style.setProperty("--hero-paint", paintFor(brand + "|" + ((spec && spec.fuel) || "")));
   $("sceneTag").textContent = modelName
-    ? `Scenic drive · ${brand} · ${suv ? "SUV" : "car"}`
-    : "Scenic drive · pick a car to personalize";
+    ? `Sunset drive · ${brand} ${modelName}`
+    : "Sunset drive · pick a car to personalize";
 }
 
 /* Step indicator: 1 Vehicle → 2 Condition → 3 Estimate */
