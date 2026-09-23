@@ -61,15 +61,18 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 20px 10px;
+    padding: 14px 20px 10px;
+    border-bottom: 1px solid #edf2f0;
   }
-  .c24-wishlist {
-    color: #e7604f;
-    font-size: 0.84rem;
-    font-weight: 750;
+  .c24-studio-tag {
+    color: var(--teal-dark);
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.8px;
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    text-transform: uppercase;
   }
   .c24-elite {
     font-size: 0.72rem;
@@ -209,6 +212,61 @@
     width: 24px;
     border-radius: 4px;
     background: var(--teal);
+  }
+
+  /* Dynamic Slide Feature & Spec Spotlight Panel */
+  .c24-spotlight {
+    background: #f8faf9;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    padding: 12px 20px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .c24-spotlight-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .c24-spotlight-badge {
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: #e2eeeb;
+    color: var(--teal-dark);
+  }
+  .c24-spotlight-title {
+    font-size: 0.95rem;
+    font-weight: 750;
+    color: var(--ink);
+  }
+  .c24-spotlight-specs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .c24-spec-chip {
+    background: #ffffff;
+    border: 1px solid #dbe4e1;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--ink);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  }
+  .c24-spec-chip span.sym {
+    color: var(--teal);
+    font-weight: 800;
   }
 
   /* CompCars Viewpoint Tabs */
@@ -406,7 +464,7 @@
   <!-- CompCars Multi-Angle Studio & 360 Spin Card -->
   <div class="c24-card" id="carStudioCard">
     <div class="c24-header">
-      <div class="c24-wishlist" id="c24Wishlist">❤️ Wishlisted by 14 users</div>
+      <div class="c24-studio-tag">HD 360° Studio &amp; Multi-View Inspector</div>
       <div class="c24-elite">COMPCARS VERIFIED</div>
     </div>
 
@@ -425,19 +483,28 @@
     <!-- Slide Dots & Position Indicator -->
     <div class="slide-dots" id="slideDots"></div>
 
+    <!-- Dynamic Slide Feature & Spec Spotlight Panel -->
+    <div class="c24-spotlight" id="c24Spotlight">
+      <div class="c24-spotlight-top">
+        <span class="c24-spotlight-badge" id="spotlightBadge">EXTERIOR VIEWPOINT</span>
+        <span class="c24-spotlight-title" id="spotlightTitle">Front Angle (0°)</span>
+      </div>
+      <div class="c24-spotlight-specs" id="spotlightSpecs"></div>
+    </div>
+
     <!-- CompCars 3 Main Navigation Tabs -->
     <div class="c24-tabs">
       <div class="c24-tab active" id="tabExterior" onclick="jumpToCategory('exterior')">
         <img class="c24-tab-thumb" id="thumbExterior" src="" alt="Exterior Viewpoints" />
-        <div class="c24-tab-label">Exterior (5-Angle)</div>
+        <div class="c24-tab-label">Exterior (5 Angles)</div>
       </div>
       <div class="c24-tab" id="tabInterior" onclick="jumpToCategory('interior')">
         <img class="c24-tab-thumb" id="thumbInterior" src="" alt="Cockpit & Cabin" />
-        <div class="c24-tab-label">Interior Cockpit</div>
+        <div class="c24-tab-label">Interior (4 Views)</div>
       </div>
       <div class="c24-tab" id="tabHighlights" onclick="jumpToCategory('highlights')">
         <img class="c24-tab-thumb" id="thumbHighlights" src="" alt="Vehicle Parts" />
-        <div class="c24-tab-label"><span class="c24-tab-star">★</span> Key Features</div>
+        <div class="c24-tab-label"><span class="c24-tab-star">★</span> Key Features (4 Specs)</div>
       </div>
     </div>
 
@@ -522,67 +589,133 @@ function fillSpecs(spec) {
 }
 function enableSpecs(on) { SPEC_IDS.forEach(k => $(k).disabled = !on); $("go").disabled = !on; }
 
-/* CompCars Multi-Viewpoint Catalog for All Major Brands & Models */
+/* CompCars Multi-Viewpoint Studio Catalog (13 Viewpoints: 5 Exterior + 4 Interior + 4 Key Features) */
 const MODEL_PHOTOS = {
   "bmw 3 series": [
-    { title: "BMW 3 Series • Front M-Sport (0°)", cat: "exterior", url: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=1000&auto=format&fit=crop&q=80" },
-    { title: "BMW 3 Series • Front-Side 3/4 (45°)", cat: "exterior", url: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=1000&auto=format&fit=crop&q=80" },
-    { title: "BMW 3 Series • Side Profile (90°)", cat: "exterior", url: "https://images.unsplash.com/photo-1556189250-72ba954cfc2b?w=1000&auto=format&fit=crop&q=80" },
-    { title: "BMW 3 Series • Rear-Side Stance (135°)", cat: "exterior", url: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=1000&auto=format&fit=crop&q=80" },
-    { title: "BMW 3 Series • Rear Quad Exhaust (180°)", cat: "exterior", url: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=1000&auto=format&fit=crop&q=80" },
-    { title: "BMW 3 Series • Cockpit & iDrive Display", cat: "interior", url: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1000&auto=format&fit=crop&q=80" },
-    { title: "BMW 3 Series • Laser LED Headlights & Kidney Grille", cat: "highlights", url: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=1000&auto=format&fit=crop&q=80" }
+    // Exterior (5 CompCars Angles)
+    { title: "BMW 3 Series • Front M-Sport Fascia (0°)", cat: "exterior", url: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=1000&auto=format&fit=crop&q=80", specs: ["Kidney Grille Active Flaps", "Air Curtain Aerodynamics", "M Sport Front Bumper Lip"] },
+    { title: "BMW 3 Series • Front-Side 3/4 Dynamic Stance (45°)", cat: "exterior", url: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=1000&auto=format&fit=crop&q=80", specs: ["50:50 Axle Weight Balance", "Sculpted Bonnet Lines", "Low Drag Coefficient (0.23 Cd)"] },
+    { title: "BMW 3 Series • Side Silhouette Profile (90°)", cat: "exterior", url: "https://images.unsplash.com/photo-1556189250-72ba954cfc2b?w=1000&auto=format&fit=crop&q=80", specs: ["2,851 mm Wheelbase", "136 mm Ground Clearance", "Iconic Hofmeister Kink C-Pillar"] },
+    { title: "BMW 3 Series • Rear-Side 3/4 Muscular Stance (135°)", cat: "exterior", url: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=1000&auto=format&fit=crop&q=80", specs: ["L-Shaped 3D LED Taillights", "Twin Chrome Exhaust Pipes", "M Aerodynamic Rear Diffuser"] },
+    { title: "BMW 3 Series • Rear Quad Exhaust Stance (180°)", cat: "exterior", url: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=1000&auto=format&fit=crop&q=80", specs: ["Reverse Parking Camera & PDC", "Sport Integrated Boot Spoiler", "Dual Chrome Exhaust Outlets"] },
+    // Interior (4 Viewpoints)
+    { title: "BMW 3 Series • Driver Cockpit & iDrive Curved Display", cat: "interior", url: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1000&auto=format&fit=crop&q=80", specs: ["14.9-inch Touchscreen + 12.3\" Cluster", "BMW Live Cockpit Professional", "Heads-Up Display (HUD)"] },
+    { title: "BMW 3 Series • M-Sport Steering Wheel & Center Console", cat: "interior", url: "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=1000&auto=format&fit=crop&q=80", specs: ["M Leather Steering with Paddle Shifters", "iDrive Touch Rotary Controller", "3-Zone Automatic Climate Control"] },
+    { title: "BMW 3 Series • Executive Rear Cabin & Lounge Seating", cat: "interior", url: "https://images.unsplash.com/photo-1563720223185-11003d516935?w=1000&auto=format&fit=crop&q=80", specs: ["Vernasca Perforated Leather", "Dedicated Rear AC Climate Vents", "Foldable Armrest with Cupholders"] },
+    { title: "BMW 3 Series • Luggage Cargo Boot Space (480L)", cat: "interior", url: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=1000&auto=format&fit=crop&q=80", specs: ["480 Litres Deep Luggage Volume", "40:20:40 Split Folding Rear Seats", "Hands-Free Smart Power Tailgate"] },
+    // Key Features & Engineering (4 Highlights)
+    { title: "BMW 3 Series • TwinPower Turbo Engine & Powertrain", cat: "highlights", url: "https://images.unsplash.com/photo-1486006920555-c77dce18193b?w=1000&auto=format&fit=crop&q=80", specs: ["2.0L TwinPower Turbo 4-Cylinder", "255 bhp @ 5,000 RPM / 400 Nm", "8-Speed Steptronic Sport Transmission"] },
+    { title: "BMW 3 Series • M-Sport Precision Diamond Cut Alloy Wheels", cat: "highlights", url: "https://images.unsplash.com/photo-1555353540-64580b51c258?w=1000&auto=format&fit=crop&q=80", specs: ["18-inch Double Spoke M Alloys", "M Sport Blue Caliper Brakes", "Run-Flat Performance Tyres with TPMS"] },
+    { title: "BMW 3 Series • Adaptive LED Headlamps & Laser High-Beam", cat: "highlights", url: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=1000&auto=format&fit=crop&q=80", specs: ["Adaptive Full LED Matrix Lights", "Laserlight High Beam Assist", "Dynamic Cornering Illumination"] },
+    { title: "BMW 3 Series • Electric Glass Sunroof & ADAS Safety Suite", cat: "highlights", url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&auto=format&fit=crop&q=80", specs: ["One-Touch Electric Glass Sunroof", "6 Airbags Standard with DSC & DTC", "Attentiveness & Lane Keep Assist"] }
   ],
   "audi q3": [
-    { title: "Audi Q3 • Front Singleframe Grille (0°)", cat: "exterior", url: "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Audi Q3 • Front-Side 3/4 Quattro (45°)", cat: "exterior", url: "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Audi Q3 • Side Profile (90°)", cat: "exterior", url: "https://images.unsplash.com/photo-1541348263662-e0c8243a1b3f?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Audi Q3 • Rear-Side 3/4 (135°)", cat: "exterior", url: "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Audi Q3 • Rear Stance (180°)", cat: "exterior", url: "https://images.unsplash.com/photo-1541348263662-e0c8243a1b3f?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Audi Q3 • Virtual Cockpit Dashboard", cat: "interior", url: "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Audi Q3 • Matrix LED Headlights & Alloy Wheels", cat: "highlights", url: "https://images.unsplash.com/photo-1555353540-64580b51c258?w=1000&auto=format&fit=crop&q=80" }
+    // Exterior
+    { title: "Audi Q3 • Front Singleframe Octagonal Grille (0°)", cat: "exterior", url: "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=1000&auto=format&fit=crop&q=80", specs: ["Octagonal Singleframe Grille", "Underbody Skid Plate", "S-Line Front Apron"] },
+    { title: "Audi Q3 • Front-Side 3/4 Quattro AWD Stance (45°)", cat: "exterior", url: "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=1000&auto=format&fit=crop&q=80", specs: ["Quattro Permanent All-Wheel Drive", "Coupe-like Roofline", "Pronounced Wheel Arches"] },
+    { title: "Audi Q3 • Side Profile & High Ground Clearance (90°)", cat: "exterior", url: "https://images.unsplash.com/photo-1541348263662-e0c8243a1b3f?w=1000&auto=format&fit=crop&q=80", specs: ["2,680 mm Wheelbase", "170 mm Ground Clearance", "Aluminium Roof Rails"] },
+    { title: "Audi Q3 • Rear-Side 3/4 Dynamic Stance (135°)", cat: "exterior", url: "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=1000&auto=format&fit=crop&q=80", specs: ["LED Rear Lights with Dynamic Turn Signals", "Sporty C-Pillar Angle", "Integrated Tailgate Spoiler"] },
+    { title: "Audi Q3 • Rear Stance & Diffuser (180°)", cat: "exterior", url: "https://images.unsplash.com/photo-1541348263662-e0c8243a1b3f?w=1000&auto=format&fit=crop&q=80", specs: ["Concealed Dual Exhaust Finishers", "High-Mounted LED Stop Lamp", "Underbody Diffuser"] },
+    // Interior
+    { title: "Audi Q3 • Audi Virtual Cockpit & MMI Navigation", cat: "interior", url: "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=1000&auto=format&fit=crop&q=80", specs: ["12.3-inch Virtual Cockpit Plus", "10.1-inch MMI Touch High-Res Screen", "30-Color Ambient Contour Lighting"] },
+    { title: "Audi Q3 • Flat-Bottom Steering & Drive Select Console", cat: "interior", url: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1000&auto=format&fit=crop&q=80", specs: ["Flat-Bottom 3-Spoke Leather Steering", "Audi Drive Select (6 Modes)", "Cruise Control with Speed Limiter"] },
+    { title: "Audi Q3 • Luxury Rear Cabin Lounge & Climate Control", cat: "interior", url: "https://images.unsplash.com/photo-1563720223185-11003d516935?w=1000&auto=format&fit=crop&q=80", specs: ["Sliding & Reclining Rear Seats", "Dual Zone Rear Climate Vents", "Plush Leatherette Ergonomic Seating"] },
+    { title: "Audi Q3 • Versatile Luggage Cargo Bay (530L)", cat: "interior", url: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=1000&auto=format&fit=crop&q=80", specs: ["530 Litres Expandable to 1,525L", "Height-Adjustable Cargo Floor", "Gesture Controlled Smart Tailgate"] },
+    // Key Features
+    { title: "Audi Q3 • 40 TFSI Turbo Engine & S-Tronic Drivetrain", cat: "highlights", url: "https://images.unsplash.com/photo-1486006920555-c77dce18193b?w=1000&auto=format&fit=crop&q=80", specs: ["2.0L TFSI Turbocharged Petrol", "190 bhp / 320 Nm Torque", "7-Speed S-Tronic Dual Clutch AWD"] },
+    { title: "Audi Q3 • 18-inch 5-Arm Dynamic Alloy Wheels", cat: "highlights", url: "https://images.unsplash.com/photo-1555353540-64580b51c258?w=1000&auto=format&fit=crop&q=80", specs: ["18\" 5-Arm Turbine Alloys", "All-Wheel Disc Brakes with ABS/EBD", "Electronic Parking Brake with Auto Hold"] },
+    { title: "Audi Q3 • Matrix LED Headlights with Dynamic Turn Lights", cat: "highlights", url: "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=1000&auto=format&fit=crop&q=80", specs: ["Full Matrix LED Headlamps", "Daytime Running Light Light-Guides", "High-Pressure Headlight Washers"] },
+    { title: "Audi Q3 • Panoramic Glass Sunroof & Pre-Sense Safety", cat: "highlights", url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&auto=format&fit=crop&q=80", specs: ["Panoramic 2-Piece Glass Sunroof", "6 Airbags & Electronic Stability Control", "Audi Pre-Sense Front Collision Warning"] }
   ],
   "maruti swift": [
-    { title: "Maruti Swift • Front Honeycomb Grille (0°)", cat: "exterior", url: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Maruti Swift • Front-Side 3/4 Hatch (45°)", cat: "exterior", url: "https://images.unsplash.com/photo-1502877338535-766e1452684a?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Maruti Swift • Side Silhouette (90°)", cat: "exterior", url: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Maruti Swift • Rear-Side 3/4 (135°)", cat: "exterior", url: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Maruti Swift • Rear Hatch Stance (180°)", cat: "exterior", url: "https://images.unsplash.com/photo-1502877338535-766e1452684a?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Maruti Swift • SmartPlay Touchscreen Cockpit", cat: "interior", url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Maruti Swift • Dual-Tone Precision Diamond Cut Alloys", cat: "highlights", url: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1000&auto=format&fit=crop&q=80" }
+    // Exterior
+    { title: "Maruti Swift • Front Honeycomb Grille & Sport Lip (0°)", cat: "exterior", url: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=1000&auto=format&fit=crop&q=80", specs: ["Bold Honeycomb Chrome Grille", "Aerodynamic Front Bumper Lip", "Sport Fog Lamp Enclosures"] },
+    { title: "Maruti Swift • Front-Side 3/4 Hatchback Stance (45°)", cat: "exterior", url: "https://images.unsplash.com/photo-1502877338535-766e1452684a?w=1000&auto=format&fit=crop&q=80", specs: ["Floating Roof Visual Effect", "Heartect Platform Architecture", "Sport Hatchback Dimensions"] },
+    { title: "Maruti Swift • Side Silhouette Profile (90°)", cat: "exterior", url: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1000&auto=format&fit=crop&q=80", specs: ["2,450 mm Wheelbase", "163 mm Ground Clearance", "Concealed C-Pillar Rear Door Handles"] },
+    { title: "Maruti Swift • Rear-Side 3/4 Muscular Shoulder (135°)", cat: "exterior", url: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=1000&auto=format&fit=crop&q=80", specs: ["LED Rear Combination Taillamps", "Muscular Rear Shoulder Curves", "Reverse Parking Camera Sensors"] },
+    { title: "Maruti Swift • Rear Hatch Tailgate Stance (180°)", cat: "exterior", url: "https://images.unsplash.com/photo-1502877338535-766e1452684a?w=1000&auto=format&fit=crop&q=80", specs: ["Integrated Roof Spoiler", "Rear Windshield Wiper & Washer", "Electromagnetic Boot Release"] },
+    // Interior
+    { title: "Maruti Swift • SmartPlay Pro+ Touchscreen Cockpit", cat: "interior", url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&auto=format&fit=crop&q=80", specs: ["9-inch SmartPlay Pro+ Touchscreen", "Wireless Apple CarPlay / Android Auto", "TFT Multi-Information Display"] },
+    { title: "Maruti Swift • D-Cut Sporty Steering & Center Console", cat: "interior", url: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1000&auto=format&fit=crop&q=80", specs: ["Flat-Bottom D-Cut Steering Wheel", "Steering Mounted Audio & Phone Controls", "Push Button Engine Start/Stop"] },
+    { title: "Maruti Swift • Ergonomic Rear Cabin Seating with ISOFIX", cat: "interior", url: "https://images.unsplash.com/photo-1563720223185-11003d516935?w=1000&auto=format&fit=crop&q=80", specs: ["Sculpted Ergonomic Fabric Seats", "ISOFIX Child Seat Anchors", "Rear AC Vents & Fast USB Charging"] },
+    { title: "Maruti Swift • 268L Boot Space with 60:40 Split Fold", cat: "interior", url: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=1000&auto=format&fit=crop&q=80", specs: ["268 Litres Practical Boot Volume", "60:40 Rear Seat Split Fold", "Deep Parcel Tray Storage"] },
+    // Key Features
+    { title: "Maruti Swift • 1.2L DualJet K-Series Engine", cat: "highlights", url: "https://images.unsplash.com/photo-1486006920555-c77dce18193b?w=1000&auto=format&fit=crop&q=80", specs: ["1.2L DualJet Dual VVT K-Series", "89 bhp @ 6,000 RPM / 113 Nm", "Idle Start-Stop (ISS) 23.2 kmpl Economy"] },
+    { title: "Maruti Swift • Dual-Tone Precision Diamond-Cut Alloys", cat: "highlights", url: "https://images.unsplash.com/photo-1555353540-64580b51c258?w=1000&auto=format&fit=crop&q=80", specs: ["15-inch Precision Diamond-Cut Alloys", "Ventilated Front Discs with ABS & EBD", "Brake Assist (BA) System"] },
+    { title: "Maruti Swift • Automatic LED Projector Headlamps & DRLs", cat: "highlights", url: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1000&auto=format&fit=crop&q=80", specs: ["Automatic LED Projector Headlamps", "Integrated LED DRL Signatures", "Follow-Me-Home Headlight Function"] },
+    { title: "Maruti Swift • Electronic Stability Program (ESP) & 6 Airbags", cat: "highlights", url: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=1000&auto=format&fit=crop&q=80", specs: ["Electronic Stability Program (ESP)", "Hill Hold Assist Control", "6 Airbags Standard Safety"] }
   ],
   "hyundai creta": [
-    { title: "Hyundai Creta • Parametric Front Grille (0°)", cat: "exterior", url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Hyundai Creta • Front-Side 3/4 SUV (45°)", cat: "exterior", url: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Hyundai Creta • Side Profile (90°)", cat: "exterior", url: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Hyundai Creta • Rear-Side 3/4 (135°)", cat: "exterior", url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Hyundai Creta • Rear Tailgate (180°)", cat: "exterior", url: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Hyundai Creta • BlueLink Panoramic Digital Cockpit", cat: "interior", url: "https://images.unsplash.com/photo-1563720223185-11003d516935?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Hyundai Creta • Voice-Enabled Panoramic Sunroof", cat: "highlights", url: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=1000&auto=format&fit=crop&q=80" }
+    // Exterior
+    { title: "Hyundai Creta • Parametric Black Chrome Grille (0°)", cat: "exterior", url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000&auto=format&fit=crop&q=80", specs: ["Parametric Black Chrome Radiator Grille", "Silver Skid Plates", "Aggressive SUV Stance"] },
+    { title: "Hyundai Creta • Front-Side 3/4 SUV Profile (45°)", cat: "exterior", url: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=1000&auto=format&fit=crop&q=80", specs: ["Sensuous Sportiness Design", "Muscular Wheel Arch Claddings", "Dual-Tone Contrast Roof Option"] },
+    { title: "Hyundai Creta • Side Silhouette & High Clearance (90°)", cat: "exterior", url: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=1000&auto=format&fit=crop&q=80", specs: ["2,610 mm Wheelbase", "190 mm Ground Clearance", "Lightning Arch C-Pillar Garnish"] },
+    { title: "Hyundai Creta • Rear-Side 3/4 Connected LED Bar (135°)", cat: "exterior", url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000&auto=format&fit=crop&q=80", specs: ["Connecting LED Horizon Light Bar", "Aero Rear Spoiler with HMSL", "Shark Fin Antenna"] },
+    { title: "Hyundai Creta • Rear Tailgate Stance & Camera (180°)", cat: "exterior", url: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=1000&auto=format&fit=crop&q=80", specs: ["Twin Tip Exhaust Finisher", "Rear Camera with Dynamic Guidelines", "High Strength Steel Tailgate"] },
+    // Interior
+    { title: "Hyundai Creta • BlueLink 10.25\" Dual Curved Cockpit", cat: "interior", url: "https://images.unsplash.com/photo-1563720223185-11003d516935?w=1000&auto=format&fit=crop&q=80", specs: ["Seamless 10.25\" Dual Curved Displays", "Hyundai BlueLink 70+ Connected Features", "Bose Premium 8-Speaker Sound System"] },
+    { title: "Hyundai Creta • Leather Steering, Paddle Shifts & Drive Modes", cat: "interior", url: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1000&auto=format&fit=crop&q=80", specs: ["Leather-Wrapped D-Cut Steering", "Traction Modes (Snow/Mud/Sand)", "Smart Air Purifier with AQI Display"] },
+    { title: "Hyundai Creta • Ventilated Front & Reclining Rear Seats", cat: "interior", url: "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=1000&auto=format&fit=crop&q=80", specs: ["2-Step Reclining Rear Seats", "Integrated Rear Window Sunshades", "Ventilated Front Driver & Co-Driver Seats"] },
+    { title: "Hyundai Creta • 433L Luggage Boot Space with 60:40 Split", cat: "interior", url: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=1000&auto=format&fit=crop&q=80", specs: ["433 Litres Deep Luggage Boot", "60:40 Rear Split Folding Mechanism", "Luggage Lamp & 12V Boot Socket"] },
+    // Key Features
+    { title: "Hyundai Creta • 1.5L Turbo GDi Powertrain & DCT", cat: "highlights", url: "https://images.unsplash.com/photo-1486006920555-c77dce18193b?w=1000&auto=format&fit=crop&q=80", specs: ["1.5L Turbo GDi Petrol / 1.5L CRDi Diesel", "160 PS Power / 253 Nm Torque", "7-Speed DCT / 6-Speed AT / Manual Options"] },
+    { title: "Hyundai Creta • R17 Diamond Cut Two-Tone Alloys", cat: "highlights", url: "https://images.unsplash.com/photo-1555353540-64580b51c258?w=1000&auto=format&fit=crop&q=80", specs: ["R17 Diamond Cut Two-Tone Alloys", "All-4 Wheel Disc Brakes", "Electronic Parking Brake with Auto Hold"] },
+    { title: "Hyundai Creta • Trio Beam LED Headlamps & Horizon DRLs", cat: "highlights", url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000&auto=format&fit=crop&q=80", specs: ["Quad Beam LED Headlamps", "Horizon LED Positioning Lamp & DRLs", "Sequential LED Turn Signals"] },
+    { title: "Hyundai Creta • Voice Panoramic Sunroof & Level 2 ADAS", cat: "highlights", url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&auto=format&fit=crop&q=80", specs: ["Voice-Enabled Smart Panoramic Sunroof", "Hyundai SmartSense Level 2 ADAS (19 Features)", "6 Airbags Standard with ESC & VSM"] }
   ],
   "mahindra scorpio": [
-    { title: "Mahindra Scorpio • Muscular Front Grille (0°)", cat: "exterior", url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Mahindra Scorpio • Front-Side 3/4 4WD (45°)", cat: "exterior", url: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Mahindra Scorpio • Heavy Duty Side Profile (90°)", cat: "exterior", url: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Mahindra Scorpio • Rear Tailgate Stance (180°)", cat: "exterior", url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Mahindra Scorpio • 7-Seater Command Cockpit", cat: "interior", url: "https://images.unsplash.com/photo-1563720223185-11003d516935?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Mahindra Scorpio • mHawk Turbo Diesel & 4x4", cat: "highlights", url: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=1000&auto=format&fit=crop&q=80" }
+    // Exterior
+    { title: "Mahindra Scorpio • Muscular Chrome Tooth Grille (0°)", cat: "exterior", url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000&auto=format&fit=crop&q=80", specs: ["Aggressive Chrome Tooth Grille", "Silver Skid Plate", "Muscular Twin-Peak Mahindra Logo"] },
+    { title: "Mahindra Scorpio • Front-Side 3/4 4WD Stance (45°)", cat: "exterior", url: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=1000&auto=format&fit=crop&q=80", specs: ["Rugged Ladder Frame Chassis", "Flared Wheel Arches", "High Command Seating Stance"] },
+    { title: "Mahindra Scorpio • Heavy Duty Side Profile (90°)", cat: "exterior", url: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=1000&auto=format&fit=crop&q=80", specs: ["2,750 mm Long Wheelbase", "187 mm Ground Clearance", "Sturdy Side Footsteps"] },
+    { title: "Mahindra Scorpio • Rear-Side 3/4 Vertical Tailfin (135°)", cat: "exterior", url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000&auto=format&fit=crop&q=80", specs: ["Vertical Tailfin LED Signature", "Quarter Glass View", "Side-Hinged Heavy Duty Tailgate"] },
+    { title: "Mahindra Scorpio • Rear Tailgate Stance (180°)", cat: "exterior", url: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=1000&auto=format&fit=crop&q=80", specs: ["Signature Scorpio Badging", "Rear Wiper, Washer & Defogger", "Underbody Full-Size Spare Wheel"] },
+    // Interior
+    { title: "Mahindra Scorpio • AdrenoX Touchscreen Command Cockpit", cat: "interior", url: "https://images.unsplash.com/photo-1563720223185-11003d516935?w=1000&auto=format&fit=crop&q=80", specs: ["8-inch AdrenoX Touchscreen with Alexa Built-in", "Dual-Tone Coffee Black Interior", "Sony 3D 12-Speaker Immersive Audio"] },
+    { title: "Mahindra Scorpio • Drive Modes & Frequency Dependent Damping", cat: "interior", url: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1000&auto=format&fit=crop&q=80", specs: ["Tilt Steering with Audio & Cruise Controls", "Frequency Dependent Damping (FDD)", "Drive Modes (Zip, Zap, Zoom)"] },
+    { title: "Mahindra Scorpio • 7-Seater Executive Captain Seats", cat: "interior", url: "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=1000&auto=format&fit=crop&q=80", specs: ["7-Seater Executive Captain Seats", "Dual Zone FATC with Rear AC Vents", "Leatherette Upholstery with Lumbar Support"] },
+    { title: "Mahindra Scorpio • 460L Versatile Flat-Fold Cargo Bay", cat: "interior", url: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=1000&auto=format&fit=crop&q=80", specs: ["460 Litres Foldable 3rd Row Space", "Wide Side-Opening Door for Quick Loading", "Versatile Flat Folding Cargo Floor"] },
+    // Key Features
+    { title: "Mahindra Scorpio • 2.2L mHawk CRDe Turbo Diesel Engine", cat: "highlights", url: "https://images.unsplash.com/photo-1486006920555-c77dce18193b?w=1000&auto=format&fit=crop&q=80", specs: ["2.2L mHawk CRDe Turbo Diesel", "175 PS @ 3,500 RPM / 400 Nm Torque", "6-Speed AISIN Automatic / 6-Speed Manual"] },
+    { title: "Mahindra Scorpio • 18-inch Diamond Cut Alloys & Disc Brakes", cat: "highlights", url: "https://images.unsplash.com/photo-1555353540-64580b51c258?w=1000&auto=format&fit=crop&q=80", specs: ["18-inch Diamond Cut Alloy Wheels", "All 4 Disc Brakes with ABS + EBD", "Tyre-Tronics Real-Time Pressure Monitoring"] },
+    { title: "Mahindra Scorpio • Double Barrel LED Projectors & DRLs", cat: "highlights", url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000&auto=format&fit=crop&q=80", specs: ["Double Barrel LED Projector Headlamps", "Sting-Like LED DRLs", "Sequential Dynamic LED Indicators"] },
+    { title: "Mahindra Scorpio • 4XPLOR Terrain System & 5-Star Safety", cat: "highlights", url: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=1000&auto=format&fit=crop&q=80", specs: ["Electric One-Touch Sunroof", "4XPLOR Intelligent Terrain Management System", "6 Airbags with 5-Star Global NCAP Safety Rating"] }
   ],
   "toyota fortuner": [
-    { title: "Toyota Fortuner • Aggressive Front Fascia (0°)", cat: "exterior", url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Toyota Fortuner • Front-Side 3/4 (45°)", cat: "exterior", url: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Toyota Fortuner • Side Profile High Ground Clearance (90°)", cat: "exterior", url: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Toyota Fortuner • Rear Stance (180°)", cat: "exterior", url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Toyota Fortuner • Executive Leather Cabin", cat: "interior", url: "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Toyota Fortuner • Sigma-4 4x4 System & D-4D Engine", cat: "highlights", url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&auto=format&fit=crop&q=80" }
+    // Exterior
+    { title: "Toyota Fortuner • Aggressive Wave Mesh Grille (0°)", cat: "exterior", url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000&auto=format&fit=crop&q=80", specs: ["Aggressive Wave Mesh Grille", "Chrome Accents & Skid Plate", "Heavy Duty Front Bumper"] },
+    { title: "Toyota Fortuner • Front-Side 3/4 High-Rider SUV (45°)", cat: "exterior", url: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=1000&auto=format&fit=crop&q=80", specs: ["High-Rider SUV Silhouette", "Body-on-Frame IMV Platform", "Muscular Flared Fenders"] },
+    { title: "Toyota Fortuner • Side Profile 225mm Ground Clearance (90°)", cat: "exterior", url: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=1000&auto=format&fit=crop&q=80", specs: ["2,745 mm Long Wheelbase", "225 mm Ground Clearance", "Heavy Duty Side Steps & Roof Rails"] },
+    { title: "Toyota Fortuner • Rear-Side 3/4 Aero Stabilizing Fins (135°)", cat: "exterior", url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000&auto=format&fit=crop&q=80", specs: ["Sleek Aero Stabilizing Fins", "Chrome Tailgate Garnish", "LED Rear Combination Lamps"] },
+    { title: "Toyota Fortuner • Rear Tailgate Stance & Power Door (180°)", cat: "exterior", url: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=1000&auto=format&fit=crop&q=80", specs: ["Power Back Door with Memory", "Rear Spoiler with LED High Mount Stop Lamp", "Reverse Camera with Parking Sensors"] },
+    // Interior
+    { title: "Toyota Fortuner • Optitron Meter & 8\" Touchscreen Cockpit", cat: "interior", url: "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=1000&auto=format&fit=crop&q=80", specs: ["8-inch Touchscreen Infotainment", "Optitron Meter with Metallic Ornamentation", "JBL 11-Speaker Audio with Subwoofer"] },
+    { title: "Toyota Fortuner • Leather-Wood Steering & Drive Modes", cat: "interior", url: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1000&auto=format&fit=crop&q=80", specs: ["Leather-Wrapped Steering with Wood Finish", "Drive Mode Select (Eco / Normal / Sport)", "Paddle Shifters (Automatic Variants)"] },
+    { title: "Toyota Fortuner • 7-Seater 3-Row Leather Cabin", cat: "interior", url: "https://images.unsplash.com/photo-1563720223185-11003d516935?w=1000&auto=format&fit=crop&q=80", specs: ["7-Seater Executive Leather Seating", "Roof-Mounted Rear AC Vents with Controls", "One-Touch Tumble 2nd Row Seats"] },
+    { title: "Toyota Fortuner • 296L Expandable to 710L Cargo Space", cat: "interior", url: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=1000&auto=format&fit=crop&q=80", specs: ["296L Expandable to 710L Cargo Space", "50:50 Space-Up 3rd Row Seats", "Power Tailgate with Kick Sensor"] },
+    // Key Features
+    { title: "Toyota Fortuner • 2.8L D-4D 204PS Turbo Diesel Engine", cat: "highlights", url: "https://images.unsplash.com/photo-1486006920555-c77dce18193b?w=1000&auto=format&fit=crop&q=80", specs: ["2.8L 4-Cylinder D-4D Turbo Diesel", "204 PS Power / 500 Nm Massive Torque", "6-Speed Sequential Automatic Transmission"] },
+    { title: "Toyota Fortuner • 18\" Super Chrome Alloy Wheels & 4-Discs", cat: "highlights", url: "https://images.unsplash.com/photo-1555353540-64580b51c258?w=1000&auto=format&fit=crop&q=80", specs: ["18-inch Super Chrome Alloy Wheels", "Ventilated Disc Brakes on all 4 Wheels", "Active Traction Control (A-TRC)"] },
+    { title: "Toyota Fortuner • Dual LED Projector Headlamps & DRLs", cat: "highlights", url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000&auto=format&fit=crop&q=80", specs: ["Dual LED Projector Headlamps", "LED Daytime Running Lights & Turn Signals", "LED Front Fog Lamps with Chrome Bezels"] },
+    { title: "Toyota Fortuner • Sigma-4 4x4 & 7 Airbags Safety", cat: "highlights", url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&auto=format&fit=crop&q=80", specs: ["Sigma 4 (4x4) System with High/Low Range", "7 SRS Airbags & Vehicle Stability Control (VSC)", "Hill Start Assist & Downhill Assist Control"] }
   ],
   "honda city": [
-    { title: "Honda City • Solid Wing Face Grille (0°)", cat: "exterior", url: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Honda City • Front-Side 3/4 (45°)", cat: "exterior", url: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Honda City • Side Profile Sleek Sedan (90°)", cat: "exterior", url: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Honda City • Rear Z-shaped 3D Taillights (180°)", cat: "exterior", url: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Honda City • Ergonomic Beige Leather Cockpit", cat: "interior", url: "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Honda City • i-VTEC Engine & One-Touch Sunroof", cat: "highlights", url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&auto=format&fit=crop&q=80" }
+    // Exterior
+    { title: "Honda City • Solid Wing Face Chrome Grille (0°)", cat: "exterior", url: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1000&auto=format&fit=crop&q=80", specs: ["Signature Solid Wing Face Chrome Grille", "Aerodynamic Front Lower Garnish", "Low & Wide Sedan Stance"] },
+    { title: "Honda City • Front-Side 3/4 Katana Blade Line (45°)", cat: "exterior", url: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=1000&auto=format&fit=crop&q=80", specs: ["Sharp Katana Blade Dynamic Character Line", "Streamlined Sedan Proportion", "Door-Mounted Aerodynamic ORVMs"] },
+    { title: "Honda City • Side Profile Sleek Executive Sedan (90°)", cat: "exterior", url: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=1000&auto=format&fit=crop&q=80", specs: ["2,600 mm Wheelbase", "165 mm Ground Clearance", "Chrome Outer Door Handles"] },
+    { title: "Honda City • Rear-Side 3/4 3D LED Taillamps (135°)", cat: "exterior", url: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=1000&auto=format&fit=crop&q=80", specs: ["Z-Shaped 3D Wrap-Around LED Taillamps", "Trunk Lid Lip Spoiler", "Rear Bumper Lower Diffuser"] },
+    { title: "Honda City • Rear Tailgate Stance & Camera (180°)", cat: "exterior", url: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1000&auto=format&fit=crop&q=80", specs: ["Rear Multi-Angle Parking Camera", "Rear Windshield Defogger", "Shark Fin Body-Colored Antenna"] },
+    // Interior
+    { title: "Honda City • Dual-Tone Black & Luxury Beige Cockpit", cat: "interior", url: "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=1000&auto=format&fit=crop&q=80", specs: ["8-inch Advanced Touchscreen Display Audio", "7-inch Full-Color HD TFT Meter", "Dual-Tone Black & Luxury Beige Cabin"] },
+    { title: "Honda City • Leather Steering & Honda Connect Suite", cat: "interior", url: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1000&auto=format&fit=crop&q=80", specs: ["Leather-Wrapped Steering with Paddle Shifters", "Honda Connect with Alexa & Smartwatch Support", "One-Touch Engine Start/Stop"] },
+    { title: "Honda City • Best-in-Class Rear Legroom Lounge Seating", cat: "interior", url: "https://images.unsplash.com/photo-1563720223185-11003d516935?w=1000&auto=format&fit=crop&q=80", specs: ["Class-Leading Rear Legroom & Knee Clearance", "Plush Rear Lounge Seats with Center Armrest", "Rear AC Vents with 12V Fast Power Sockets"] },
+    { title: "Honda City • Class-Leading 506L Massive Boot Space", cat: "interior", url: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=1000&auto=format&fit=crop&q=80", specs: ["Best-in-Class 506 Litres Massive Boot", "Wide Trunk Opening for Extra Suitcases", "Illuminated Luggage Compartment"] },
+    // Key Features
+    { title: "Honda City • 1.5L i-VTEC DOHC Engine & 7-Speed CVT", cat: "highlights", url: "https://images.unsplash.com/photo-1486006920555-c77dce18193b?w=1000&auto=format&fit=crop&q=80", specs: ["1.5L i-VTEC DOHC with VTC Petrol", "121 PS @ 6,600 RPM / 145 Nm Torque", "7-Speed CVT with Paddle Shift / 6-Speed MT"] },
+    { title: "Honda City • 16-inch Diamond-Cut Two-Tone Alloys", cat: "highlights", url: "https://images.unsplash.com/photo-1555353540-64580b51c258?w=1000&auto=format&fit=crop&q=80", specs: ["16-inch Diamond-Cut Two-Tone Alloy Wheels", "Front Ventilated Discs with ABS & EBD", "Vehicle Stability Assist (VSA) with Agile Handling"] },
+    { title: "Honda City • Full LED 9-Array Inline Headlamps & DRLs", cat: "highlights", url: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=1000&auto=format&fit=crop&q=80", specs: ["Full LED 9-Array Inline Headlamps", "L-Shaped LED Daytime Running Lights", "Auto Headlight Control with Light Sensor"] },
+    { title: "Honda City • Honda Sensing ADAS & One-Touch Sunroof", cat: "highlights", url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&auto=format&fit=crop&q=80", specs: ["One-Touch Electric Sunroof with Pinch Guard", "Honda Sensing ADAS (Collision Mitigation / Lane Keep)", "6 Airbags & LaneWatch Blind Spot Camera"] }
   ]
 };
 
@@ -624,17 +757,23 @@ function resolveGallery(modelName, brandName) {
   }
 
   // Fallbacks by category
-  if (b.includes("audi")) return MODEL_PHOTOS["audi q3"];
-  if (b.includes("bmw")) return MODEL_PHOTOS["bmw 3 series"];
-  if (b.includes("maruti") || b.includes("suzuki")) return MODEL_PHOTOS["maruti swift"];
-  if (b.includes("hyundai")) return MODEL_PHOTOS["hyundai creta"];
-  if (b.includes("mahindra")) return MODEL_PHOTOS["mahindra scorpio"];
-  if (b.includes("toyota")) return MODEL_PHOTOS["toyota fortuner"];
-  if (b.includes("honda")) return MODEL_PHOTOS["honda city"];
+  let baseTemplate = MODEL_PHOTOS["honda city"];
+  if (b.includes("audi")) baseTemplate = MODEL_PHOTOS["audi q3"];
+  else if (b.includes("bmw")) baseTemplate = MODEL_PHOTOS["bmw 3 series"];
+  else if (b.includes("maruti") || b.includes("suzuki")) baseTemplate = MODEL_PHOTOS["maruti swift"];
+  else if (b.includes("hyundai") || b.includes("kia")) baseTemplate = MODEL_PHOTOS["hyundai creta"];
+  else if (b.includes("mahindra") || b.includes("tata")) baseTemplate = MODEL_PHOTOS["mahindra scorpio"];
+  else if (b.includes("toyota") || b.includes("ford") || b.includes("isuzu")) baseTemplate = MODEL_PHOTOS["toyota fortuner"];
+  else {
+    const suvs = ["q3","q5","q7","x1","x3","x5","x7","creta","brezza","scorpio","fortuner","duster","ecosport","harrier","safari","nexon","compass","hector","seltos","endeavour","xuv","tuv","bolero","venue","thar","innova","ertiga","carens","kiger","magnite","taigun","kushaq"];
+    if (suvs.some(k => m.includes(k))) baseTemplate = MODEL_PHOTOS["hyundai creta"];
+  }
 
-  const suvs = ["q3","q5","q7","x1","x3","x5","x7","creta","brezza","scorpio","fortuner","duster","ecosport","harrier","safari","nexon","compass","hector","seltos","endeavour","xuv","tuv","bolero","venue","thar","innova","ertiga"];
-  if (suvs.some(k => m.includes(k))) return MODEL_PHOTOS["hyundai creta"];
-  return MODEL_PHOTOS["honda city"];
+  // Clone template so model title reflects exact searched model
+  return baseTemplate.map(item => ({
+    ...item,
+    title: item.title.replace(/BMW 3 Series|Audi Q3|Maruti Swift|Hyundai Creta|Mahindra Scorpio|Toyota Fortuner|Honda City/g, modelName || "Vehicle")
+  }));
 }
 
 function updateGalleryUI() {
@@ -657,6 +796,18 @@ function updateGalleryUI() {
   $("tabExterior").classList.toggle("active", item.cat === "exterior");
   $("tabInterior").classList.toggle("active", item.cat === "interior");
   $("tabHighlights").classList.toggle("active", item.cat === "highlights");
+
+  // Dynamic Spotlight Spec Panel
+  let badgeText = "EXTERIOR VIEWPOINT";
+  if (item.cat === "interior") badgeText = "INTERIOR AMENITY";
+  if (item.cat === "highlights") badgeText = "KEY FEATURE & TECH";
+  $("spotlightBadge").textContent = badgeText;
+  $("spotlightTitle").textContent = item.title;
+
+  const specs = item.specs || ["Verified Quality Inspection", "High-Resolution Studio View"];
+  $("spotlightSpecs").innerHTML = specs.map(s =>
+    `<div class="c24-spec-chip"><span class="sym">✦</span> ${s}</div>`
+  ).join("");
 }
 
 function nextSlide(e) {
@@ -810,9 +961,12 @@ fetch("data.json").then(r => r.json()).then(db => {
 
   // Default initial preview
   currentGallery = MODEL_PHOTOS["bmw 3 series"];
-  $("thumbExterior").src = currentGallery[0].url;
-  $("thumbInterior").src = currentGallery[5].url;
-  $("thumbHighlights").src = currentGallery[6].url;
+  const initExt = currentGallery.find(item => item.cat === "exterior") || currentGallery[0];
+  const initInt = currentGallery.find(item => item.cat === "interior") || currentGallery[5];
+  const initHl = currentGallery.find(item => item.cat === "highlights") || currentGallery[9];
+  $("thumbExterior").src = initExt.url;
+  $("thumbInterior").src = initInt.url;
+  $("thumbHighlights").src = initHl.url;
   updateGalleryUI();
 });
 
@@ -849,14 +1003,13 @@ $("model").addEventListener("change", async () => {
   exit360Mode();
 
   const extItem = currentGallery.find(item => item.cat === "exterior") || currentGallery[0];
-  const intItem = currentGallery.find(item => item.cat === "interior") || currentGallery[1];
-  const hlItem = currentGallery.find(item => item.cat === "highlights") || currentGallery[2];
+  const intItem = currentGallery.find(item => item.cat === "interior") || currentGallery[5];
+  const hlItem = currentGallery.find(item => item.cat === "highlights") || currentGallery[9];
 
   $("thumbExterior").src = extItem.url;
   $("thumbInterior").src = intItem.url;
   $("thumbHighlights").src = hlItem.url;
   $("c24Sub").textContent = `${spec.engine_value || 1498} cc • ${spec.max_power_value || 100} bhp • ${spec.seats || 5} Seats`;
-  $("c24Wishlist").textContent = `❤️ Wishlisted by ${Math.floor(Math.random() * 18 + 7)} users`;
 
   updateGalleryUI();
 
