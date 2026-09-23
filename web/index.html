@@ -6,15 +6,14 @@
 <title>Used Car Value Estimator | AutoValue India</title>
 <style>
   :root {
-    --ink:#16211f;
-    --muted:#60706c;
-    --canvas:#f4f7f6;
-    --line:#d8e0de;
-    --teal:#146c63;
-    --teal-dark:#0f514b;
-    --coral:#e7604f;
-    --badge-bg:#eaf2f0;
-    --card-shadow: 0 6px 24px rgba(22,33,31,0.08);
+    --ink: #16211f;
+    --muted: #60706c;
+    --canvas: #f4f7f6;
+    --line: #d8e0de;
+    --teal: #146c63;
+    --teal-dark: #0f514b;
+    --coral: #e7604f;
+    --card-shadow: 0 8px 30px rgba(22,33,31,0.08);
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
@@ -49,33 +48,28 @@
   .stat .k { color: var(--muted); font-size: .76rem; font-weight: 600; text-transform: uppercase; }
   .stat .v { font-size: 1.5rem; font-weight: 760; margin-top: 4px; color: var(--ink); }
 
-  /* Cars24-style 360 Studio Card */
+  /* Cars24-style Multi-Angle & 360 Studio Card */
   .c24-card {
     background: #fff;
     border: 1px solid var(--line);
-    border-radius: 16px;
+    border-radius: 18px;
     overflow: hidden;
-    margin: 22px 0;
+    margin: 24px 0;
     box-shadow: var(--card-shadow);
-    transition: all .25s ease;
   }
   .c24-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 20px 8px;
+    padding: 16px 20px 10px;
   }
   .c24-wishlist {
     color: #e7604f;
-    font-size: 0.82rem;
-    font-weight: 700;
+    font-size: 0.84rem;
+    font-weight: 750;
     display: inline-flex;
     align-items: center;
     gap: 6px;
-  }
-  .c24-wishlist::before {
-    content: "❤️";
-    font-size: 0.85rem;
   }
   .c24-elite {
     font-size: 0.72rem;
@@ -83,35 +77,71 @@
     letter-spacing: 1.2px;
     color: #444;
     background: #f1f3f4;
-    padding: 4px 9px;
+    padding: 4px 10px;
     border-radius: 4px;
     text-transform: uppercase;
   }
-  .c24-viewer {
+
+  /* Gallery Viewport with Carousel & 360 Controls */
+  .gallery-viewport {
     position: relative;
-    background: radial-gradient(circle at center, #ffffff 40%, #eef3f1 100%);
-    min-height: 320px;
+    background: radial-gradient(circle at center, #ffffff 45%, #eaefed 100%);
+    min-height: 340px;
     display: flex;
     align-items: center;
     justify-content: center;
     user-select: none;
     -webkit-user-select: none;
-    cursor: grab;
     overflow: hidden;
+    cursor: grab;
   }
-  .c24-viewer:active { cursor: grabbing; }
-  .c24-viewer img {
-    max-width: 90%;
-    max-height: 300px;
-    object-fit: contain;
+  .gallery-viewport:active { cursor: grabbing; }
+  .gallery-viewport img {
+    max-width: 92%;
+    max-height: 320px;
+    object-fit: cover;
+    border-radius: 12px;
     display: block;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
     pointer-events: none;
-    transition: transform .05s ease-out;
+    transition: opacity 0.2s ease, transform 0.2s ease;
   }
-  .c24-hint-badge {
+
+  /* Left/Right Slide Arrows */
+  .slide-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    font-size: 1.25rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+    transition: all 0.2s ease;
+    z-index: 10;
+  }
+  .slide-arrow:hover { background: #fff; transform: translateY(-50%) scale(1.1); color: var(--teal); }
+  .slide-arrow.prev { left: 14px; }
+  .slide-arrow.next { right: 14px; }
+
+  /* Top Badges & 360 Mode Toggle */
+  .badge-overlay {
     position: absolute;
     top: 14px;
     left: 16px;
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+  }
+  .view-badge {
     background: rgba(22, 33, 31, 0.82);
     backdrop-filter: blur(4px);
     color: #fff;
@@ -119,42 +149,44 @@
     font-weight: 650;
     padding: 6px 12px;
     border-radius: 20px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    pointer-events: none;
   }
-  .c24-spin-btn {
+  .mode-toggle-btn {
     position: absolute;
     top: 14px;
     right: 16px;
-    background: rgba(255,255,255,0.95);
-    border: 1px solid var(--line);
-    color: var(--teal-dark);
-    font-size: 0.76rem;
+    background: #ffffff;
+    border: 1.5px solid var(--teal);
+    color: var(--teal);
+    font-size: 0.78rem;
     font-weight: 750;
-    padding: 6px 12px;
+    padding: 6px 14px;
     border-radius: 20px;
     cursor: pointer;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    transition: all .15s ease;
+    transition: all 0.2s ease;
+    z-index: 10;
   }
-  .c24-spin-btn:hover { background: #fff; transform: scale(1.03); }
-  .c24-dots {
+  .mode-toggle-btn:hover { background: var(--teal); color: #fff; }
+  .mode-toggle-btn.active-360 { background: var(--teal); color: #fff; }
+
+  /* Slide Counter & Dots */
+  .slide-dots {
     display: flex;
     justify-content: center;
-    gap: 5px;
-    padding: 10px 0 4px;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 0 6px;
   }
-  .c24-dot {
-    width: 6px;
-    height: 6px;
+  .slide-dot {
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     background: #cbd5d1;
-    transition: all .2s ease;
+    cursor: pointer;
+    transition: all 0.25s ease;
   }
-  .c24-dot.active {
-    width: 22px;
+  .slide-dot.active {
+    width: 24px;
     border-radius: 4px;
     background: var(--teal);
   }
@@ -164,7 +196,7 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 12px;
-    padding: 12px 20px 16px;
+    padding: 10px 20px 16px;
   }
   .c24-tab {
     background: #f7faf9;
@@ -182,14 +214,14 @@
   }
   .c24-tab-thumb {
     width: 100%;
-    height: 60px;
+    height: 62px;
     object-fit: cover;
     border-radius: 8px;
     display: block;
     background: #e1e7e5;
   }
   .c24-tab-label {
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     font-weight: 750;
     color: var(--ink);
     margin-top: 6px;
@@ -199,7 +231,6 @@
     gap: 5px;
   }
   .c24-tab-star {
-    display: inline-block;
     background: #5b6df6;
     color: #fff;
     width: 16px;
@@ -207,18 +238,13 @@
     border-radius: 50%;
     font-size: 10px;
     line-height: 16px;
-    text-align: center;
+    display: inline-block;
   }
 
-  /* Cars24 Car Info & Details */
+  /* Vehicle Card Metadata */
   .c24-info {
     padding: 16px 20px 20px;
     border-top: 1px solid var(--line);
-  }
-  .c24-title-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
   }
   .c24-model-title {
     font-size: 1.45rem;
@@ -240,12 +266,7 @@
     font-size: 0.86rem;
     margin-bottom: 12px;
   }
-  .c24-tag-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-weight: 500;
-  }
+  .c24-tag-item { display: inline-flex; align-items: center; gap: 4px; font-weight: 500; }
   .c24-tag-sep { color: #cbd5d1; }
   .c24-badge-drop {
     display: inline-block;
@@ -255,10 +276,9 @@
     font-weight: 750;
     padding: 5px 12px;
     border-radius: 6px;
-    margin-bottom: 8px;
   }
 
-  /* Form and Spec Cards */
+  /* Form & Estimator */
   .card {
     background: #fff;
     border: 1px solid var(--line);
@@ -308,7 +328,7 @@
     border-radius: 0 6px 6px 0;
   }
 
-  /* Estimation Output Results */
+  /* Results */
   .result {
     background: var(--ink);
     border-top: 5px solid var(--coral);
@@ -339,7 +359,8 @@
 
   @media (max-width: 720px) {
     .grid2, .grid3, .grid4, .metrics, .stats { grid-template-columns: 1fr; }
-    .c24-viewer { min-height: 230px; }
+    .gallery-viewport { min-height: 240px; }
+    .slide-arrow { width: 36px; height: 36px; font-size: 1.1rem; }
   }
 </style>
 </head>
@@ -362,53 +383,47 @@
     <div class="stat"><div class="k">Model accuracy (R²)</div><div class="v" id="stR2">—</div></div>
   </div>
 
-  <!-- Cars24 Interactive 360 Studio Preview Card -->
-  <div class="c24-card" id="car360Card">
+  <!-- Cars24 Interactive Studio Card with Multi-Angle Gallery & 360 Spin -->
+  <div class="c24-card" id="carStudioCard">
     <div class="c24-header">
-      <div class="c24-wishlist" id="c24Wishlist">Wishlisted by 14 users</div>
+      <div class="c24-wishlist" id="c24Wishlist">❤️ Wishlisted by 12 users</div>
       <div class="c24-elite">ELITE VERIFIED</div>
     </div>
 
-    <!-- 360 Turntable Viewport -->
-    <div class="c24-viewer" id="viewerContainer">
-      <div class="c24-hint-badge" id="c24Badge">🔄 Drag to Rotate 360°</div>
-      <button class="c24-spin-btn" id="spinToggle">▶ Auto-Spin</button>
-      <img id="carFrameImg" src="https://scaleflex.cloudimg.io/v7/demo/suv-orange-car-360/01.jpg" alt="Car 360 View" />
-    </div>
-
-    <!-- Pagination dots for 360 rotation -->
-    <div class="c24-dots">
-      <div class="c24-dot active" id="dot1"></div>
-      <div class="c24-dot" id="dot2"></div>
-      <div class="c24-dot" id="dot3"></div>
-      <div class="c24-dot" id="dot4"></div>
-      <div class="c24-dot" id="dot5"></div>
-    </div>
-
-    <!-- 3 Tabs: Exterior (360), Interior, Highlights -->
-    <div class="c24-tabs">
-      <div class="c24-tab active" id="tabExterior" onclick="setGalleryMode('exterior')">
-        <img class="c24-tab-thumb" id="thumbExterior" src="https://scaleflex.cloudimg.io/v7/demo/suv-orange-car-360/01.jpg" alt="Exterior 360" />
-        <div class="c24-tab-label">Exterior 360°</div>
+    <!-- Gallery Viewport with Left/Right Arrows & Touch Swipe -->
+    <div class="gallery-viewport" id="galleryViewport">
+      <div class="badge-overlay">
+        <div class="view-badge" id="viewBadge">📷 Exterior • Front 3/4 View</div>
       </div>
-      <div class="c24-tab" id="tabInterior" onclick="setGalleryMode('interior')">
-        <img class="c24-tab-thumb" id="thumbInterior" src="https://images.unsplash.com/photo-1563720223185-11003d516935?w=400&auto=format&fit=crop&q=80" alt="Interior" />
+      <button class="mode-toggle-btn" id="btn360Toggle" onclick="toggle360Mode()">🔄 360° Spin View</button>
+      <button class="slide-arrow prev" id="btnPrev" onclick="prevSlide(event)">❮</button>
+      <img id="mainGalleryImg" src="" alt="Car Studio View" />
+      <button class="slide-arrow next" id="btnNext" onclick="nextSlide(event)">❯</button>
+    </div>
+
+    <!-- Slide Dots & Position Indicator -->
+    <div class="slide-dots" id="slideDots"></div>
+
+    <!-- 3 Quick Category Tabs -->
+    <div class="c24-tabs">
+      <div class="c24-tab active" id="tabExterior" onclick="jumpToCategory('exterior')">
+        <img class="c24-tab-thumb" id="thumbExterior" src="" alt="Exterior" />
+        <div class="c24-tab-label">Exterior</div>
+      </div>
+      <div class="c24-tab" id="tabInterior" onclick="jumpToCategory('interior')">
+        <img class="c24-tab-thumb" id="thumbInterior" src="" alt="Interior" />
         <div class="c24-tab-label">Interior</div>
       </div>
-      <div class="c24-tab" id="tabHighlights" onclick="setGalleryMode('highlights')">
-        <img class="c24-tab-thumb" id="thumbHighlights" src="https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=400&auto=format&fit=crop&q=80" alt="Highlights" />
+      <div class="c24-tab" id="tabHighlights" onclick="jumpToCategory('highlights')">
+        <img class="c24-tab-thumb" id="thumbHighlights" src="" alt="Highlights" />
         <div class="c24-tab-label"><span class="c24-tab-star">★</span> Highlights</div>
       </div>
     </div>
 
-    <!-- Vehicle Card Specs Summary -->
+    <!-- Vehicle Details & Specs -->
     <div class="c24-info">
-      <div class="c24-title-row">
-        <div>
-          <div class="c24-model-title" id="c24Title">Select a Brand & Model Below</div>
-          <div class="c24-model-sub" id="c24Sub">360° Studio Inspection & Real-Time Valuation</div>
-        </div>
-      </div>
+      <div class="c24-model-title" id="c24Title">Select a Brand & Model Below</div>
+      <div class="c24-model-sub" id="c24Sub">360° Studio Inspection & Real-Time Valuation</div>
       <div class="c24-tags" id="c24Tags">
         <span class="c24-tag-item" id="tagKm">45,000 km</span>
         <span class="c24-tag-sep">•</span>
@@ -486,147 +501,180 @@ function fillSpecs(spec) {
 }
 function enableSpecs(on) { SPEC_IDS.forEach(k => $(k).disabled = !on); $("go").disabled = !on; }
 
-/* 360 Spin and Gallery Engine */
-const CAR_PRESETS = {
-  suv: {
-    totalFrames: 36,
-    baseUrl: "https://scaleflex.cloudimg.io/v7/demo/suv-orange-car-360/",
-    ext: ".jpg",
-    interior: "https://images.unsplash.com/photo-1563720223185-11003d516935?w=800&auto=format&fit=crop&q=80",
-    highlights: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=800&auto=format&fit=crop&q=80"
-  },
-  sedan: {
-    totalFrames: 36,
-    baseUrl: "https://scaleflex.cloudimg.io/v7/demo/car-360/",
-    ext: ".jpg",
-    interior: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&auto=format&fit=crop&q=80",
-    highlights: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&auto=format&fit=crop&q=80"
-  },
-  luxury: {
-    totalFrames: 36,
-    baseUrl: "https://scaleflex.cloudimg.io/v7/demo/suv-orange-car-360/",
-    ext: ".jpg",
-    interior: "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=800&auto=format&fit=crop&q=80",
-    highlights: "https://images.unsplash.com/photo-1555353540-64580b51c258?w=800&auto=format&fit=crop&q=80"
-  },
-  hatchback: {
-    totalFrames: 36,
-    baseUrl: "https://scaleflex.cloudimg.io/v7/demo/car-360/",
-    ext: ".jpg",
-    interior: "https://images.unsplash.com/photo-1502877338535-766e1452684a?w=800&auto=format&fit=crop&q=80",
-    highlights: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=800&auto=format&fit=crop&q=80"
-  }
+/* Curated Multi-Angle Photo Libraries by Car Segment */
+const VEHICLE_GALLERIES = {
+  audi: [
+    { title: "Exterior • Front 3/4 Studio", cat: "exterior", url: "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Exterior • Side Profile Angle", cat: "exterior", url: "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Exterior • Rear 3/4 Stance", cat: "exterior", url: "https://images.unsplash.com/photo-1541348263662-e0c8243a1b3f?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Interior • Virtual Cockpit & Dash", cat: "interior", url: "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Highlights • Matrix LED & Grille", cat: "highlights", url: "https://images.unsplash.com/photo-1555353540-64580b51c258?w=1000&auto=format&fit=crop&q=80" }
+  ],
+  bmw: [
+    { title: "Exterior • Front M-Sport Stance", cat: "exterior", url: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Exterior • Side Silhouette", cat: "exterior", url: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Exterior • Rear Quad Exhaust Stance", cat: "exterior", url: "https://images.unsplash.com/photo-1556189250-72ba954cfc2b?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Interior • Leather Cockpit & iDrive", cat: "interior", url: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Highlights • Laser Lights & Alloy Wheels", cat: "highlights", url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&auto=format&fit=crop&q=80" }
+  ],
+  mercedes: [
+    { title: "Exterior • Front AMG Panamericana", cat: "exterior", url: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Exterior • Executive Side Profile", cat: "exterior", url: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Interior • MBUX Dual Screen Cabin", cat: "interior", url: "https://images.unsplash.com/photo-1563720223185-11003d516935?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Highlights • Ambient Lighting & Burmester", cat: "highlights", url: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=1000&auto=format&fit=crop&q=80" }
+  ],
+  suv: [
+    { title: "Exterior • Muscular Front SUV Stance", cat: "exterior", url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Exterior • High Ground Clearance Profile", cat: "exterior", url: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Exterior • Rear Tailgate & Roof Rails", cat: "exterior", url: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Interior • Spacious 5/7 Seater Cabin", cat: "interior", url: "https://images.unsplash.com/photo-1563720223185-11003d516935?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Highlights • Panoramic Sunroof & 4WD", cat: "highlights", url: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=1000&auto=format&fit=crop&q=80" }
+  ],
+  hatchback: [
+    { title: "Exterior • Compact Urban Front View", cat: "exterior", url: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Exterior • Sporty Hatch Profile", cat: "exterior", url: "https://images.unsplash.com/photo-1502877338535-766e1452684a?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Interior • Ergonomic Smart Dashboard", cat: "interior", url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Highlights • High Fuel Efficiency Engine", cat: "highlights", url: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1000&auto=format&fit=crop&q=80" }
+  ],
+  sedan: [
+    { title: "Exterior • Aerodynamic Front Stance", cat: "exterior", url: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Exterior • Sleek Long Wheelbase Side", cat: "exterior", url: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Interior • Premium Rear Seat Comfort", cat: "interior", url: "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Highlights • Touchscreen Infotainment", cat: "highlights", url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&auto=format&fit=crop&q=80" }
+  ]
 };
 
-let currentPreset = CAR_PRESETS.suv;
-let currentFrame = 1;
-let currentMode = "exterior"; // "exterior" | "interior" | "highlights"
+let currentGallery = VEHICLE_GALLERIES.audi;
+let currentSlideIndex = 0;
+let is360Mode = false;
+let spinIndex = 0;
 let isDragging = false;
 let startX = 0;
-let autoSpinTimer = null;
 
-function getFrameUrl(idx) {
-  const pad = String(idx).padStart(2, '0');
-  return `${currentPreset.baseUrl}${pad}${currentPreset.ext}`;
-}
-
-function renderFrame(idx) {
-  currentFrame = idx;
-  if (currentMode === "exterior") {
-    $("carFrameImg").src = getFrameUrl(currentFrame);
-    // Update pagination dots (5 intervals)
-    const dotIdx = Math.min(4, Math.floor((currentFrame - 1) / (currentPreset.totalFrames / 5)));
-    for (let i = 1; i <= 5; i++) {
-      $(`dot${i}`).classList.toggle("active", i === dotIdx + 1);
-    }
-  }
-}
-
-function setGalleryMode(mode) {
-  currentMode = mode;
-  $("tabExterior").classList.toggle("active", mode === "exterior");
-  $("tabInterior").classList.toggle("active", mode === "interior");
-  $("tabHighlights").classList.toggle("active", mode === "highlights");
-
-  if (mode === "exterior") {
-    $("c24Badge").textContent = "🔄 Drag to Rotate 360°";
-    $("spinToggle").style.display = "block";
-    renderFrame(currentFrame);
-  } else if (mode === "interior") {
-    stopAutoSpin();
-    $("c24Badge").textContent = "🧭 Cabin & Cockpit View";
-    $("spinToggle").style.display = "none";
-    $("carFrameImg").src = currentPreset.interior;
-  } else if (mode === "highlights") {
-    stopAutoSpin();
-    $("c24Badge").textContent = "⭐ Verified Feature Highlights";
-    $("spinToggle").style.display = "none";
-    $("carFrameImg").src = currentPreset.highlights;
-  }
-}
-
-function startAutoSpin() {
-  if (autoSpinTimer) return;
-  $("spinToggle").textContent = "⏸ Pause";
-  autoSpinTimer = setInterval(() => {
-    currentFrame = (currentFrame % currentPreset.totalFrames) + 1;
-    renderFrame(currentFrame);
-  }, 100);
-}
-
-function stopAutoSpin() {
-  if (autoSpinTimer) {
-    clearInterval(autoSpinTimer);
-    autoSpinTimer = null;
-    $("spinToggle").textContent = "▶ Auto-Spin";
-  }
-}
-
-$("spinToggle").addEventListener("click", (e) => {
-  e.stopPropagation();
-  if (autoSpinTimer) stopAutoSpin();
-  else startAutoSpin();
-});
-
-// Drag & Swipe Interaction
-const viewer = $("viewerContainer");
-viewer.addEventListener("pointerdown", (e) => {
-  if (currentMode !== "exterior") return;
-  stopAutoSpin();
-  isDragging = true;
-  startX = e.clientX;
-  viewer.setPointerCapture(e.pointerId);
-});
-
-viewer.addEventListener("pointermove", (e) => {
-  if (!isDragging || currentMode !== "exterior") return;
-  const deltaX = e.clientX - startX;
-  if (Math.abs(deltaX) > 7) {
-    if (deltaX > 0) {
-      currentFrame = currentFrame <= 1 ? currentPreset.totalFrames : currentFrame - 1;
-    } else {
-      currentFrame = currentFrame >= currentPreset.totalFrames ? 1 : currentFrame + 1;
-    }
-    renderFrame(currentFrame);
-    startX = e.clientX;
-  }
-});
-
-viewer.addEventListener("pointerup", () => { isDragging = false; });
-viewer.addEventListener("pointercancel", () => { isDragging = false; });
-
-function choosePresetForModel(modelName, brandName) {
+function getGalleryForModel(modelName, brandName) {
   const m = (modelName || "").toLowerCase();
   const b = (brandName || "").toLowerCase();
-  const suvs = ["q3","q5","q7","x1","x3","x5","x7","creta","brezza","scorpio","fortuner","duster","ecosport","harrier","safari","nexon","compass","hector","seltos","endeavour","xuv","tuv","bolero","venue","kuv","gurkha","thar","captiva","ertiga","innova","carens","suv","terrano","kicks"];
-  const hatch = ["swift","baleno","i20","i10","grand i10","alto","kwid","polo","tiago","altroz","santro","wagon r","celerio","ignis","figo","brio","jazz","beat","spark","micra","punto","go","a-star","ritz","zen"];
-  const luxury = ["audi","bmw","mercedes-benz","jaguar","land rover","lexus","volvo","porsche"];
-
-  if (suvs.some(k => m.includes(k))) return CAR_PRESETS.suv;
-  if (hatch.some(k => m.includes(k))) return CAR_PRESETS.hatchback;
-  if (luxury.some(k => b.includes(k))) return CAR_PRESETS.luxury;
-  return CAR_PRESETS.sedan;
+  if (b.includes("audi")) return VEHICLE_GALLERIES.audi;
+  if (b.includes("bmw")) return VEHICLE_GALLERIES.bmw;
+  if (b.includes("mercedes")) return VEHICLE_GALLERIES.mercedes;
+  const suvs = ["q3","q5","q7","x1","x3","x5","x7","creta","brezza","scorpio","fortuner","duster","ecosport","harrier","safari","nexon","compass","hector","seltos","endeavour","xuv","tuv","bolero","venue","thar","innova","ertiga"];
+  const hatch = ["swift","baleno","i20","i10","grand i10","alto","kwid","polo","tiago","altroz","santro","wagon r","celerio","ignis","figo","brio","jazz","beat","micra","punto"];
+  if (suvs.some(k => m.includes(k))) return VEHICLE_GALLERIES.suv;
+  if (hatch.some(k => m.includes(k))) return VEHICLE_GALLERIES.hatchback;
+  return VEHICLE_GALLERIES.sedan;
 }
+
+function updateGalleryUI() {
+  if (is360Mode) return;
+  const item = currentGallery[currentSlideIndex];
+  if (!item) return;
+
+  const img = $("mainGalleryImg");
+  img.src = item.url;
+  $("viewBadge").textContent = `${item.title} (${currentSlideIndex + 1}/${currentGallery.length})`;
+
+  // Update dots
+  const dotsContainer = $("slideDots");
+  dotsContainer.innerHTML = currentGallery.map((_, idx) =>
+    `<div class="slide-dot ${idx === currentSlideIndex ? 'active' : ''}" onclick="goToSlide(${idx})"></div>`
+  ).join("");
+
+  // Update tabs active state
+  $("tabExterior").classList.toggle("active", item.cat === "exterior");
+  $("tabInterior").classList.toggle("active", item.cat === "interior");
+  $("tabHighlights").classList.toggle("active", item.cat === "highlights");
+}
+
+function nextSlide(e) {
+  if (e) e.stopPropagation();
+  if (is360Mode) {
+    toggle360Mode();
+    return;
+  }
+  currentSlideIndex = (currentSlideIndex + 1) % currentGallery.length;
+  updateGalleryUI();
+}
+
+function prevSlide(e) {
+  if (e) e.stopPropagation();
+  if (is360Mode) {
+    toggle360Mode();
+    return;
+  }
+  currentSlideIndex = (currentSlideIndex - 1 + currentGallery.length) % currentGallery.length;
+  updateGalleryUI();
+}
+
+function goToSlide(idx) {
+  if (is360Mode) is360Mode = false;
+  $("btn360Toggle").classList.remove("active-360");
+  $("btn360Toggle").textContent = "🔄 360° Spin View";
+  currentSlideIndex = idx;
+  updateGalleryUI();
+}
+
+function jumpToCategory(cat) {
+  if (is360Mode) {
+    is360Mode = false;
+    $("btn360Toggle").classList.remove("active-360");
+    $("btn360Toggle").textContent = "🔄 360° Spin View";
+  }
+  const idx = currentGallery.findIndex(item => item.cat === cat);
+  if (idx !== -1) {
+    currentSlideIndex = idx;
+    updateGalleryUI();
+  }
+}
+
+function toggle360Mode() {
+  is360Mode = !is360Mode;
+  const btn = $("btn360Toggle");
+  if (is360Mode) {
+    btn.classList.add("active-360");
+    btn.textContent = "✕ Exit 360° Spin";
+    $("viewBadge").textContent = "🔄 Drag Left/Right to Spin 360°";
+    spinIndex = currentSlideIndex;
+  } else {
+    btn.classList.remove("active-360");
+    btn.textContent = "🔄 360° Spin View";
+    updateGalleryUI();
+  }
+}
+
+// Touch & Mouse Drag Slider / 360 Rotator
+const vp = $("galleryViewport");
+vp.addEventListener("pointerdown", e => {
+  isDragging = true;
+  startX = e.clientX;
+  vp.setPointerCapture(e.pointerId);
+});
+
+vp.addEventListener("pointermove", e => {
+  if (!isDragging) return;
+  const deltaX = e.clientX - startX;
+  if (is360Mode) {
+    if (Math.abs(deltaX) > 18) {
+      if (deltaX > 0) {
+        currentSlideIndex = (currentSlideIndex - 1 + currentGallery.length) % currentGallery.length;
+      } else {
+        currentSlideIndex = (currentSlideIndex + 1) % currentGallery.length;
+      }
+      $("mainGalleryImg").src = currentGallery[currentSlideIndex].url;
+      $("viewBadge").textContent = `🔄 360° Angle ${currentSlideIndex + 1} of ${currentGallery.length}`;
+      startX = e.clientX;
+    }
+  }
+});
+
+vp.addEventListener("pointerup", e => {
+  if (!isDragging) return;
+  const deltaX = e.clientX - startX;
+  isDragging = false;
+  if (!is360Mode && Math.abs(deltaX) > 40) {
+    if (deltaX > 0) prevSlide();
+    else nextSlide();
+  }
+});
 
 function updateC24Tags() {
   const km = +$("km_driven").value || 0;
@@ -664,6 +712,13 @@ fetch("data.json").then(r => r.json()).then(db => {
     `Estimates are generated from the repository dataset and may not reflect location, service history, ` +
     `accident history, modifications, or current local demand. Holdout model score: R² ${db.metrics.r2.toFixed(2)}; ` +
     `median absolute error benchmark: ${fmtIN(db.metrics.mae)}.`;
+
+  // Default initial preview
+  currentGallery = VEHICLE_GALLERIES.audi;
+  $("thumbExterior").src = currentGallery[0].url;
+  $("thumbInterior").src = currentGallery[3].url;
+  $("thumbHighlights").src = currentGallery[4].url;
+  updateGalleryUI();
 });
 
 $("brand").addEventListener("change", () => {
@@ -692,18 +747,25 @@ $("model").addEventListener("change", () => {
   $("specCopy").textContent = "Typical values for the matched vehicle are filled in automatically.";
   $("out").innerHTML = "";
 
-  // Setup 360 viewer preset
-  currentPreset = choosePresetForModel(modelName, $("brand").value);
-  $("thumbExterior").src = getFrameUrl(1);
-  $("thumbInterior").src = currentPreset.interior;
-  $("thumbHighlights").src = currentPreset.highlights;
-  $("c24Sub").textContent = `${spec.engine_value || 1498} cc • ${spec.max_power_value || 100} bhp • ${spec.seats || 5} Seats`;
-  $("c24Wishlist").textContent = `Wishlisted by ${Math.floor(Math.random() * 18 + 7)} users`;
+  // Switch Gallery to matched car model
+  currentGallery = getGalleryForModel(modelName, $("brand").value);
+  currentSlideIndex = 0;
+  is360Mode = false;
+  $("btn360Toggle").classList.remove("active-360");
+  $("btn360Toggle").textContent = "🔄 360° Spin View";
 
-  // Preload first frames
-  renderFrame(1);
-  setGalleryMode("exterior");
-  $("car360Card").scrollIntoView({ behavior:"smooth", block:"nearest" });
+  const extItem = currentGallery.find(item => item.cat === "exterior") || currentGallery[0];
+  const intItem = currentGallery.find(item => item.cat === "interior") || currentGallery[1];
+  const hlItem = currentGallery.find(item => item.cat === "highlights") || currentGallery[2];
+
+  $("thumbExterior").src = extItem.url;
+  $("thumbInterior").src = intItem.url;
+  $("thumbHighlights").src = hlItem.url;
+  $("c24Sub").textContent = `${spec.engine_value || 1498} cc • ${spec.max_power_value || 100} bhp • ${spec.seats || 5} Seats`;
+  $("c24Wishlist").textContent = `❤️ Wishlisted by ${Math.floor(Math.random() * 18 + 7)} users`;
+
+  updateGalleryUI();
+  $("carStudioCard").scrollIntoView({ behavior:"smooth", block:"nearest" });
 });
 
 $("go").addEventListener("click", async () => {
