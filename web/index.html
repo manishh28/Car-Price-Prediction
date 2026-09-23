@@ -82,11 +82,11 @@
     text-transform: uppercase;
   }
 
-  /* Gallery Viewport with Carousel & 360 Controls */
+  /* Gallery Viewport */
   .gallery-viewport {
     position: relative;
     background: radial-gradient(circle at center, #ffffff 45%, #eaefed 100%);
-    min-height: 350px;
+    min-height: 360px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -98,11 +98,11 @@
   .gallery-viewport:active { cursor: grabbing; }
   .gallery-viewport img {
     max-width: 92%;
-    max-height: 330px;
+    max-height: 340px;
     object-fit: cover;
     border-radius: 12px;
     display: block;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
     pointer-events: none;
     transition: opacity 0.2s ease, transform 0.2s ease;
   }
@@ -112,23 +112,24 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 44px;
-    height: 44px;
+    width: 46px;
+    height: 46px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.94);
+    background: rgba(255, 255, 255, 0.96);
     border: 1px solid var(--line);
     color: var(--ink);
-    font-size: 1.25rem;
-    font-weight: 700;
+    font-size: 1.35rem;
+    font-weight: 800;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.14);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.16);
     transition: all 0.2s ease;
-    z-index: 10;
+    z-index: 20;
   }
-  .slide-arrow:hover { background: #fff; transform: translateY(-50%) scale(1.1); color: var(--teal); }
+  .slide-arrow:hover { background: #fff; transform: translateY(-50%) scale(1.12); color: var(--teal); }
+  .slide-arrow:active { transform: translateY(-50%) scale(0.95); }
   .slide-arrow.prev { left: 14px; }
   .slide-arrow.next { right: 14px; }
 
@@ -139,10 +140,11 @@
     left: 16px;
     display: flex;
     gap: 8px;
-    z-index: 10;
+    z-index: 20;
+    pointer-events: none;
   }
   .view-badge {
-    background: rgba(22, 33, 31, 0.84);
+    background: rgba(22, 33, 31, 0.85);
     backdrop-filter: blur(4px);
     color: #fff;
     font-size: 0.76rem;
@@ -159,15 +161,33 @@
     color: var(--teal);
     font-size: 0.78rem;
     font-weight: 750;
-    padding: 6px 14px;
+    padding: 7px 14px;
     border-radius: 20px;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
     transition: all 0.2s ease;
-    z-index: 10;
+    z-index: 20;
   }
   .mode-toggle-btn:hover { background: var(--teal); color: #fff; }
   .mode-toggle-btn.active-360 { background: var(--teal); color: #fff; }
+
+  /* 360 Auto-spin pill */
+  .spin-control-btn {
+    position: absolute;
+    bottom: 14px;
+    right: 16px;
+    background: rgba(255,255,255,0.92);
+    border: 1px solid var(--line);
+    color: var(--teal-dark);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    display: none;
+    z-index: 20;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
 
   /* Slide Counter & Dots */
   .slide-dots {
@@ -339,7 +359,7 @@
     box-shadow: 0 8px 24px rgba(22,33,31,0.15);
   }
   .result .lbl { color: #b8c8c4; font-size: .75rem; font-weight: 750; text-transform: uppercase; letter-spacing: .5px; }
-  .result .price { font-size: clamp(2rem, 5vw, 3.4rem); font-weight: 800; margin: .35rem 0 .55rem; color: #fff; }
+  .price { font-size: clamp(2rem, 5vw, 3.4rem); font-weight: 800; margin: .35rem 0 .55rem; color: #fff; }
   .result .note { color: #d9e2e0; font-size: .92rem; margin: 0; line-height: 1.5; }
   .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; }
   .metric { border-left: 3px solid var(--line); padding-left: .95rem; }
@@ -359,8 +379,8 @@
 
   @media (max-width: 720px) {
     .grid2, .grid3, .grid4, .metrics, .stats { grid-template-columns: 1fr; }
-    .gallery-viewport { min-height: 250px; }
-    .slide-arrow { width: 38px; height: 38px; font-size: 1.1rem; }
+    .gallery-viewport { min-height: 260px; }
+    .slide-arrow { width: 38px; height: 38px; font-size: 1.15rem; }
   }
 </style>
 </head>
@@ -395,10 +415,11 @@
       <div class="badge-overlay">
         <div class="view-badge" id="viewBadge">📷 Viewpoint 1 • Front Angle (0°)</div>
       </div>
-      <button class="mode-toggle-btn" id="btn360Toggle" onclick="toggle360Mode()">🔄 360° Spin View</button>
-      <button class="slide-arrow prev" id="btnPrev" onclick="prevSlide(event)">❮</button>
+      <button class="mode-toggle-btn" id="btn360Toggle">🔄 360° Spin View</button>
+      <button class="slide-arrow prev" id="btnPrev">❮</button>
       <img id="mainGalleryImg" src="" alt="Car Studio View" />
-      <button class="slide-arrow next" id="btnNext" onclick="nextSlide(event)">❯</button>
+      <button class="slide-arrow next" id="btnNext">❯</button>
+      <button class="spin-control-btn" id="btnAutoSpin">▶ Auto-Spin</button>
     </div>
 
     <!-- Slide Dots & Position Indicator -->
@@ -501,122 +522,130 @@ function fillSpecs(spec) {
 }
 function enableSpecs(on) { SPEC_IDS.forEach(k => $(k).disabled = !on); $("go").disabled = !on; }
 
-/* CompCars Multi-Viewpoint Standard Dataset Mapping */
-const COMPCARS_GALLERIES = {
-  audi: [
-    { title: "Viewpoint 1 • Front View (0°)", cat: "exterior", url: "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 2 • Front-Side 3/4 (45°)", cat: "exterior", url: "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 3 • Side Profile (90°)", cat: "exterior", url: "https://images.unsplash.com/photo-1541348263662-e0c8243a1b3f?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 4 • Rear-Side 3/4 (135°)", cat: "exterior", url: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 5 • Rear Stance (180°)", cat: "exterior", url: "https://images.unsplash.com/photo-1555353540-64580b51c258?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Interior • Virtual Cockpit & Dashboard", cat: "interior", url: "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Vehicle Parts • Matrix LED Headlights & Grille", cat: "highlights", url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&auto=format&fit=crop&q=80" }
+/* CompCars Multi-Viewpoint Catalog for All Major Brands & Models */
+const MODEL_PHOTOS = {
+  "bmw 3 series": [
+    { title: "BMW 3 Series • Front M-Sport (0°)", cat: "exterior", url: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=1000&auto=format&fit=crop&q=80" },
+    { title: "BMW 3 Series • Front-Side 3/4 (45°)", cat: "exterior", url: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=1000&auto=format&fit=crop&q=80" },
+    { title: "BMW 3 Series • Side Profile (90°)", cat: "exterior", url: "https://images.unsplash.com/photo-1556189250-72ba954cfc2b?w=1000&auto=format&fit=crop&q=80" },
+    { title: "BMW 3 Series • Rear-Side Stance (135°)", cat: "exterior", url: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=1000&auto=format&fit=crop&q=80" },
+    { title: "BMW 3 Series • Rear Quad Exhaust (180°)", cat: "exterior", url: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=1000&auto=format&fit=crop&q=80" },
+    { title: "BMW 3 Series • Cockpit & iDrive Display", cat: "interior", url: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1000&auto=format&fit=crop&q=80" },
+    { title: "BMW 3 Series • Laser LED Headlights & Kidney Grille", cat: "highlights", url: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=1000&auto=format&fit=crop&q=80" }
   ],
-  bmw: [
-    { title: "Viewpoint 1 • Front Kidney Grille (0°)", cat: "exterior", url: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 2 • Front-Side 3/4 M-Sport (45°)", cat: "exterior", url: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 3 • Side Silhouette (90°)", cat: "exterior", url: "https://images.unsplash.com/photo-1556189250-72ba954cfc2b?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 4 • Rear-Side Stance (135°)", cat: "exterior", url: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 5 • Rear Tail & Quad Exhaust (180°)", cat: "exterior", url: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Interior • Leather Cockpit & iDrive Display", cat: "interior", url: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Vehicle Parts • Laser Lights & Alloy Rims", cat: "highlights", url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&auto=format&fit=crop&q=80" }
+  "audi q3": [
+    { title: "Audi Q3 • Front Singleframe Grille (0°)", cat: "exterior", url: "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Audi Q3 • Front-Side 3/4 Quattro (45°)", cat: "exterior", url: "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Audi Q3 • Side Profile (90°)", cat: "exterior", url: "https://images.unsplash.com/photo-1541348263662-e0c8243a1b3f?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Audi Q3 • Rear-Side 3/4 (135°)", cat: "exterior", url: "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Audi Q3 • Rear Stance (180°)", cat: "exterior", url: "https://images.unsplash.com/photo-1541348263662-e0c8243a1b3f?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Audi Q3 • Virtual Cockpit Dashboard", cat: "interior", url: "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Audi Q3 • Matrix LED Headlights & Alloy Wheels", cat: "highlights", url: "https://images.unsplash.com/photo-1555353540-64580b51c258?w=1000&auto=format&fit=crop&q=80" }
   ],
-  maruti: [
-    { title: "Viewpoint 1 • Front Urban Grille (0°)", cat: "exterior", url: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 2 • Front-Side 3/4 Hatch (45°)", cat: "exterior", url: "https://images.unsplash.com/photo-1502877338535-766e1452684a?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 3 • Side Profile (90°)", cat: "exterior", url: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 4 • Rear-Side 3/4 (135°)", cat: "exterior", url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 5 • Rear Tailgate (180°)", cat: "exterior", url: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Interior • SmartPlay Touchscreen & Cabin", cat: "interior", url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Vehicle Parts • Fuel Efficient Engine & Precision Gearbox", cat: "highlights", url: "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=1000&auto=format&fit=crop&q=80" }
+  "maruti swift": [
+    { title: "Maruti Swift • Front Honeycomb Grille (0°)", cat: "exterior", url: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Maruti Swift • Front-Side 3/4 Hatch (45°)", cat: "exterior", url: "https://images.unsplash.com/photo-1502877338535-766e1452684a?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Maruti Swift • Side Silhouette (90°)", cat: "exterior", url: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Maruti Swift • Rear-Side 3/4 (135°)", cat: "exterior", url: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Maruti Swift • Rear Hatch Stance (180°)", cat: "exterior", url: "https://images.unsplash.com/photo-1502877338535-766e1452684a?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Maruti Swift • SmartPlay Touchscreen Cockpit", cat: "interior", url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Maruti Swift • Dual-Tone Precision Diamond Cut Alloys", cat: "highlights", url: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1000&auto=format&fit=crop&q=80" }
   ],
-  hyundai: [
-    { title: "Viewpoint 1 • Front Cascading Grille (0°)", cat: "exterior", url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 2 • Front-Side 3/4 Stance (45°)", cat: "exterior", url: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 3 • High Ground Clearance Profile (90°)", cat: "exterior", url: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 4 • Rear-Side 3/4 Connected Taillights (135°)", cat: "exterior", url: "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 5 • Rear Tailgate (180°)", cat: "exterior", url: "https://images.unsplash.com/photo-1541348263662-e0c8243a1b3f?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Interior • BlueLink Panoramic Digital Cockpit", cat: "interior", url: "https://images.unsplash.com/photo-1563720223185-11003d516935?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Vehicle Parts • Diamond Cut Alloys & Voice Sunroof", cat: "highlights", url: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=1000&auto=format&fit=crop&q=80" }
+  "hyundai creta": [
+    { title: "Hyundai Creta • Parametric Front Grille (0°)", cat: "exterior", url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Hyundai Creta • Front-Side 3/4 SUV (45°)", cat: "exterior", url: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Hyundai Creta • Side Profile (90°)", cat: "exterior", url: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Hyundai Creta • Rear-Side 3/4 (135°)", cat: "exterior", url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Hyundai Creta • Rear Tailgate (180°)", cat: "exterior", url: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Hyundai Creta • BlueLink Panoramic Digital Cockpit", cat: "interior", url: "https://images.unsplash.com/photo-1563720223185-11003d516935?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Hyundai Creta • Voice-Enabled Panoramic Sunroof", cat: "highlights", url: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=1000&auto=format&fit=crop&q=80" }
   ],
-  mahindra: [
-    { title: "Viewpoint 1 • Front Seven-Slot Grille (0°)", cat: "exterior", url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 2 • Front-Side 3/4 4x4 Stance (45°)", cat: "exterior", url: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 3 • Heavy Duty Side Profile (90°)", cat: "exterior", url: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 4 • Rear-Side 3/4 Tough Bodyshell (135°)", cat: "exterior", url: "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 5 • Rear Tailgate with Mounted Spare (180°)", cat: "exterior", url: "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Interior • Rugged 7-Seater Cabin & Infotainment", cat: "interior", url: "https://images.unsplash.com/photo-1563720223185-11003d516935?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Vehicle Parts • mHawk Turbo Diesel Engine & 4WD Transfer Case", cat: "highlights", url: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=1000&auto=format&fit=crop&q=80" }
+  "mahindra scorpio": [
+    { title: "Mahindra Scorpio • Muscular Front Grille (0°)", cat: "exterior", url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Mahindra Scorpio • Front-Side 3/4 4WD (45°)", cat: "exterior", url: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Mahindra Scorpio • Heavy Duty Side Profile (90°)", cat: "exterior", url: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Mahindra Scorpio • Rear Tailgate Stance (180°)", cat: "exterior", url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Mahindra Scorpio • 7-Seater Command Cockpit", cat: "interior", url: "https://images.unsplash.com/photo-1563720223185-11003d516935?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Mahindra Scorpio • mHawk Turbo Diesel & 4x4", cat: "highlights", url: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=1000&auto=format&fit=crop&q=80" }
   ],
-  toyota: [
-    { title: "Viewpoint 1 • Front Dynamic Grille (0°)", cat: "exterior", url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 2 • Front-Side 3/4 Premium Stance (45°)", cat: "exterior", url: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 3 • Long Wheelbase Side Profile (90°)", cat: "exterior", url: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 4 • Rear-Side 3/4 Aerodynamic (135°)", cat: "exterior", url: "https://images.unsplash.com/photo-1541348263662-e0c8243a1b3f?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 5 • Rear Tailgate (180°)", cat: "exterior", url: "https://images.unsplash.com/photo-1555353540-64580b51c258?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Interior • Executive Captain Seats & Dashboard", cat: "interior", url: "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Vehicle Parts • Ultra-Reliable D-4D Engine & Smart Key", cat: "highlights", url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&auto=format&fit=crop&q=80" }
+  "toyota fortuner": [
+    { title: "Toyota Fortuner • Aggressive Front Fascia (0°)", cat: "exterior", url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Toyota Fortuner • Front-Side 3/4 (45°)", cat: "exterior", url: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Toyota Fortuner • Side Profile High Ground Clearance (90°)", cat: "exterior", url: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Toyota Fortuner • Rear Stance (180°)", cat: "exterior", url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Toyota Fortuner • Executive Leather Cabin", cat: "interior", url: "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Toyota Fortuner • Sigma-4 4x4 System & D-4D Engine", cat: "highlights", url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&auto=format&fit=crop&q=80" }
   ],
-  tata: [
-    { title: "Viewpoint 1 • Front Humanity Line Grille (0°)", cat: "exterior", url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 2 • Front-Side 3/4 Impact 2.0 (45°)", cat: "exterior", url: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 3 • Side Profile & High Roofline (90°)", cat: "exterior", url: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 4 • Rear-Side 3/4 LED Stance (135°)", cat: "exterior", url: "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 5 • Rear Tailgate (180°)", cat: "exterior", url: "https://images.unsplash.com/photo-1541348263662-e0c8243a1b3f?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Interior • Dual Tone Ergonomic Dashboard", cat: "interior", url: "https://images.unsplash.com/photo-1563720223185-11003d516935?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Vehicle Parts • 5-Star GNCAP Safety Shell & Harman Audio", cat: "highlights", url: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=1000&auto=format&fit=crop&q=80" }
-  ],
-  suv: [
-    { title: "Viewpoint 1 • Front Bold Grille (0°)", cat: "exterior", url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 2 • Front-Side 3/4 SUV (45°)", cat: "exterior", url: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 3 • High Clearance Side (90°)", cat: "exterior", url: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 4 • Rear-Side 3/4 (135°)", cat: "exterior", url: "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 5 • Rear Tailgate & Spoiler (180°)", cat: "exterior", url: "https://images.unsplash.com/photo-1541348263662-e0c8243a1b3f?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Interior • High Driving Position Cockpit", cat: "interior", url: "https://images.unsplash.com/photo-1563720223185-11003d516935?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Vehicle Parts • All-Terrain Wheels & Roof Rails", cat: "highlights", url: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=1000&auto=format&fit=crop&q=80" }
-  ],
-  sedan: [
-    { title: "Viewpoint 1 • Front Low-Slung Grille (0°)", cat: "exterior", url: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 2 • Front-Side 3/4 Stance (45°)", cat: "exterior", url: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 3 • Sleek Executive Profile (90°)", cat: "exterior", url: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 4 • Rear-Side 3/4 Fastback (135°)", cat: "exterior", url: "https://images.unsplash.com/photo-1556189250-72ba954cfc2b?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Viewpoint 5 • Rear Trunk Stance (180°)", cat: "exterior", url: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Interior • Premium Rear Seat Comfort & Cockpit", cat: "interior", url: "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=1000&auto=format&fit=crop&q=80" },
-    { title: "Vehicle Parts • Aerodynamic Alloys & Dual Exhaust", cat: "highlights", url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&auto=format&fit=crop&q=80" }
+  "honda city": [
+    { title: "Honda City • Solid Wing Face Grille (0°)", cat: "exterior", url: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Honda City • Front-Side 3/4 (45°)", cat: "exterior", url: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Honda City • Side Profile Sleek Sedan (90°)", cat: "exterior", url: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Honda City • Rear Z-shaped 3D Taillights (180°)", cat: "exterior", url: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Honda City • Ergonomic Beige Leather Cockpit", cat: "interior", url: "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=1000&auto=format&fit=crop&q=80" },
+    { title: "Honda City • i-VTEC Engine & One-Touch Sunroof", cat: "highlights", url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&auto=format&fit=crop&q=80" }
   ]
 };
 
-let currentGallery = COMPCARS_GALLERIES.audi;
+/* Dynamic Wikimedia Image Fetcher for Any Vehicle Name */
+const IMAGE_CACHE = {};
+async function fetchWikiImageForModel(query) {
+  if (IMAGE_CACHE[query]) return IMAGE_CACHE[query];
+  try {
+    const url = `https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrsearch=${encodeURIComponent(query)}&gsrlimit=1&prop=pageimages&pithumbsize=1000`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const pages = data?.query?.pages;
+    if (pages) {
+      const page = Object.values(pages)[0];
+      if (page?.thumbnail?.source) {
+        IMAGE_CACHE[query] = page.thumbnail.source;
+        return page.thumbnail.source;
+      }
+    }
+  } catch (e) {
+    console.warn("Wiki image lookup fallback:", e);
+  }
+  return null;
+}
+
+let currentGallery = MODEL_PHOTOS["bmw 3 series"];
 let currentSlideIndex = 0;
 let is360Mode = false;
+let autoSpinTimer = null;
 let isDragging = false;
 let startX = 0;
 
-function getGalleryForModel(modelName, brandName) {
+function resolveGallery(modelName, brandName) {
   const m = (modelName || "").toLowerCase();
   const b = (brandName || "").toLowerCase();
 
-  if (b.includes("audi")) return COMPCARS_GALLERIES.audi;
-  if (b.includes("bmw")) return COMPCARS_GALLERIES.bmw;
-  if (b.includes("maruti")) return COMPCARS_GALLERIES.maruti;
-  if (b.includes("hyundai")) return COMPCARS_GALLERIES.hyundai;
-  if (b.includes("mahindra")) return COMPCARS_GALLERIES.mahindra;
-  if (b.includes("toyota")) return COMPCARS_GALLERIES.toyota;
-  if (b.includes("tata")) return COMPCARS_GALLERIES.tata;
+  for (const [k, gallery] of Object.entries(MODEL_PHOTOS)) {
+    if (m.includes(k) || (b + " " + m).includes(k)) return gallery;
+  }
 
-  const suvs = ["q3","q5","q7","x1","x3","x5","x7","creta","brezza","scorpio","fortuner","duster","ecosport","harrier","safari","nexon","compass","hector","seltos","endeavour","xuv","tuv","bolero","venue","thar","innova","ertiga","kicks","terrano","captur"];
-  if (suvs.some(k => m.includes(k))) return COMPCARS_GALLERIES.suv;
-  return COMPCARS_GALLERIES.sedan;
+  // Fallbacks by category
+  if (b.includes("audi")) return MODEL_PHOTOS["audi q3"];
+  if (b.includes("bmw")) return MODEL_PHOTOS["bmw 3 series"];
+  if (b.includes("maruti") || b.includes("suzuki")) return MODEL_PHOTOS["maruti swift"];
+  if (b.includes("hyundai")) return MODEL_PHOTOS["hyundai creta"];
+  if (b.includes("mahindra")) return MODEL_PHOTOS["mahindra scorpio"];
+  if (b.includes("toyota")) return MODEL_PHOTOS["toyota fortuner"];
+  if (b.includes("honda")) return MODEL_PHOTOS["honda city"];
+
+  const suvs = ["q3","q5","q7","x1","x3","x5","x7","creta","brezza","scorpio","fortuner","duster","ecosport","harrier","safari","nexon","compass","hector","seltos","endeavour","xuv","tuv","bolero","venue","thar","innova","ertiga"];
+  if (suvs.some(k => m.includes(k))) return MODEL_PHOTOS["hyundai creta"];
+  return MODEL_PHOTOS["honda city"];
 }
 
 function updateGalleryUI() {
-  if (is360Mode) return;
   const item = currentGallery[currentSlideIndex];
   if (!item) return;
 
   const img = $("mainGalleryImg");
   img.src = item.url;
-  $("viewBadge").textContent = `${item.title} (${currentSlideIndex + 1}/${currentGallery.length})`;
+  $("viewBadge").textContent = is360Mode
+    ? `🔄 360° Angle ${currentSlideIndex + 1} of ${currentGallery.length}`
+    : `${item.title} (${currentSlideIndex + 1}/${currentGallery.length})`;
 
   // Update dots
   const dotsContainer = $("slideDots");
@@ -631,39 +660,24 @@ function updateGalleryUI() {
 }
 
 function nextSlide(e) {
-  if (e) e.stopPropagation();
-  if (is360Mode) {
-    toggle360Mode();
-    return;
-  }
+  if (e) { e.preventDefault(); e.stopPropagation(); }
   currentSlideIndex = (currentSlideIndex + 1) % currentGallery.length;
   updateGalleryUI();
 }
 
 function prevSlide(e) {
-  if (e) e.stopPropagation();
-  if (is360Mode) {
-    toggle360Mode();
-    return;
-  }
+  if (e) { e.preventDefault(); e.stopPropagation(); }
   currentSlideIndex = (currentSlideIndex - 1 + currentGallery.length) % currentGallery.length;
   updateGalleryUI();
 }
 
 function goToSlide(idx) {
-  if (is360Mode) is360Mode = false;
-  $("btn360Toggle").classList.remove("active-360");
-  $("btn360Toggle").textContent = "🔄 360° Spin View";
   currentSlideIndex = idx;
   updateGalleryUI();
 }
 
 function jumpToCategory(cat) {
-  if (is360Mode) {
-    is360Mode = false;
-    $("btn360Toggle").classList.remove("active-360");
-    $("btn360Toggle").textContent = "🔄 360° Spin View";
-  }
+  if (is360Mode) exit360Mode();
   const idx = currentGallery.findIndex(item => item.cat === cat);
   if (idx !== -1) {
     currentSlideIndex = idx;
@@ -671,50 +685,87 @@ function jumpToCategory(cat) {
   }
 }
 
-function toggle360Mode() {
-  is360Mode = !is360Mode;
-  const btn = $("btn360Toggle");
-  if (is360Mode) {
-    btn.classList.add("active-360");
-    btn.textContent = "✕ Exit 360° Spin";
-    $("viewBadge").textContent = "🔄 Drag Left/Right to Spin 360°";
-  } else {
-    btn.classList.remove("active-360");
-    btn.textContent = "🔄 360° Spin View";
+function enter360Mode() {
+  is360Mode = true;
+  $("btn360Toggle").classList.add("active-360");
+  $("btn360Toggle").textContent = "✕ Exit 360°";
+  $("btnAutoSpin").style.display = "block";
+  $("viewBadge").textContent = "🔄 Drag Left/Right to Spin 360°";
+  updateGalleryUI();
+}
+
+function exit360Mode() {
+  is360Mode = false;
+  stopAutoSpin();
+  $("btn360Toggle").classList.remove("active-360");
+  $("btn360Toggle").textContent = "🔄 360° Spin View";
+  $("btnAutoSpin").style.display = "none";
+  updateGalleryUI();
+}
+
+function toggle360Mode(e) {
+  if (e) { e.preventDefault(); e.stopPropagation(); }
+  if (is360Mode) exit360Mode();
+  else enter360Mode();
+}
+
+function startAutoSpin() {
+  if (autoSpinTimer) return;
+  $("btnAutoSpin").textContent = "⏸ Pause";
+  autoSpinTimer = setInterval(() => {
+    currentSlideIndex = (currentSlideIndex + 1) % currentGallery.length;
     updateGalleryUI();
+  }, 1200);
+}
+
+function stopAutoSpin() {
+  if (autoSpinTimer) {
+    clearInterval(autoSpinTimer);
+    autoSpinTimer = null;
+    $("btnAutoSpin").textContent = "▶ Auto-Spin";
   }
 }
 
-// Touch & Mouse Drag Slider / 360 Rotator
-const vp = $("galleryViewport");
-vp.addEventListener("pointerdown", e => {
-  isDragging = true;
-  startX = e.clientX;
-  vp.setPointerCapture(e.pointerId);
+// Attach explicit click event listeners to buttons
+$("btnPrev").addEventListener("click", prevSlide);
+$("btnNext").addEventListener("click", nextSlide);
+$("btn360Toggle").addEventListener("click", toggle360Mode);
+$("btnAutoSpin").addEventListener("click", e => {
+  e.stopPropagation();
+  if (autoSpinTimer) stopAutoSpin();
+  else startAutoSpin();
 });
 
-vp.addEventListener("pointermove", e => {
+// Touch & Mouse Drag Slider / 360 Rotator (ignores button clicks)
+const vp = $("galleryViewport");
+vp.addEventListener("pointerdown", e => {
+  if (e.target.closest("button")) return; // Let buttons handle their own clicks
+  stopAutoSpin();
+  isDragging = true;
+  startX = e.clientX;
+});
+
+window.addEventListener("pointermove", e => {
   if (!isDragging) return;
   const deltaX = e.clientX - startX;
   if (is360Mode) {
-    if (Math.abs(deltaX) > 16) {
+    if (Math.abs(deltaX) > 20) {
       if (deltaX > 0) {
         currentSlideIndex = (currentSlideIndex - 1 + currentGallery.length) % currentGallery.length;
       } else {
         currentSlideIndex = (currentSlideIndex + 1) % currentGallery.length;
       }
-      $("mainGalleryImg").src = currentGallery[currentSlideIndex].url;
-      $("viewBadge").textContent = `🔄 CompCars Angle ${currentSlideIndex + 1} of ${currentGallery.length}`;
+      updateGalleryUI();
       startX = e.clientX;
     }
   }
 });
 
-vp.addEventListener("pointerup", e => {
+window.addEventListener("pointerup", e => {
   if (!isDragging) return;
   const deltaX = e.clientX - startX;
   isDragging = false;
-  if (!is360Mode && Math.abs(deltaX) > 35) {
+  if (!is360Mode && Math.abs(deltaX) > 40) {
     if (deltaX > 0) prevSlide();
     else nextSlide();
   }
@@ -758,7 +809,7 @@ fetch("data.json").then(r => r.json()).then(db => {
     `median absolute error benchmark: ${fmtIN(db.metrics.mae)}.`;
 
   // Default initial preview
-  currentGallery = COMPCARS_GALLERIES.audi;
+  currentGallery = MODEL_PHOTOS["bmw 3 series"];
   $("thumbExterior").src = currentGallery[0].url;
   $("thumbInterior").src = currentGallery[5].url;
   $("thumbHighlights").src = currentGallery[6].url;
@@ -774,8 +825,9 @@ $("brand").addEventListener("change", () => {
   $("match").hidden = true; $("out").innerHTML = ""; enableSpecs(false);
 });
 
-$("model").addEventListener("change", () => {
+$("model").addEventListener("change", async () => {
   const modelName = $("model").value;
+  const brandName = $("brand").value;
   const entry = DB && DB.models[ modelName ];
   if (!entry) {
     $("match").hidden = true;
@@ -792,11 +844,9 @@ $("model").addEventListener("change", () => {
   $("out").innerHTML = "";
 
   // Switch Gallery to matched car model
-  currentGallery = getGalleryForModel(modelName, $("brand").value);
+  currentGallery = resolveGallery(modelName, brandName);
   currentSlideIndex = 0;
-  is360Mode = false;
-  $("btn360Toggle").classList.remove("active-360");
-  $("btn360Toggle").textContent = "🔄 360° Spin View";
+  exit360Mode();
 
   const extItem = currentGallery.find(item => item.cat === "exterior") || currentGallery[0];
   const intItem = currentGallery.find(item => item.cat === "interior") || currentGallery[1];
@@ -809,6 +859,16 @@ $("model").addEventListener("change", () => {
   $("c24Wishlist").textContent = `❤️ Wishlisted by ${Math.floor(Math.random() * 18 + 7)} users`;
 
   updateGalleryUI();
+
+  // Dynamic exact photo fetch for this specific vehicle model
+  const queryWords = `${brandName} ${modelName.split(" ").slice(1, 3).join(" ")}`;
+  const liveImg = await fetchWikiImageForModel(queryWords);
+  if (liveImg && currentGallery[0]) {
+    currentGallery[0].url = liveImg;
+    $("thumbExterior").src = liveImg;
+    if (currentSlideIndex === 0) $("mainGalleryImg").src = liveImg;
+  }
+
   $("carStudioCard").scrollIntoView({ behavior:"smooth", block:"nearest" });
 });
 
