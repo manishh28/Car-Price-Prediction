@@ -481,12 +481,102 @@
     .gallery-viewport { min-height: 260px; }
     .slide-arrow { width: 38px; height: 38px; font-size: 1.15rem; }
   }
+
+  /* ---- Redesign system: timing tokens,/spring easing, AA contrast ---- */
+  :root {
+    --dur-1: 150ms; --dur-2: 350ms; --dur-3: 650ms;
+    --ease-spring: cubic-bezier(.34,1.56,.64,1);
+    --ease-out: cubic-bezier(.2,.7,.2,1);
+    --cta: #bf4636;
+  }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+             overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  .skip { position: absolute; left: 12px; top: -70px; z-index: 100;
+          background: var(--ink); color: #fff; padding: 12px 18px; border-radius: 8px;
+          font-weight: 700; transition: top var(--dur-1) var(--ease-out); }
+  .skip:focus { top: 12px; color: #fff; }
+  :focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; border-radius: 4px; }
+  #go, #stickyGo, .cta { background: var(--cta); border-color: var(--cta); }
+  #go:hover:not(:disabled), #stickyGo:hover, .cta:hover { background: #a53a2c; }
+  .bg { will-change: transform; }
+  /* exterior gallery: crossfade stack + Ken Burns */
+  .gal { position: relative; border-radius: 10px; overflow: hidden; background: #0e1514; }
+  .gal-stack { position: relative; aspect-ratio: 16/9; min-height: 260px; }
+  .gal-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+             opacity: 0; transition: opacity var(--dur-2) var(--ease-out); }
+  .gal-img.on { opacity: 1; }
+  .gal-img.kb { animation: kb 7s ease-in-out infinite alternate; }
+  @keyframes kb { from { transform: scale(1); } to { transform: scale(1.09) translate(-1.5%,1%); } }
+  .gal:hover { box-shadow: 0 14px 34px rgba(22,33,31,.22); }
+  .gal { transition: box-shadow var(--dur-2) var(--ease-out); }
+  .gal-dots { display: flex; gap: 4px; justify-content: center; margin-top: 10px; }
+  .gal-dot { width: 44px; height: 44px; background: none; border: none; cursor: pointer;
+             display: flex; align-items: center; justify-content: center; padding: 0; }
+  .gal-dot::after { content: ""; width: 22px; height: 5px; border-radius: 3px; background: #c9d4d1;
+                    transition: background var(--dur-1) var(--ease-out), width var(--dur-2) var(--ease-spring); }
+  .gal-dot.on::after { background: var(--ink); width: 30px; }
+  .gal-cap { min-height: 2.6em; }
+  .gal-play { position: absolute; top: 12px; right: 12px; min-width: 44px; min-height: 44px;
+              border-radius: 22px; border: 1px solid var(--line); background: rgba(255,255,255,.92);
+              font-size: .8rem; font-weight: 700; cursor: pointer; padding: 0 14px; color: var(--ink); }
+  /* custom combobox */
+  .combo { position: relative; }
+  .combo-box { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: #fff;
+               border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 14px 34px rgba(22,33,31,.16);
+               max-height: 264px; overflow: auto; z-index: 30; margin: 0; padding: 6px;
+               transform-origin: top center; animation: comboIn var(--dur-2) var(--ease-spring); }
+  @keyframes comboIn { from { opacity: 0; transform: scaleY(.85) translateY(-6px); }
+                       to { opacity: 1; transform: none; } }
+  .combo-opt { padding: 11px 12px; border-radius: 8px; cursor: pointer; font-size: .92rem; }
+  .combo-opt.active { background: #eaf2f0; color: var(--teal-dark); font-weight: 700; }
+  .combo-opt mark { background: none; color: var(--teal); font-weight: 800; }
+  .combo-empty { padding: 12px 14px; color: var(--muted); font-size: .88rem; }
+  /* step indicator */
+  .steps { list-style: none; display: flex; gap: 10px; padding: 0; margin: 18px 0 0; }
+  .steps li { flex: 1; font-size: .8rem; font-weight: 700; color: var(--muted);
+              padding-top: 8px; border-top: 3px solid var(--line);
+              transition: color var(--dur-2), border-color var(--dur-2); }
+  .steps li.on { color: var(--ink); border-color: var(--teal); }
+  .steps li.done { color: var(--teal-dark); border-color: var(--teal); }
+  /* sticky mobile CTA */
+  #stickyGo { position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 40; display: none;
+              box-shadow: 0 12px 30px rgba(22,33,31,.3); }
+  @media (max-width: 720px) { body.show-sticky #stickyGo { display: block; } }
+  /* confidence gauge */
+  .gauge-wrap { margin-top: 12px; font-size: .82rem; color: #d9e2e0; }
+  .gauge { height: 10px; border-radius: 5px; background: rgba(255,255,255,.18);
+           overflow: hidden; margin-top: 6px; }
+  .gauge > i { display: block; height: 100%; width: 0;
+               background: linear-gradient(90deg,var(--teal),#35b184); border-radius: 5px;
+               transition: width var(--dur-3) var(--ease-out); }
+  /* staggered spec fields */
+  #specCard .grid3 > *, #specCard .grid4 > *, #specCard .go {
+    opacity: 0; transform: translateY(8px); }
+  #specCard.in .grid3 > *, #specCard.in .grid4 > *, #specCard.in .go {
+    opacity: 1; transform: none;
+    transition: opacity var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out); }
+  /* snappy spring feedback */
+  .stat, .card, .mq-item, .cam-btns button, .sw {
+    transition: transform var(--dur-1) var(--ease-spring), box-shadow var(--dur-1) var(--ease-out); }
+  .cam-btns button:active, .go:active, .cta:active { transform: scale(.97); }
+  .field-err { color: #b3261e; font-size: .85rem; font-weight: 600; margin: 10px 0 0; }
+  input[aria-invalid="true"], select[aria-invalid="true"] { border-color: #b3261e; outline-color: #b3261e; }
+  /* motion master guard */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .001s !important; animation-iteration-count: 1 !important;
+                             transition-duration: .001s !important; }
+    .gal-img.kb { animation: none !important; }
+    #specCard .grid3 > *, #specCard .grid4 > *, #specCard .go { opacity: 1; transform: none; }
+  }
 </style>
 </head>
 <body>
+<a class="skip" href="#estimator">Skip to vehicle estimator</a>
 <div class="bg" aria-hidden="true">
-  <svg class="blob-a" viewBox="0 0 500 500"><path fill="#d9e8e4" d="M410,300C390,380,300,440,210,430C120,420,60,350,70,260C80,170,160,90,250,80C340,70,430,220,410,300Z"/></svg>
-  <svg class="blob-b" viewBox="0 0 500 500"><path fill="#f3ddd7" d="M420,260C420,350,340,440,240,440C140,440,60,370,60,270C60,170,150,60,260,60C370,60,420,170,420,260Z"/></svg>
+  <div class="aurora a1"></div>
+  <div class="aurora a2"></div>
+  <div class="aurora a3"></div>
+  <div class="grain"></div>
 </div>
 
 <div class="wrap">
@@ -504,52 +594,29 @@
 
   <div class="marquee" aria-hidden="true"><div class="mq-track" id="mqTrack"></div></div>
 
-  <!-- CompCars Multi-Angle Studio & 360 Spin Card -->
+  <!-- Exterior showcase (photos only) -->
   <div class="c24-card" id="carStudioCard">
+    <h2 id="showcaseH" class="sr-only">Exterior showcase</h2>
     <div class="c24-header">
-      <div class="c24-studio-tag">HD 360° Studio &amp; Multi-View Inspector</div>
+      <div class="c24-studio-tag">Exterior angles · swipe or use ← →</div>
       <div class="c24-elite">COMPCARS VERIFIED</div>
     </div>
 
-    <!-- Gallery Viewport with Left/Right Arrows & Touch Swipe -->
-    <div class="gallery-viewport" id="galleryViewport">
-      <div class="badge-overlay">
-        <div class="view-badge" id="viewBadge">📷 Viewpoint 1 • Front Angle (0°)</div>
+    <!-- Exterior gallery: crossfade stack, arrows, play/pause -->
+    <div class="gal" id="gal" role="region" aria-roledescription="carousel"
+         aria-label="Exterior photo gallery" tabindex="0">
+      <div class="gal-stack">
+        <img class="gal-img on" id="galA" alt="Exterior car photo" />
+        <img class="gal-img" id="galB" alt="" aria-hidden="true" />
       </div>
-      <button class="mode-toggle-btn" id="btn360Toggle">🔄 360° Spin View</button>
-      <button class="slide-arrow prev" id="btnPrev">❮</button>
-      <img id="mainGalleryImg" src="" alt="Car Studio View" />
-      <button class="slide-arrow next" id="btnNext">❯</button>
-      <button class="spin-control-btn" id="btnAutoSpin">▶ Auto-Spin</button>
+      <button class="slide-arrow prev" id="btnPrev" aria-label="Previous exterior angle">❮</button>
+      <button class="slide-arrow next" id="btnNext" aria-label="Next exterior angle">❯</button>
+      <button class="gal-play" id="galPlay" aria-pressed="true" aria-label="Pause automatic slide advance">⏸</button>
     </div>
 
-    <!-- Slide Dots & Position Indicator -->
-    <div class="slide-dots" id="slideDots"></div>
-
-    <!-- Dynamic Slide Feature & Spec Spotlight Panel -->
-    <div class="c24-spotlight" id="c24Spotlight">
-      <div class="c24-spotlight-top">
-        <span class="c24-spotlight-badge" id="spotlightBadge">EXTERIOR VIEWPOINT</span>
-        <span class="c24-spotlight-title" id="spotlightTitle">Front Angle (0°)</span>
-      </div>
-      <div class="c24-spotlight-specs" id="spotlightSpecs"></div>
-    </div>
-
-    <!-- CompCars 3 Main Navigation Tabs -->
-    <div class="c24-tabs">
-      <div class="c24-tab active" id="tabExterior" onclick="jumpToCategory('exterior')">
-        <img class="c24-tab-thumb" id="thumbExterior" src="" alt="Exterior Viewpoints" />
-        <div class="c24-tab-label">Exterior (5 Angles)</div>
-      </div>
-      <div class="c24-tab" id="tabInterior" onclick="jumpToCategory('interior')">
-        <img class="c24-tab-thumb" id="thumbInterior" src="" alt="Cockpit & Cabin" />
-        <div class="c24-tab-label">Interior (4 Views)</div>
-      </div>
-      <div class="c24-tab" id="tabHighlights" onclick="jumpToCategory('highlights')">
-        <img class="c24-tab-thumb" id="thumbHighlights" src="" alt="Vehicle Parts" />
-        <div class="c24-tab-label"><span class="c24-tab-star">★</span> Key Features (4 Specs)</div>
-      </div>
-    </div>
+    <!-- Angle dots -->
+    <div class="gal-dots" id="slideDots" role="tablist" aria-label="Choose exterior angle"></div>
+    <p class="copy gal-cap" id="galCap" aria-live="polite"></p>
 
     <!-- Vehicle Details & Specs -->
     <div class="c24-info">
@@ -568,21 +635,36 @@
     </div>
   </div>
 
+  <!-- Step indicator -->
+  <ol class="steps" aria-label="Estimation progress">
+    <li id="step1" class="on" aria-current="step">1. Vehicle</li>
+    <li id="step2">2. Condition</li>
+    <li id="step3">3. Estimate</li>
+  </ol>
+
   <!-- Search Card -->
   <div class="card" id="estimator">
     <h2>Search for your vehicle</h2>
     <p class="copy">Start typing to filter the brand and model suggestions.</p>
     <div class="grid2">
-      <label>Car brand<input id="brand" list="brandList" placeholder="Type to search brands" autocomplete="off" /></label>
-      <label>Car model<input id="model" list="modelList" placeholder="Choose a brand first" autocomplete="off" disabled /></label>
+      <div class="combo">
+        <label for="brand">Car brand</label>
+        <input id="brand" placeholder="Type to search brands" autocomplete="off" role="combobox"
+               aria-expanded="false" aria-controls="brandBox" aria-autocomplete="list" />
+        <div class="combo-box" id="brandBox" role="listbox" aria-label="Brand suggestions" hidden></div>
+      </div>
+      <div class="combo">
+        <label for="model">Car model</label>
+        <input id="model" placeholder="Choose a brand first" autocomplete="off" disabled role="combobox"
+               aria-expanded="false" aria-controls="modelBox" aria-autocomplete="list" />
+        <div class="combo-box" id="modelBox" role="listbox" aria-label="Model suggestions" hidden></div>
+      </div>
     </div>
-    <datalist id="brandList"></datalist>
-    <datalist id="modelList"></datalist>
     <p class="match" id="match" hidden></p>
   </div>
 
   <!-- Specifications Card -->
-  <div class="card">
+  <div class="card" id="specCard">
     <h2>Condition and specifications</h2>
     <p class="copy" id="specCopy">Choose a brand and model to enable these fields.</p>
     <div class="grid3">
@@ -601,9 +683,11 @@
       <label>Power (bhp)<input id="max_power_value" type="number" step="5" disabled /></label>
       <label>Seats<input id="seats" type="number" disabled /></label>
     </div>
+    <p class="field-err" id="specErr" role="alert" hidden></p>
     <button class="go" id="go" disabled>Estimate resale value</button>
   </div>
 
+  <button class="go" id="stickyGo">Estimate resale value</button>
   <div id="toast"></div>
   <div id="out"></div>
   <div class="note" id="footnote"></div>
@@ -640,13 +724,15 @@ const fmtIN = n => "INR " + Math.round(n).toLocaleString("en-IN");
 const SPEC_IDS = ["year","km_driven","owner","fuel","transmission","seller_type",
                   "mileage_value","engine_value","max_power_value","seats"];
 
-function countUp(el, target, fmt) {
-  const dur = 1000, start = performance.now();
+function countUp(el, target, fmt, from) {
+  const dur = reducedMotion ? 1 : 1100, start = performance.now();
+  from = (typeof from === "number" && isFinite(from)) ? from : 0;
   function tick(now) {
     const p = Math.min(1, (now - start) / dur);
-    const ease = 1 - Math.pow(1 - p, 3);
-    el.textContent = fmt(target * ease);
+    const e = 1 + 2.2 * Math.pow(p - 1, 3) + 1.2 * Math.pow(p - 1, 2); // easeOutBack: slight overshoot
+    el.textContent = fmt(from + (target - from) * e);
     if (p < 1) requestAnimationFrame(tick);
+    else el.textContent = fmt(target);
   }
   requestAnimationFrame(tick);
 }
@@ -810,11 +896,10 @@ async function fetchWikiImageForModel(query) {
 }
 
 let currentGallery = MODEL_PHOTOS["bmw 3 series"];
-let currentSlideIndex = 0;
-let is360Mode = false;
-let autoSpinTimer = null;
-let isDragging = false;
-let startX = 0;
+const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let extSlides = [];   // exterior-only angles: {url, title}
+let galIdx = 0, galTimer = null, galFlip = false, galModel = "";
+let lastPrice = 0;
 
 function resolveGallery(modelName, brandName) {
   const m = (modelName || "").toLowerCase();
@@ -844,151 +929,136 @@ function resolveGallery(modelName, brandName) {
   }));
 }
 
-function updateGalleryUI() {
-  const item = currentGallery[currentSlideIndex];
-  if (!item) return;
-
-  const img = $("mainGalleryImg");
-  img.src = item.url;
-  $("viewBadge").textContent = is360Mode
-    ? `🔄 360° Angle ${currentSlideIndex + 1} of ${currentGallery.length}`
-    : `${item.title} (${currentSlideIndex + 1}/${currentGallery.length})`;
-
-  // Update dots
-  const dotsContainer = $("slideDots");
-  dotsContainer.innerHTML = currentGallery.map((_, idx) =>
-    `<div class="slide-dot ${idx === currentSlideIndex ? 'active' : ''}" onclick="goToSlide(${idx})"></div>`
+/* Exterior-only gallery engine: crossfade stack, Ken Burns, dots, autoplay */
+function extAngles() {
+  return (currentGallery || []).filter(i => i.cat === "exterior").slice(0, 5);
+}
+function setGalleryExterior(reset) {
+  extSlides = extAngles();
+  if (reset !== false) galIdx = 0;
+  if (galIdx >= extSlides.length) galIdx = 0;
+  renderDots();
+  showSlide(galIdx);
+  restartAuto();
+}
+function renderDots() {
+  $("slideDots").innerHTML = extSlides.map((s, i) =>
+    `<button class="gal-dot${i === galIdx ? " on" : ""}" data-i="${i}" role="tab" ` +
+    `aria-selected="${i === galIdx}" aria-label="Show exterior angle ${i + 1} of ${extSlides.length}"></button>`
   ).join("");
+  document.querySelectorAll("#slideDots .gal-dot").forEach(b =>
+    b.addEventListener("click", () => { showSlide(+b.dataset.i); restartAuto(); }));
+}
+function showSlide(i) {
+  if (!extSlides.length) return;
+  galIdx = ((i % extSlides.length) + extSlides.length) % extSlides.length;
+  const s = extSlides[galIdx];
+  const show = galFlip ? $("galB") : $("galA");
+  const hide = galFlip ? $("galA") : $("galB");
+  galFlip = !galFlip;
+  show.src = s.url;
+  show.alt = `${s.title} — ${galModel || "selected car"}`;
+  show.classList.toggle("kb", !reducedMotion);
+  show.classList.add("on"); hide.classList.remove("on", "kb");
+  $("galCap").textContent = `${s.title} (${galIdx + 1}/${extSlides.length})`;
+  document.querySelectorAll("#slideDots .gal-dot").forEach((b, j) => {
+    b.classList.toggle("on", j === galIdx);
+    b.setAttribute("aria-selected", j === galIdx);
+  });
+  const n = extSlides[(galIdx + 1) % extSlides.length];
+  if (n && "requestIdleCallback" in window)
+    requestIdleCallback(() => { const im = new Image(); im.src = n.url; });
+}
+function nextSlide() { showSlide(galIdx + 1); }
+function prevSlide() { showSlide(galIdx - 1); }
+function goToSlide(i) { showSlide(i); }
+function setPlayUI(playing) {
+  const b = $("galPlay");
+  b.textContent = playing ? "⏸" : "▶";
+  b.setAttribute("aria-pressed", playing);
+  b.setAttribute("aria-label", playing ? "Pause automatic slide advance" : "Resume automatic slide advance");
+}
+function restartAuto() {
+  stopAuto();
+  if (reducedMotion || !extSlides.length) { setPlayUI(false); return; }
+  galTimer = setInterval(() => showSlide(galIdx + 1), 4000);
+  setPlayUI(true);
+}
+function stopAuto() {
+  if (galTimer) { clearInterval(galTimer); galTimer = null; }
+  setPlayUI(false);
+}
+function togglePlay() { if (galTimer) stopAuto(); else restartAuto(); }
 
-  // Update tabs active state
-  $("tabExterior").classList.toggle("active", item.cat === "exterior");
-  $("tabInterior").classList.toggle("active", item.cat === "interior");
-  $("tabHighlights").classList.toggle("active", item.cat === "highlights");
-
-  // Dynamic Spotlight Spec Panel
-  let badgeText = "EXTERIOR VIEWPOINT";
-  if (item.cat === "interior") badgeText = "INTERIOR AMENITY";
-  if (item.cat === "highlights") badgeText = "KEY FEATURE & TECH";
-  $("spotlightBadge").textContent = badgeText;
-  $("spotlightTitle").textContent = item.title;
-
-  const specs = item.specs || ["Verified Quality Inspection", "High-Resolution Studio View"];
-  $("spotlightSpecs").innerHTML = specs.map(s =>
-    `<div class="c24-spec-chip"><span class="sym">✦</span> ${s}</div>`
-  ).join("");
+/* Step indicator: 1 Vehicle → 2 Condition → 3 Estimate */
+function setStep(n) {
+  [["step1", 1], ["step2", 2], ["step3", 3]].forEach(([id, k]) => {
+    const el = $(id);
+    if (!el) return;
+    el.classList.toggle("done", k < n);
+    el.classList.toggle("on", k === n);
+    if (k === n) el.setAttribute("aria-current", "step");
+    else el.removeAttribute("aria-current");
+  });
+}
+/* Staggered reveal of condition fields */
+function staggerSpecs() {
+  const card = $("specCard");
+  if (!card) return;
+  const kids = card.querySelectorAll(".grid3 > *, .grid4 > *, .go");
+  kids.forEach((el, i) => { el.style.transitionDelay = (i * 55) + "ms"; });
+  requestAnimationFrame(() => requestAnimationFrame(() => card.classList.add("in")));
 }
 
-function nextSlide(e) {
-  if (e) { e.preventDefault(); e.stopPropagation(); }
-  currentSlideIndex = (currentSlideIndex + 1) % currentGallery.length;
-  updateGalleryUI();
-}
-
-function prevSlide(e) {
-  if (e) { e.preventDefault(); e.stopPropagation(); }
-  currentSlideIndex = (currentSlideIndex - 1 + currentGallery.length) % currentGallery.length;
-  updateGalleryUI();
-}
-
-function goToSlide(idx) {
-  currentSlideIndex = idx;
-  updateGalleryUI();
-}
-
-function jumpToCategory(cat) {
-  if (is360Mode) exit360Mode();
-  const idx = currentGallery.findIndex(item => item.cat === cat);
-  if (idx !== -1) {
-    currentSlideIndex = idx;
-    updateGalleryUI();
-  }
-}
-
-function enter360Mode() {
-  is360Mode = true;
-  $("btn360Toggle").classList.add("active-360");
-  $("btn360Toggle").textContent = "✕ Exit 360°";
-  $("btnAutoSpin").style.display = "block";
-  $("viewBadge").textContent = "🔄 Drag Left/Right to Spin 360°";
-  updateGalleryUI();
-}
-
-function exit360Mode() {
-  is360Mode = false;
-  stopAutoSpin();
-  $("btn360Toggle").classList.remove("active-360");
-  $("btn360Toggle").textContent = "🔄 360° Spin View";
-  $("btnAutoSpin").style.display = "none";
-  updateGalleryUI();
-}
-
-function toggle360Mode(e) {
-  if (e) { e.preventDefault(); e.stopPropagation(); }
-  if (is360Mode) exit360Mode();
-  else enter360Mode();
-}
-
-function startAutoSpin() {
-  if (autoSpinTimer) return;
-  $("btnAutoSpin").textContent = "⏸ Pause";
-  autoSpinTimer = setInterval(() => {
-    currentSlideIndex = (currentSlideIndex + 1) % currentGallery.length;
-    updateGalleryUI();
-  }, 1200);
-}
-
-function stopAutoSpin() {
-  if (autoSpinTimer) {
-    clearInterval(autoSpinTimer);
-    autoSpinTimer = null;
-    $("btnAutoSpin").textContent = "▶ Auto-Spin";
-  }
-}
-
-// Attach explicit click event listeners to buttons
-$("btnPrev").addEventListener("click", prevSlide);
-$("btnNext").addEventListener("click", nextSlide);
-$("btn360Toggle").addEventListener("click", toggle360Mode);
-$("btnAutoSpin").addEventListener("click", e => {
-  e.stopPropagation();
-  if (autoSpinTimer) stopAutoSpin();
-  else startAutoSpin();
+// Gallery controls: arrows, play/pause, hover/focus pause, swipe, keyboard
+$("btnPrev").addEventListener("click", () => { prevSlide(); restartAuto(); });
+$("btnNext").addEventListener("click", () => { nextSlide(); restartAuto(); });
+$("galPlay").addEventListener("click", togglePlay);
+const galEl = $("gal");
+galEl.addEventListener("pointerenter", stopAuto);
+galEl.addEventListener("pointerleave", restartAuto);
+galEl.addEventListener("focusin", stopAuto);
+galEl.addEventListener("focusout", restartAuto);
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) stopAuto(); else restartAuto();
 });
-
-// Touch & Mouse Drag Slider / 360 Rotator (ignores button clicks)
-const vp = $("galleryViewport");
-vp.addEventListener("pointerdown", e => {
-  if (e.target.closest("button")) return; // Let buttons handle their own clicks
-  stopAutoSpin();
-  isDragging = true;
-  startX = e.clientX;
+galEl.addEventListener("keydown", e => {
+  if (e.key === "ArrowLeft") { e.preventDefault(); prevSlide(); restartAuto(); }
+  else if (e.key === "ArrowRight") { e.preventDefault(); nextSlide(); restartAuto(); }
+  else if (e.key === " ") { e.preventDefault(); togglePlay(); }
 });
-
-window.addEventListener("pointermove", e => {
-  if (!isDragging) return;
-  const deltaX = e.clientX - startX;
-  if (is360Mode) {
-    if (Math.abs(deltaX) > 20) {
-      if (deltaX > 0) {
-        currentSlideIndex = (currentSlideIndex - 1 + currentGallery.length) % currentGallery.length;
-      } else {
-        currentSlideIndex = (currentSlideIndex + 1) % currentGallery.length;
-      }
-      updateGalleryUI();
-      startX = e.clientX;
-    }
+(function(){
+  let sx = null;
+  galEl.addEventListener("pointerdown", e => {
+    if (e.target.closest("button")) return;
+    sx = e.clientX;
+  });
+  window.addEventListener("pointerup", e => {
+    if (sx === null) return;
+    const dx = e.clientX - sx; sx = null;
+    if (Math.abs(dx) > 40) { if (dx > 0) prevSlide(); else nextSlide(); restartAuto(); }
+  });
+})();
+/* Parallax background: transform-only, desktop fine pointers, motion-safe */
+(function(){
+  if (reducedMotion) return;
+  const bg = document.querySelector(".bg");
+  if (!bg) return;
+  let ticking = false;
+  addEventListener("scroll", () => {
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(() => {
+      bg.style.transform = `translateY(${Math.round(scrollY * -0.06)}px)`;
+      ticking = false;
+    });
+  }, { passive: true });
+  if (matchMedia("(pointer:fine)").matches) {
+    addEventListener("pointermove", e => {
+      const x = (e.clientX / innerWidth - .5) * 22, y = (e.clientY / innerHeight - .5) * 14;
+      bg.style.translate = `${x.toFixed(1)}px ${y.toFixed(1)}px`;
+    }, { passive: true });
   }
-});
-
-window.addEventListener("pointerup", e => {
-  if (!isDragging) return;
-  const deltaX = e.clientX - startX;
-  isDragging = false;
-  if (!is360Mode && Math.abs(deltaX) > 40) {
-    if (deltaX > 0) prevSlide();
-    else nextSlide();
-  }
-});
+})();
 
 function updateC24Tags() {
   const km = +$("km_driven").value || 0;
@@ -1013,7 +1083,7 @@ fetch("data.json").then(r => r.json()).then(db => {
   DB = db;
   $("intro").textContent =
     `Estimate a fair resale value using ${db.n_listings.toLocaleString("en-IN")} real used-car listings.`;
-  $("brandList").innerHTML = db.brands.map(b => `<option value="${b}">`).join("");
+  // Brand/model suggestions are served live by the comboboxes from DB.
   const fill = (id, items) => $(id).innerHTML = items.map(v => `<option>${v}</option>`).join("");
   fill("fuel", ["Petrol","Diesel","CNG","LPG"]);
   fill("transmission", ["Manual","Automatic"]);
@@ -1031,24 +1101,121 @@ fetch("data.json").then(r => r.json()).then(db => {
     `accident history, modifications, or current local demand. Holdout model score: R² ${db.metrics.r2.toFixed(2)}; ` +
     `median absolute error benchmark: ${fmtIN(db.metrics.mae)}.`;
 
-  // Default initial preview
+  // Default initial preview (exterior angles only)
   currentGallery = MODEL_PHOTOS["bmw 3 series"];
-  const initExt = currentGallery.find(item => item.cat === "exterior") || currentGallery[0];
-  const initInt = currentGallery.find(item => item.cat === "interior") || currentGallery[5];
-  const initHl = currentGallery.find(item => item.cat === "highlights") || currentGallery[9];
-  $("thumbExterior").src = initExt.url;
-  $("thumbInterior").src = initInt.url;
-  $("thumbHighlights").src = initHl.url;
-  updateGalleryUI();
+  galModel = "BMW 3 Series";
+  setGalleryExterior(true);
+  setStep(1);
+})
+.catch(() => {
+  $("intro").textContent = "Listings could not be loaded. Check your connection and reload the page.";
+  $("intro").setAttribute("role", "alert");
+  ["stList","stMakes","stR2"].forEach(id => {
+    $(id).classList.remove("skel"); $(id).textContent = "offline";
+  });
+});
+
+/* Searchable combobox: debounced, typo-tolerant, fully keyboard operable */
+let modelItems = [];
+function fuzzScore(q, text) {
+  q = String(q || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  const t = String(text).toLowerCase().replace(/[^a-z0-9]/g, "");
+  if (!q) return 0;
+  const at = t.indexOf(q);
+  if (at !== -1) return at - q.length * 2;
+  let qi = 0, skips = 0;
+  for (let i = 0; i < t.length && qi < q.length; i++) {
+    if (t[i] === q[qi]) qi++; else skips++;
+  }
+  return qi === q.length ? 100 + skips : Infinity;
+}
+function hiMark(text, q) {
+  q = String(q || "").trim();
+  const i = text.toLowerCase().indexOf(q.toLowerCase());
+  if (!q || i === -1) return text;
+  return text.slice(0, i) + "<mark>" + text.slice(i, i + q.length) + "</mark>" + text.slice(i + q.length);
+}
+function attachCombo(inputId, boxId, getItems, onPick) {
+  const input = $(inputId), box = $(boxId);
+  let active = -1, items = [], deb = null;
+  function close() {
+    box.hidden = true; input.setAttribute("aria-expanded", "false");
+    input.removeAttribute("aria-activedescendant"); active = -1;
+  }
+  function paint() {
+    box.querySelectorAll(".combo-opt").forEach((el, i) => {
+      el.classList.toggle("active", i === active);
+      el.setAttribute("aria-selected", i === active);
+    });
+    input.setAttribute("aria-activedescendant", active >= 0 ? `${boxId}-o${active}` : "");
+    const a = box.querySelector(".combo-opt.active");
+    if (a) a.scrollIntoView({ block: "nearest" });
+  }
+  function render(q) {
+    items = getItems()
+      .map(t => ({ t, s: fuzzScore(q, t) }))
+      .filter(o => o.s !== Infinity)
+      .sort((a, b) => a.s - b.s)
+      .slice(0, 8);
+    box.innerHTML = items.length
+      ? items.map((o, i) =>
+          `<div class="combo-opt${i === active ? " active" : ""}" id="${boxId}-o${i}" role="option" ` +
+          `aria-selected="${i === active}" data-i="${i}">${hiMark(o.t, q)}</div>`).join("")
+      : `<div class="combo-empty">No matches — try fewer letters.</div>`;
+    box.querySelectorAll(".combo-opt").forEach(el =>
+      el.addEventListener("pointerdown", e => { e.preventDefault(); pick(+el.dataset.i); }));
+    box.hidden = false;
+    input.setAttribute("aria-expanded", "true");
+  }
+  function pick(i) {
+    if (i < 0 || i >= items.length) return;
+    input.value = items[i].t;
+    close();
+    onPick(items[i].t);
+  }
+  input.addEventListener("input", () => {
+    active = -1;
+    clearTimeout(deb);
+    deb = setTimeout(() => render(input.value), 120);
+  });
+  input.addEventListener("focus", () => render(input.value));
+  input.addEventListener("blur", () => setTimeout(close, 120));
+  input.addEventListener("keydown", e => {
+    if (box.hidden && (e.key === "ArrowDown" || e.key === "Enter")) {
+      render(input.value);
+      if (e.key === "Enter") e.preventDefault();
+      return;
+    }
+    if (e.key === "ArrowDown") { e.preventDefault(); active = Math.min(active + 1, items.length - 1); paint(); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); active = Math.max(active - 1, 0); paint(); }
+    else if (e.key === "Enter") { if (active >= 0) { e.preventDefault(); pick(active); } }
+    else if (e.key === "Escape") close();
+  });
+}
+attachCombo("brand", "brandBox", () => (DB && DB.brands) || [], v => {
+  $("brand").value = v;
+  $("brand").dispatchEvent(new Event("change"));
+});
+attachCombo("model", "modelBox", () => modelItems, v => {
+  $("model").value = v;
+  $("model").dispatchEvent(new Event("change"));
+});
+$("stickyGo").addEventListener("click", () => {
+  $("estimator").scrollIntoView({ behavior: "smooth", block: "start" });
+  setTimeout(() => $("go").click(), 450);
 });
 
 $("brand").addEventListener("change", () => {
   const b = $("brand").value;
   const models = (DB && DB.models_by_brand[b]) || [];
-  $("modelList").innerHTML = models.map(m => `<option value="${m}">`).join("");
+  modelItems = models;
   $("model").value = ""; $("model").disabled = !models.length;
   $("model").placeholder = models.length ? `Type to search ${models.length} ${b} models` : "Choose a brand first";
   $("match").hidden = true; $("out").innerHTML = ""; enableSpecs(false);
+  $("specCard").classList.remove("in");
+  document.body.classList.remove("show-sticky");
+  setStep(models.length ? 1 : 0);
+  updateC24Tags();
 });
 
 $("model").addEventListener("change", async () => {
@@ -1059,45 +1226,59 @@ $("model").addEventListener("change", async () => {
     $("match").hidden = true;
     $("out").innerHTML = "";
     enableSpecs(false);
+    $("specCard").classList.remove("in");
+    document.body.classList.remove("show-sticky");
+    setStep(1);
     return;
   }
   const spec = {};
   DB.spec_keys.forEach((k, i) => spec[k] = entry.s[i]);
   fillSpecs(spec); enableSpecs(true);
+  staggerSpecs(); setStep(2);
+  document.body.classList.add("show-sticky");
   $("match").hidden = false;
   $("match").innerHTML = `<strong>Matched vehicle:</strong> ${modelName}`;
   $("specCopy").textContent = "Typical values for the matched vehicle are filled in automatically.";
   $("out").innerHTML = "";
 
-  // Switch Gallery to matched car model
+  // Switch showcase to matched car model (exterior angles only)
   currentGallery = resolveGallery(modelName, brandName);
-  currentSlideIndex = 0;
-  exit360Mode();
-
-  const extItem = currentGallery.find(item => item.cat === "exterior") || currentGallery[0];
-  const intItem = currentGallery.find(item => item.cat === "interior") || currentGallery[5];
-  const hlItem = currentGallery.find(item => item.cat === "highlights") || currentGallery[9];
-
-  $("thumbExterior").src = extItem.url;
-  $("thumbInterior").src = intItem.url;
-  $("thumbHighlights").src = hlItem.url;
+  galModel = modelName;
   $("c24Sub").textContent = `${spec.engine_value || 1498} cc • ${spec.max_power_value || 100} bhp • ${spec.seats || 5} Seats`;
 
-  updateGalleryUI();
+  setGalleryExterior(true);
 
   // Dynamic exact photo fetch for this specific vehicle model
   const queryWords = `${brandName} ${modelName.split(" ").slice(1, 3).join(" ")}`;
   const liveImg = await fetchWikiImageForModel(queryWords);
-  if (liveImg && currentGallery[0]) {
-    currentGallery[0].url = liveImg;
-    $("thumbExterior").src = liveImg;
-    if (currentSlideIndex === 0) $("mainGalleryImg").src = liveImg;
+  if (liveImg) {
+    const first = currentGallery.find(i => i.cat === "exterior") || currentGallery[0];
+    if (first) { first.url = liveImg; setGalleryExterior(false); }
   }
 
   $("carStudioCard").scrollIntoView({ behavior:"smooth", block:"nearest" });
 });
 
 $("go").addEventListener("click", async () => {
+  const go = $("go");
+  $("specErr").hidden = true;
+  SPEC_IDS.forEach(k => { $(k).removeAttribute("aria-invalid"); $(k).removeAttribute("aria-describedby"); });
+  const limits = { year:[1983,2026,"Registration year"], km_driven:[0,1500000,"Kilometres driven"],
+    mileage_value:[1,60,"Mileage"], engine_value:[300,7000,"Engine"],
+    max_power_value:[10,1000,"Power"], seats:[2,14,"Seats"] };
+  for (const [k,[lo,hi,label]] of Object.entries(limits)) {
+    const v = +$(k).value;
+    if (!isFinite(v) || v < lo || v > hi) {
+      $("specErr").textContent = `${label} must be between ${lo.toLocaleString("en-IN")} and ${hi.toLocaleString("en-IN")}.`;
+      $("specErr").hidden = false;
+      $(k).setAttribute("aria-invalid", "true");
+      $(k).setAttribute("aria-describedby", "specErr");
+      $(k).focus();
+      return;
+    }
+  }
+  const goLabel = go.textContent;
+  go.disabled = true; go.setAttribute("aria-busy", "true"); go.textContent = "Estimating…";
   const car = { name: $("model").value };
   SPEC_IDS.forEach(k => {
     car[k] = (k === "year" || k === "km_driven" || k === "engine_value" || k === "seats")
@@ -1110,7 +1291,10 @@ $("go").addEventListener("click", async () => {
       headers:{"Content-Type":"application/json"}, body: JSON.stringify(car) });
     res = await r.json();
     if (!r.ok) throw new Error(res.error || "prediction failed");
-  } catch (e) { $("out").innerHTML = `<p class="err shake">${e.message}</p>`; return; }
+  } catch (e) {
+    go.disabled = false; go.removeAttribute("aria-busy"); go.textContent = goLabel;
+    $("out").innerHTML = `<p class="err shake" role="alert">${e.message}</p>`; return;
+  }
 
   const entry = DB.models[car.name];
   let comp = entry.p, label = "closest comparable listings";
@@ -1123,10 +1307,13 @@ $("go").addEventListener("click", async () => {
   $("c24PriceBadge").textContent = `Estimated Value: ${fmtIN(res.predicted_price)} (${Math.abs(d).toFixed(1)}% ${rel} market median)`;
 
   $("out").innerHTML = `
-    <div class="result"><div class="lbl">Estimated resale value</div>
-      <div class="price pop">${fmtIN(res.predicted_price)}</div>
+    <div class="result" role="region" aria-label="Estimate result"><div class="lbl">Estimated resale value</div>
+      <div class="price pop" id="priceOut">…</div>
+      <p class="sr-only" aria-live="polite" id="priceLive"></p>
       <p class="note">${Math.abs(d).toFixed(1)}% ${rel} the median of the ${label}.
-      Use this as a negotiation benchmark, not a guaranteed sale price.</p></div>
+      Use this as a negotiation benchmark, not a guaranteed sale price.</p>
+      <div class="gauge-wrap">Model confidence · R² ${DB.metrics.r2.toFixed(2)}
+        <div class="gauge"><i id="gaugeFill"></i></div></div></div>
     <div class="metrics">
       <div class="metric"><div class="k">Comparable median</div><div class="v">${fmtIN(med)}</div></div>
       <div class="metric"><div class="k">Middle market range</div><div class="v">${fmtIN(comp.low).replace("INR ","")} - ${fmtIN(comp.high).replace("INR ","")}</div></div>
@@ -1134,9 +1321,9 @@ $("go").addEventListener("click", async () => {
     </div>
     <div class="card"><h2>Market position</h2>
       <div class="bar-row">Your estimate — ${fmtIN(res.predicted_price)}
-        <div class="bar" style="width:${100*res.predicted_price/max}%;background:#146c63"></div></div>
+        <div class="bar" id="bar1" style="width:0;background:#146c63"></div></div>
       <div class="bar-row">Comparable median — ${fmtIN(med)}
-        <div class="bar" style="width:${100*med/max}%;background:#aebbb8"></div></div>
+        <div class="bar" id="bar2" style="width:0;background:#aebbb8"></div></div>
     </div>
     <div class="card"><h2>What-if explorer</h2>
       <p class="copy">Move either control to see how year and kilometres change this estimate.</p>
@@ -1147,6 +1334,18 @@ $("go").addEventListener("click", async () => {
       <p id="wOut"></p>
     </div>`;
   toast(`Estimate ready — ${fmtIN(res.predicted_price)}`);
+  countUp($("priceOut"), res.predicted_price, fmtLakh, lastPrice);
+  lastPrice = res.predicted_price;
+  $("priceLive").textContent = `Estimated resale value ${fmtIN(res.predicted_price)}.`;
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    $("gaugeFill").style.width = (DB.metrics.r2 * 100).toFixed(1) + "%";
+    $("bar1").style.width = (100 * res.predicted_price / max) + "%";
+    $("bar2").style.width = (100 * med / max) + "%";
+  }));
+  go.disabled = false; go.removeAttribute("aria-busy");
+  go.textContent = "✓ Estimated";
+  setTimeout(() => { go.textContent = goLabel; }, 1600);
+  setStep(3);
   const upd = async () => {
     const c2 = {...car, year:+$("wYear").value, km_driven:+$("wKm").value};
     const r = await (await fetch("/api/predict", { method:"POST",
