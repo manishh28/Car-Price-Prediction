@@ -36,6 +36,9 @@
   .a3 { width: 700px; height: 700px; left: 20%; bottom: -320px;
         background: radial-gradient(circle,#e0dcf2 0%,transparent 70%);
         animation: drift1 38s ease-in-out infinite alternate-reverse; }
+  .a4 { width: 420px; height: 420px; left: 44%; top: 30%;
+        background: radial-gradient(circle,#f9e2c8 0%,transparent 70%);
+        animation: drift2 30s ease-in-out infinite alternate-reverse; }
   @keyframes drift1 { from { transform: translate(0,0) scale(1); } to { transform: translate(70px,50px) scale(1.12); } }
   @keyframes drift2 { from { transform: translate(0,0) scale(1.05); } to { transform: translate(-80px,60px) scale(.95); } }
   .grain { position: absolute; inset: 0; opacity: .55;
@@ -516,6 +519,12 @@
                     transition: background var(--dur-1) var(--ease-out), width var(--dur-2) var(--ease-spring); }
   .gal-dot.on::after { background: var(--ink); width: 30px; }
   .gal-cap { min-height: 2.6em; }
+  .gal-empty { border: 2px dashed var(--line); border-radius: 10px; background: #fff;
+               padding: 44px 20px; text-align: center; color: var(--muted);
+               animation: emptyin var(--dur-2) var(--ease-out); }
+  .gal-empty svg { width: 64px; height: 64px; opacity: .7; }
+  .gal-empty p { margin: 12px 0 0; font-size: .92rem; font-weight: 600; }
+  @keyframes emptyin { from { opacity: 0; } to { opacity: 1; } }
   .gal-play { position: absolute; top: 12px; right: 12px; min-width: 44px; min-height: 44px;
               border-radius: 22px; border: 1px solid var(--line); background: rgba(255,255,255,.92);
               font-size: .8rem; font-weight: 700; cursor: pointer; padding: 0 14px; color: var(--ink); }
@@ -572,12 +581,13 @@
 </head>
 <body>
 <a class="skip" href="#estimator">Skip to vehicle estimator</a>
-<div class="bg" aria-hidden="true">
-  <div class="aurora a1"></div>
-  <div class="aurora a2"></div>
-  <div class="aurora a3"></div>
-  <div class="grain"></div>
-</div>
+  <div class="bg" aria-hidden="true">
+    <div class="aurora a1"></div>
+    <div class="aurora a2"></div>
+    <div class="aurora a3"></div>
+    <div class="aurora a4"></div>
+    <div class="grain"></div>
+  </div>
 
 <div class="wrap">
   <div class="kicker">AutoValue India • CompCars Powered</div>
@@ -604,7 +614,7 @@
 
     <!-- Exterior gallery: crossfade stack, arrows, play/pause -->
     <div class="gal" id="gal" role="region" aria-roledescription="carousel"
-         aria-label="Exterior photo gallery" tabindex="0">
+         aria-label="Exterior photo gallery" tabindex="0" hidden>
       <div class="gal-stack">
         <img class="gal-img on" id="galA" alt="Exterior car photo" />
         <img class="gal-img" id="galB" alt="" aria-hidden="true" />
@@ -615,8 +625,12 @@
     </div>
 
     <!-- Angle dots -->
-    <div class="gal-dots" id="slideDots" role="tablist" aria-label="Choose exterior angle"></div>
-    <p class="copy gal-cap" id="galCap" aria-live="polite"></p>
+    <div class="gal-dots" id="slideDots" role="tablist" aria-label="Choose exterior angle" hidden></div>
+    <p class="copy gal-cap" id="galCap" aria-live="polite" hidden></p>
+    <div class="gal-empty" id="galEmpty">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="#60706c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 40 L12 26 Q13 23 16 22 L24 20 L30 12 Q31 10 34 10 L46 10 Q49 10 50 13 L54 22 L58 24 Q61 25 61 28 L61 40"/><circle cx="20" cy="42" r="6"/><circle cx="48" cy="42" r="6"/><path d="M26 42 L42 42 M14 40 L8 40 M56 40 L61 40"/></g></svg>
+      <p>Select a brand and model to see photos</p>
+    </div>
 
     <!-- Vehicle Details & Specs -->
     <div class="c24-info">
@@ -737,11 +751,24 @@ function countUp(el, target, fmt, from) {
   requestAnimationFrame(tick);
 }
 
-function fillSpecs(spec) {
-  for (const k of SPEC_IDS) $(k).value = spec[k];
-  updateC24Tags();
-}
 function enableSpecs(on) { SPEC_IDS.forEach(k => $(k).disabled = !on); $("go").disabled = !on; }
+function clearSpecs() {
+  SPEC_IDS.forEach(k => {
+    $(k).value = "";
+    $(k).removeAttribute("aria-invalid");
+    $(k).removeAttribute("aria-describedby");
+  });
+  $("specErr").hidden = true;
+}
+function showEmpty() {
+  ["gal", "slideDots", "galCap"].forEach(id => { $(id).hidden = true; });
+  $("galEmpty").hidden = false;
+  stopAuto();
+}
+function hideEmpty() {
+  ["gal", "slideDots", "galCap"].forEach(id => { $(id).hidden = false; });
+  $("galEmpty").hidden = true;
+}
 
 /* CompCars Multi-Viewpoint Studio Catalog (13 Viewpoints: 5 Exterior + 4 Interior + 4 Key Features) */
 const MODEL_PHOTOS = {
@@ -1104,7 +1131,7 @@ fetch("data.json").then(r => r.json()).then(db => {
   // Default initial preview (exterior angles only)
   currentGallery = MODEL_PHOTOS["bmw 3 series"];
   galModel = "BMW 3 Series";
-  setGalleryExterior(true);
+  showEmpty();
   setStep(1);
 })
 .catch(() => {
@@ -1212,6 +1239,8 @@ $("brand").addEventListener("change", () => {
   $("model").value = ""; $("model").disabled = !models.length;
   $("model").placeholder = models.length ? `Type to search ${models.length} ${b} models` : "Choose a brand first";
   $("match").hidden = true; $("out").innerHTML = ""; enableSpecs(false);
+  clearSpecs();
+  showEmpty();
   $("specCard").classList.remove("in");
   document.body.classList.remove("show-sticky");
   setStep(models.length ? 1 : 0);
@@ -1226,6 +1255,8 @@ $("model").addEventListener("change", async () => {
     $("match").hidden = true;
     $("out").innerHTML = "";
     enableSpecs(false);
+    clearSpecs();
+    showEmpty();
     $("specCard").classList.remove("in");
     document.body.classList.remove("show-sticky");
     setStep(1);
@@ -1233,7 +1264,7 @@ $("model").addEventListener("change", async () => {
   }
   const spec = {};
   DB.spec_keys.forEach((k, i) => spec[k] = entry.s[i]);
-  fillSpecs(spec); enableSpecs(true);
+  clearSpecs(); enableSpecs(true); updateC24Tags();
   staggerSpecs(); setStep(2);
   document.body.classList.add("show-sticky");
   $("match").hidden = false;
@@ -1246,6 +1277,7 @@ $("model").addEventListener("change", async () => {
   galModel = modelName;
   $("c24Sub").textContent = `${spec.engine_value || 1498} cc • ${spec.max_power_value || 100} bhp • ${spec.seats || 5} Seats`;
 
+  hideEmpty();
   setGalleryExterior(true);
 
   // Dynamic exact photo fetch for this specific vehicle model
