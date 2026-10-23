@@ -1154,7 +1154,7 @@ $("go").addEventListener("click", async () => {
       <p id="wOut"></p>
     </div>`;
   toast(`Estimate ready — ${fmtIN(res.predicted_price)}`);
-  countUp($("priceOut"), res.predicted_price, fmtLakh, lastPrice);
+  countUp($("priceOut"), res.predicted_price, fmtIN, lastPrice);
   lastPrice = res.predicted_price;
   $("priceLive").textContent = `Estimated resale value ${fmtIN(res.predicted_price)}.`;
   requestAnimationFrame(() => requestAnimationFrame(() => {
