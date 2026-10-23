@@ -578,6 +578,10 @@
       radial-gradient(circle 8px at 76px 7px,#1b1e22 7px,#aeb6bd 7.5px 8px,transparent 8.5px); }
   .dshade { left: 0; right: 0; bottom: 0; height: 10%;
     background: linear-gradient(180deg,transparent,rgba(6,10,24,.45)); }
+  .vis-tag { left: 16px; bottom: 16px; z-index: 6; max-width: calc(100% - 32px);
+    padding: 8px 12px; border: 1px solid rgba(255,255,255,.24); border-radius: 999px;
+    color: #fff; background: rgba(20,25,38,.68); backdrop-filter: blur(8px);
+    font-size: .82rem; font-weight: 650; line-height: 1.35; box-shadow: 0 4px 16px rgba(0,0,0,.18); }
   /* custom combobox */
   .combo { position: relative; }
   .combo-box { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: #fff;
@@ -691,13 +695,13 @@
       <div class="c24-model-title" id="c24Title">Select a Brand & Model Below</div>
       <div class="c24-model-sub" id="c24Sub">CompCars Multi-View Studio & Real-Time Price Estimator</div>
       <div class="c24-tags" id="c24Tags">
-        <span class="c24-tag-item" id="tagKm">45,000 km</span>
+        <span class="c24-tag-item" id="tagKm">— km</span>
         <span class="c24-tag-sep">•</span>
-        <span class="c24-tag-item" id="tagFuel">Diesel</span>
+        <span class="c24-tag-item" id="tagFuel">—</span>
         <span class="c24-tag-sep">•</span>
-        <span class="c24-tag-item" id="tagTrans">Automatic</span>
+        <span class="c24-tag-item" id="tagTrans">—</span>
         <span class="c24-tag-sep">•</span>
-        <span class="c24-tag-item" id="tagReg">Reg 2018</span>
+        <span class="c24-tag-item" id="tagReg">Reg —</span>
       </div>
       <div class="c24-badge-drop" id="c24PriceBadge">Verified Specs & Negotiation Benchmark</div>
     </div>
@@ -813,6 +817,7 @@ function clearSpecs() {
     $(k).removeAttribute("aria-describedby");
   });
   $("specErr").hidden = true;
+  $("tagKm").textContent = "— km";
 }
 
 /* Scenic drive banner state (pure CSS/SVG motion, no photos) */
@@ -879,17 +884,18 @@ function staggerSpecs() {
 })();
 
 function updateC24Tags() {
-  const km = +$("km_driven").value || 0;
-  const yr = $("year").value || "2018";
-  const fuel = $("fuel").value || "Petrol";
-  const trans = $("transmission").value || "Manual";
-  const model = $("model").value || "Selected Model";
+  const kmValue = $("km_driven").value;
+  const km = kmValue === "" ? null : Number(kmValue);
+  const yr = $("year").value;
+  const fuel = $("fuel").value;
+  const trans = $("transmission").value;
+  const model = $("model").value;
 
-  $("tagKm").textContent = km.toLocaleString("en-IN") + " km";
-  $("tagFuel").textContent = fuel;
-  $("tagTrans").textContent = trans;
-  $("tagReg").textContent = `Reg ${yr}`;
-  $("c24Title").textContent = `${yr} ${model}`;
+  $("tagKm").textContent = km === null || !Number.isFinite(km) ? "— km" : km.toLocaleString("en-IN") + " km";
+  $("tagFuel").textContent = fuel || "—";
+  $("tagTrans").textContent = trans || "—";
+  $("tagReg").textContent = `Reg ${yr || "—"}`;
+  $("c24Title").textContent = model ? `${yr || "—"} ${model}` : "Select a Brand & Model Below";
 }
 
 SPEC_IDS.forEach(id => {
@@ -1053,12 +1059,14 @@ $("model").addEventListener("change", async () => {
   }
   const spec = {};
   DB.spec_keys.forEach((k, i) => spec[k] = entry.s[i]);
-  clearSpecs(); enableSpecs(true); updateC24Tags();
+  clearSpecs();
+  Object.entries(spec).forEach(([key, value]) => { $(key).value = value ?? ""; });
+  enableSpecs(true); updateC24Tags();
   staggerSpecs(); setStep(2);
   document.body.classList.add("show-sticky");
   $("match").hidden = false;
   $("match").innerHTML = `<strong>Matched vehicle:</strong> ${modelName}`;
-  $("specCopy").textContent = "Enter your car's condition details below — nothing is pre-filled.";
+  $("specCopy").textContent = "Typical details for this model are filled in. Update the year, kilometres, and condition to match your car.";
   $("out").innerHTML = "";
 
   // Personalize the scenic banner for the matched car (decorative, no photos)
@@ -1110,6 +1118,8 @@ $("go").addEventListener("click", async () => {
   if (comp.n < 4) { comp = DB.brand_stats[entry.b]; label = `${entry.b} listings`; }
   const med = comp.median, d = (res.predicted_price - med) / med * 100;
   const rel = d >= 0 ? "above" : "below";
+  const gap = Math.abs(res.predicted_price - med);
+  const marketFit = res.predicted_price < comp.low ? "below" : res.predicted_price > comp.high ? "above" : "within";
   const max = Math.max(res.predicted_price, med, 1);
 
   // Update Cars24 badge with estimated price
@@ -1119,8 +1129,9 @@ $("go").addEventListener("click", async () => {
     <div class="result" role="region" aria-label="Estimate result"><div class="lbl">Estimated resale value</div>
       <div class="price pop" id="priceOut">…</div>
       <p class="sr-only" aria-live="polite" id="priceLive"></p>
-      <p class="note">${Math.abs(d).toFixed(1)}% ${rel} the median of the ${label}.
-      Use this as a negotiation benchmark, not a guaranteed sale price.</p>
+      <p class="note">Your estimate is ${fmtIN(gap)} (${Math.abs(d).toFixed(1)}%) ${rel} the comparable median, and ${marketFit} the observed middle market range.
+      Based on ${comp.n.toLocaleString("en-IN")} ${label}. Use this as a negotiation benchmark, not a guaranteed sale price.
+      </p>
       <div class="gauge-wrap">Model confidence · R² ${DB.metrics.r2.toFixed(2)}
         <div class="gauge"><i id="gaugeFill"></i></div></div></div>
     <div class="metrics">
