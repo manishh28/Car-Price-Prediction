@@ -1114,37 +1114,17 @@ $("go").addEventListener("click", async () => {
   }
 
   const entry = DB.models[car.name];
-  let comp = entry.p, label = "closest comparable listings";
-  if (comp.n < 4) { comp = DB.brand_stats[entry.b]; label = `${entry.b} listings`; }
-  const med = comp.median, d = (res.predicted_price - med) / med * 100;
-  const rel = d >= 0 ? "above" : "below";
-  const gap = Math.abs(res.predicted_price - med);
-  const marketFit = res.predicted_price < comp.low ? "below" : res.predicted_price > comp.high ? "above" : "within";
-  const max = Math.max(res.predicted_price, med, 1);
-
   // Update Cars24 badge with estimated price
-  $("c24PriceBadge").textContent = `Estimated Value: ${fmtIN(res.predicted_price)} (${Math.abs(d).toFixed(1)}% ${rel} market median)`;
+  $("c24PriceBadge").textContent = `Estimated Value: ${fmtIN(res.predicted_price)}`;
 
   $("out").innerHTML = `
     <div class="result" role="region" aria-label="Estimate result"><div class="lbl">Estimated resale value</div>
       <div class="price pop" id="priceOut">…</div>
       <p class="sr-only" aria-live="polite" id="priceLive"></p>
-      <p class="note">Your estimate is ${fmtIN(gap)} (${Math.abs(d).toFixed(1)}%) ${rel} the comparable median, and ${marketFit} the observed middle market range.
-      Based on ${comp.n.toLocaleString("en-IN")} ${label}. Use this as a negotiation benchmark, not a guaranteed sale price.
+      <p class="note">This is an estimate based on the details you entered and the used-car listings in our dataset. Use it as a negotiation benchmark, not a guaranteed sale price.
       </p>
       <div class="gauge-wrap">Model confidence · R² ${DB.metrics.r2.toFixed(2)}
         <div class="gauge"><i id="gaugeFill"></i></div></div></div>
-    <div class="metrics">
-      <div class="metric"><div class="k">Comparable median</div><div class="v">${fmtIN(med)}</div></div>
-      <div class="metric"><div class="k">Middle market range</div><div class="v">${fmtIN(comp.low).replace("INR ","")} - ${fmtIN(comp.high).replace("INR ","")}</div></div>
-      <div class="metric"><div class="k">Comparable listings</div><div class="v">${comp.n.toLocaleString("en-IN")}</div></div>
-    </div>
-    <div class="card"><h2>Market position</h2>
-      <div class="bar-row">Your estimate — ${fmtIN(res.predicted_price)}
-        <div class="bar" id="bar1" style="width:0;background:#146c63"></div></div>
-      <div class="bar-row">Comparable median — ${fmtIN(med)}
-        <div class="bar" id="bar2" style="width:0;background:#aebbb8"></div></div>
-    </div>
     <div class="card"><h2>What-if explorer</h2>
       <p class="copy">Move either control to see how year and kilometres change this estimate.</p>
       <div class="grid2">
@@ -1159,8 +1139,6 @@ $("go").addEventListener("click", async () => {
   $("priceLive").textContent = `Estimated resale value ${fmtIN(res.predicted_price)}.`;
   requestAnimationFrame(() => requestAnimationFrame(() => {
     $("gaugeFill").style.width = (DB.metrics.r2 * 100).toFixed(1) + "%";
-    $("bar1").style.width = (100 * res.predicted_price / max) + "%";
-    $("bar2").style.width = (100 * med / max) + "%";
   }));
   go.disabled = false; go.removeAttribute("aria-busy");
   go.textContent = goLabel;
