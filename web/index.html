@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="theme-color" content="#f5f7fa" />
+<meta name="theme-color" content="#1b1712" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
 <title>Used Car Value Estimator | AutoValue India</title>
 <style>
   :root {
@@ -510,8 +510,8 @@
           font-weight: 700; transition: top var(--dur-1) var(--ease-out); }
   .skip:focus { top: 12px; color: #fff; }
   :focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; border-radius: 4px; }
-  #go, #stickyGo, .cta { background: var(--cta); border-color: var(--cta); }
-  #go:hover:not(:disabled), #stickyGo:hover, .cta:hover { background: #a53a2c; }
+  #go, .cta { background: var(--cta); border-color: var(--cta); }
+  #go:hover:not(:disabled), .cta:hover { background: #a53a2c; }
   .bg { will-change: transform; }
   /* exterior gallery: crossfade stack + Ken Burns */
   .gal { position: relative; border-radius: 10px; overflow: hidden; background: #0e1514; }
@@ -606,9 +606,6 @@
   .steps li.on { color: var(--ink); border-color: var(--teal); }
   .steps li.done { color: var(--teal-dark); border-color: var(--teal); }
   /* sticky mobile CTA */
-  #stickyGo { position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 40; display: none;
-              box-shadow: 0 12px 30px rgba(22,33,31,.3); }
-  @media (max-width: 720px) { body.show-sticky #stickyGo { display: block; } }
   /* confidence gauge */
   .gauge-wrap { margin-top: 12px; font-size: .82rem; color: #d9e2e0; }
   .gauge { height: 10px; border-radius: 5px; background: rgba(255,255,255,.18);
@@ -635,58 +632,74 @@
     .gal-img.kb { animation: none !important; }
     #specCard .grid3 > *, #specCard .grid4 > *, #specCard .go { opacity: 1; transform: none; }
   }
-  /* Quiet, professional estimator styling */
-  :root {
-    --ink: #17212f;
-    --muted: #667386;
-    --canvas: #f5f7fa;
-    --line: #dce3eb;
-    --teal: #176b63;
-    --teal-dark: #10534d;
-    --coral: #176b63;
-    --cta: #176b63;
-    --card-shadow: 0 10px 30px rgba(25, 42, 62, .06);
-  }
-  *, *::before, *::after { animation: none !important; transition: none !important; }
-  html { scroll-behavior: auto; }
-  body, input, select, button { font-family: "DM Sans", "Segoe UI", sans-serif; }
-  body { background: #f5f7fa; color: var(--ink); }
-  .bg { display: none; }
-  .wrap { max-width: 1080px; padding: 56px 28px 80px; }
-  .kicker { color: #176b63; letter-spacing: .12em; font-size: .72rem; }
-  h1.hero { max-width: none; font: 800 clamp(2.25rem, 5vw, 3.5rem)/1.08 "Manrope", "Segoe UI", sans-serif; letter-spacing: -.045em; }
-  h1.hero .w:last-child { color: var(--ink); background: none; }
-  .intro { max-width: none; margin-top: 12px; font-size: 1rem; }
-  .accent { height: 1px; background: var(--line); margin: 24px 0; }
-  .stats { gap: 16px; margin: 0 0 24px; }
-  .stat { border-radius: 14px; box-shadow: none; padding: 18px 20px; }
-  .stat .k, .metric .k { letter-spacing: .06em; font-size: .7rem; }
-  .stat .v { font: 750 1.6rem/1.2 "Manrope", "Segoe UI", sans-serif; }
-  .marquee { overflow: visible; margin: 0 0 24px; mask-image: none; -webkit-mask-image: none; }
-  .mq-track { width: 100%; flex-wrap: wrap; animation: none !important; }
-  .mq-item { background: #fff; border-radius: 999px; padding: 7px 13px; font-size: .78rem; }
-  .steps { gap: 16px; margin: 26px 0 12px; }
-  .steps li { border-top-width: 2px; font-size: .78rem; }
-  .card { padding: 26px; margin-top: 16px; border-radius: 14px; box-shadow: var(--card-shadow); }
-  #specCard .grid3 > *, #specCard .grid4 > *, #specCard .go { opacity: 1; transform: none; }
-  h2 { font: 750 1.12rem/1.35 "Manrope", "Segoe UI", sans-serif; letter-spacing: -.02em; }
-  .copy { margin-top: 5px; line-height: 1.55; }
-  label { color: #354154; font-size: .8rem; font-weight: 650; }
-  input, select { border-radius: 9px; min-height: 46px; padding: 11px 13px; }
-  input:focus, select:focus { outline: 3px solid rgba(23,107,99,.14); }
-  .match { background: #f0f7f5; border-color: var(--teal); border-radius: 8px; }
-  button.go { background: var(--teal); border-radius: 9px; min-height: 50px; font: 700 .96rem "DM Sans", sans-serif; }
-  button.go:hover:not(:disabled) { background: var(--teal-dark); }
-  .result { background: #17212f; border: 0; border-top: 4px solid var(--teal); border-radius: 14px; box-shadow: var(--card-shadow); }
-  .price { font: 800 clamp(2.3rem, 6vw, 3.7rem)/1.1 "Manrope", "Segoe UI", sans-serif; letter-spacing: -.04em; }
-  .note { line-height: 1.7; }
-  .combo-box { border-radius: 10px; box-shadow: 0 14px 32px rgba(25,42,62,.12); }
-  #toast { border-radius: 9px; box-shadow: 0 8px 24px rgba(25,42,62,.16); }
-  @media (max-width: 720px) {
-    .wrap { padding: 34px 16px 72px; }
-    .stats { gap: 10px; }
-    .stat { padding: 15px 16px; }
-    .card { padding: 20px; }
+  /* Guided estimator design inspired by the supplied reference */
+  :root { --ink:#f2e9d8; --muted:#b5a692; --canvas:#1b1712; --line:#4a4135;
+    --teal:#82bba7; --teal-dark:#9bcbb9; --coral:#82bba7; --cta:#82bba7;
+    --card-shadow:8px 8px 0 #e9dfce; }
+  *, *::before, *::after { animation:none !important; }
+  html { scroll-behavior:auto; }
+  body, input, select, button { font-family:"DM Sans","Segoe UI",sans-serif; }
+  body { background:#1b1712; color:var(--ink); }
+  .bg { display:none; }
+  .wrap { max-width:1120px; padding:48px 28px 80px; }
+  .kicker { color:var(--muted); letter-spacing:.16em; font-size:.75rem; font-weight:500; }
+  h1.hero { max-width:760px; font:400 clamp(3rem,7vw,5.1rem)/.99 "DM Serif Display",Georgia,serif; letter-spacing:-.035em; }
+  h1.hero::after { content:""; display:block; width:180px; height:3px; margin-top:12px; background:var(--teal); }
+  h1.hero .w:last-child { color:var(--ink); background:none; }
+  .intro { max-width:640px; margin:14px 0 30px; font-size:1.12rem; line-height:1.65; }
+  .accent { height:1px; background:var(--line); margin:36px 0 22px; }
+  .stats { display:flex; gap:clamp(24px,5vw,58px); margin:0 0 48px; }
+  .stat { border:0; border-radius:0; background:none; box-shadow:none; padding:0; }
+  .stat .k { margin-top:7px; font-size:.88rem; font-weight:400; text-transform:none; }
+  .stat .v { color:var(--ink); font:400 2.15rem/1.1 "DM Serif Display",Georgia,serif; }
+  .steps { gap:10px; margin:0 0 20px; }
+  .steps li { border:0; padding:0; color:var(--muted); font-weight:500; }
+  .steps li::before { content:""; display:block; width:100%; height:3px; margin-bottom:9px; background:var(--line); }
+  .steps li.on,.steps li.done { color:var(--ink); }
+  .steps li.on::before,.steps li.done::before { background:var(--teal); }
+  .card { margin:0; padding:clamp(24px,4vw,40px); border:1px solid var(--ink); border-radius:11px; background:#211c16; box-shadow:var(--card-shadow); }
+  #specCard .grid3 > *,#specCard .grid4 > *,#specCard .go { opacity:1; transform:none; }
+  h2 { font:400 clamp(1.55rem,3vw,2rem)/1.2 "DM Serif Display",Georgia,serif; letter-spacing:-.015em; }
+  .copy { margin:8px 0 20px; color:var(--muted); font-size:.98rem; }
+  label { color:var(--ink); font-size:.84rem; font-weight:500; }
+  input,select { border:1px solid #685d4d; border-radius:7px; min-height:48px; padding:11px 13px; background:#1b1712; color:var(--ink); }
+  input:focus,select:focus { border-color:var(--teal); outline:2px solid rgba(130,187,167,.2); }
+  input:disabled,select:disabled { opacity:.55; }
+  .match { background:#29362e; color:var(--ink); border-color:var(--teal); border-radius:5px; }
+  button.go,.flow-btn { background:var(--teal); color:#1b1712; border:1px solid var(--teal); border-radius:7px; min-height:50px; padding:0 22px; font:700 .96rem "DM Sans",sans-serif; cursor:pointer; }
+  button.go:hover:not(:disabled),.flow-btn:hover:not(:disabled) { background:#a1ceb9; }
+  button.go:disabled,.flow-btn:disabled { background:#48564f; border-color:#766f63; color:#b8ad9e; opacity:1; }
+  .flow-actions { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:34px; }
+  .flow-actions .go { width:auto; margin:0; }
+  .text-btn { border:0; background:transparent; color:var(--muted); padding:12px 0; cursor:pointer; font:600 .9rem "DM Sans",sans-serif; }
+  .text-btn:hover { color:var(--ink); }
+  .popular-label { color:var(--muted); font-size:.78rem; font-weight:600; text-transform:uppercase; letter-spacing:.09em; margin:26px 0 12px; }
+  .popular-brands { display:flex; flex-wrap:wrap; gap:9px; }
+  .brand-pick { border:1px solid #766b5b; border-radius:6px; background:transparent; color:var(--ink); padding:11px 16px; cursor:pointer; font:500 .95rem "DM Sans",sans-serif; }
+  .brand-pick:hover,.brand-pick.selected { border-color:var(--teal); background:#2a352e; }
+  .brand-pick,.flow-btn,.text-btn { transition:background-color .16s ease,border-color .16s ease,color .16s ease; }
+  .vehicle-fields { margin-top:28px; }
+  .field-caption { color:var(--muted); font-size:.84rem; margin:12px 0 0; }
+  .result { background:#272119; border:1px solid #716453; border-top:3px solid var(--teal); border-radius:10px; box-shadow:var(--card-shadow); }
+  .result .lbl { color:var(--muted); }
+  .price { color:var(--ink); font:400 clamp(2.8rem,7vw,4.5rem)/1.1 "DM Serif Display",Georgia,serif; }
+  .result .note { color:var(--muted); }
+  .note { line-height:1.7; color:var(--muted); }
+  .combo-box { border-radius:8px; background:#2a241d; border-color:#766b5b; }
+  .combo-opt.active { background:#34473e; color:var(--ink); }
+  .combo-opt mark { color:var(--teal); }
+  .combo-empty { color:var(--muted); }
+  .field-err,.err { color:#f2a99a; }
+  [hidden] { display:none !important; }
+  .gauge { background:#51483d; }
+  .gauge > i { background:var(--teal); }
+  #toast { background:#e9dfce; color:#1b1712; box-shadow:none; border-radius:7px; }
+  @media (max-width:720px) {
+    .wrap { padding:32px 20px 64px; }
+    .stats { gap:20px; justify-content:space-between; margin-bottom:38px; }
+    .stat .v { font-size:1.8rem; } .stat .k { font-size:.75rem; }
+    .card { padding:24px 20px; } .flow-actions { margin-top:26px; }
+    .flow-btn { min-width:112px; }
   }
 </style>
 </head>
@@ -701,73 +714,79 @@
   </div>
 
 <div class="wrap">
-  <div class="kicker">AutoValue India • CompCars Powered</div>
-  <h1 class="hero" id="hero">Used car value estimator</h1>
-  <p class="intro" id="intro">Loading listings…</p>
+  <div class="kicker">AutoValue India</div>
+  <h1 class="hero" id="hero">What’s your old car really worth?</h1>
+  <p class="intro" id="intro">Pick your car, answer a few questions, and get a fair resale price before you talk to any dealer.</p>
   <div class="accent"></div>
 
   <!-- Real-Time Dataset Metrics -->
   <div class="stats">
-    <div class="stat"><div class="k">Listings analysed</div><div class="v skel" id="stList">—</div></div>
-    <div class="stat"><div class="k">Makes covered</div><div class="v skel" id="stMakes">—</div></div>
-    <div class="stat"><div class="k">Model accuracy (R²)</div><div class="v skel" id="stR2">—</div></div>
+    <div class="stat"><div class="k">Real listings studied</div><div class="v skel" id="stList">—</div></div>
+    <div class="stat"><div class="k">Car makes covered</div><div class="v skel" id="stMakes">—</div></div>
+    <div class="stat"><div class="k">Accuracy score (R²)</div><div class="v skel" id="stR2">—</div></div>
   </div>
 
-  <!-- Step indicator -->
-  <ol class="steps" aria-label="Estimation progress">
-    <li id="step1" class="on" aria-current="step">1. Vehicle</li>
-    <li id="step2">2. Condition</li>
-    <li id="step3">3. Estimate</li>
-  </ol>
-
-  <!-- Search Card -->
-  <div class="card" id="estimator">
-    <h2>Search for your vehicle</h2>
-    <p class="copy">Start typing to filter the brand and model suggestions.</p>
-    <div class="grid2">
-      <div class="combo">
-        <label for="brand">Car brand</label>
-        <input id="brand" placeholder="Type to search brands" autocomplete="off" role="combobox"
-               aria-expanded="false" aria-controls="brandBox" aria-autocomplete="list" />
-        <div class="combo-box" id="brandBox" role="listbox" aria-label="Brand suggestions" hidden></div>
+  <main class="card flow-card" id="estimator">
+    <ol class="steps" aria-label="Estimation progress">
+      <li id="step1" class="on" aria-current="step">Step 1 of 3 · Your car</li>
+      <li id="step2">Step 2 · Details</li>
+      <li id="step3">Step 3 · Estimate</li>
+    </ol>
+    <section id="vehiclePanel">
+      <h2>Which car is it?</h2>
+      <p class="copy">Tap the brand first, then choose your model.</p>
+      <div class="popular-label">Popular makes</div>
+      <div class="popular-brands" id="popularBrands" aria-label="Popular car brands"></div>
+      <p class="field-caption">Or search all makes and models</p>
+      <div class="grid2 vehicle-fields">
+        <div class="combo">
+          <label for="brand">Car brand</label>
+          <input id="brand" placeholder="Search car brands" autocomplete="off" role="combobox"
+                 aria-expanded="false" aria-controls="brandBox" aria-autocomplete="list" />
+          <div class="combo-box" id="brandBox" role="listbox" aria-label="Brand suggestions" hidden></div>
+        </div>
+        <div class="combo">
+          <label for="model">Car model</label>
+          <input id="model" placeholder="Choose a brand first" autocomplete="off" disabled role="combobox"
+                 aria-expanded="false" aria-controls="modelBox" aria-autocomplete="list" />
+          <div class="combo-box" id="modelBox" role="listbox" aria-label="Model suggestions" hidden></div>
+        </div>
       </div>
-      <div class="combo">
-        <label for="model">Car model</label>
-        <input id="model" placeholder="Choose a brand first" autocomplete="off" disabled role="combobox"
-               aria-expanded="false" aria-controls="modelBox" aria-autocomplete="list" />
-        <div class="combo-box" id="modelBox" role="listbox" aria-label="Model suggestions" hidden></div>
+      <p class="match" id="match" hidden></p>
+      <div class="flow-actions"><span></span><button class="flow-btn" id="nextVehicle" disabled>Next →</button></div>
+    </section>
+
+    <section id="specCard" hidden>
+      <h2>Tell us about your car</h2>
+      <p class="copy" id="specCopy">These details help us estimate a fair resale price.</p>
+      <div class="grid3">
+        <label>Registration year<input id="year" type="number" disabled /></label>
+        <label>Kilometres driven<input id="km_driven" type="number" disabled /></label>
+        <label>Ownership<select id="owner" disabled></select></label>
+      </div><br/>
+      <div class="grid3">
+        <label>Fuel<select id="fuel" disabled></select></label>
+        <label>Transmission<select id="transmission" disabled></select></label>
+        <label>Seller<select id="seller_type" disabled></select></label>
+      </div><br/>
+      <div class="grid4">
+        <label>Mileage (km/l)<input id="mileage_value" type="number" step="0.5" disabled /></label>
+        <label>Engine (cc)<input id="engine_value" type="number" step="50" disabled /></label>
+        <label>Power (bhp)<input id="max_power_value" type="number" step="5" disabled /></label>
+        <label>Seats<input id="seats" type="number" disabled /></label>
       </div>
-    </div>
-    <p class="match" id="match" hidden></p>
-  </div>
+      <p class="field-err" id="specErr" role="alert" hidden></p>
+      <div class="flow-actions"><button class="text-btn" id="backVehicle">← Back</button><button class="go" id="go" disabled>Get my estimate</button></div>
+    </section>
 
-  <!-- Specifications Card -->
-  <div class="card" id="specCard">
-    <h2>Condition and specifications</h2>
-    <p class="copy" id="specCopy">Choose a brand and model to enable these fields.</p>
-    <div class="grid3">
-      <label>Registration year<input id="year" type="number" disabled /></label>
-      <label>Kilometres driven<input id="km_driven" type="number" disabled /></label>
-      <label>Ownership<select id="owner" disabled></select></label>
-    </div><br/>
-    <div class="grid3">
-      <label>Fuel<select id="fuel" disabled></select></label>
-      <label>Transmission<select id="transmission" disabled></select></label>
-      <label>Seller<select id="seller_type" disabled></select></label>
-    </div><br/>
-    <div class="grid4">
-      <label>Mileage (km/l)<input id="mileage_value" type="number" step="0.5" disabled /></label>
-      <label>Engine (cc)<input id="engine_value" type="number" step="50" disabled /></label>
-      <label>Power (bhp)<input id="max_power_value" type="number" step="5" disabled /></label>
-      <label>Seats<input id="seats" type="number" disabled /></label>
-    </div>
-    <p class="field-err" id="specErr" role="alert" hidden></p>
-    <button class="go" id="go" disabled>Estimate resale value</button>
-  </div>
-
-  <button class="go" id="stickyGo">Estimate resale value</button>
+    <section id="estimatePanel" hidden>
+      <h2>Your estimate</h2>
+      <p class="copy" id="estimateCar"></p>
+      <div id="out"></div>
+      <div class="flow-actions"><button class="text-btn" id="backDetails">← Edit car details</button></div>
+    </section>
+  </main>
   <div id="toast"></div>
-  <div id="out"></div>
   <div class="note" id="footnote"></div>
 </div>
 
@@ -799,6 +818,8 @@ function clearSpecs() {
 
 /* Step indicator: 1 Vehicle → 2 Condition → 3 Estimate */
 function setStep(n) {
+  const panels = ["vehiclePanel", "specCard", "estimatePanel"];
+  panels.forEach((id, i) => { $(id).hidden = i + 1 !== n; });
   [["step1", 1], ["step2", 2], ["step3", 3]].forEach(([id, k]) => {
     const el = $(id);
     if (!el) return;
@@ -808,16 +829,32 @@ function setStep(n) {
     else el.removeAttribute("aria-current");
   });
 }
+function navigateStep(n) {
+  setStep(n);
+  $("estimator").scrollIntoView({ behavior:"smooth", block:"start" });
+}
 fetch("data.json").then(r => r.json()).then(db => {
   DB = db;
-  $("intro").textContent =
-    `Estimate a fair resale value using ${db.n_listings.toLocaleString("en-IN")} real used-car listings.`;
+  $("intro").textContent = "Pick your car, answer a few questions, and get a fair resale price before you talk to any dealer.";
   // Brand/model suggestions are served live by the comboboxes from DB.
   const fill = (id, items) => $(id).innerHTML = items.map(v => `<option>${v}</option>`).join("");
   fill("fuel", ["Petrol","Diesel","CNG","LPG"]);
   fill("transmission", ["Manual","Automatic"]);
   fill("seller_type", ["Individual","Dealer","Trustmark Dealer"]);
   fill("owner", ["First Owner","Second Owner","Third Owner","Fourth & Above Owner","Test Drive Car"]);
+  const popular = ["Maruti", "Hyundai", "Honda", "Toyota", "Mahindra", "Tata"];
+  $("popularBrands").innerHTML = popular.filter(b => db.models_by_brand[b]).map(b =>
+    `<button type="button" class="brand-pick" data-brand="${b}">${b}</button>`).join("");
+  $("popularBrands").querySelectorAll(".brand-pick").forEach(button => button.addEventListener("click", () => {
+    $("brand").value = button.dataset.brand;
+    $("brand").dispatchEvent(new Event("change"));
+    $("popularBrands").querySelectorAll(".brand-pick").forEach(b => {
+      const selected = b === button;
+      b.classList.toggle("selected", selected);
+      b.setAttribute("aria-pressed", String(selected));
+    });
+    $("model").focus();
+  }));
   ["stList","stMakes","stR2"].forEach(id => $(id).classList.remove("skel"));
   countUp($("stList"), db.n_listings, v => Math.round(v).toLocaleString("en-IN"));
   countUp($("stMakes"), db.n_makes, v => Math.round(v).toString());
@@ -922,11 +959,6 @@ attachCombo("model", "modelBox", () => modelItems, v => {
   $("model").value = v;
   $("model").dispatchEvent(new Event("change"));
 });
-$("stickyGo").addEventListener("click", () => {
-  $("estimator").scrollIntoView({ behavior: "smooth", block: "start" });
-  setTimeout(() => $("go").click(), 450);
-});
-
 $("brand").addEventListener("change", () => {
   const b = $("brand").value;
   const models = (DB && DB.models_by_brand[b]) || [];
@@ -935,10 +967,21 @@ $("brand").addEventListener("change", () => {
   $("model").placeholder = models.length ? `Type to search ${models.length} ${b} models` : "Choose a brand first";
   $("match").hidden = true; $("out").innerHTML = ""; enableSpecs(false);
   clearSpecs();
-  $("specCard").classList.remove("in");
-  document.body.classList.remove("show-sticky");
-  setStep(models.length ? 1 : 0);
+  $("nextVehicle").disabled = true;
+  $("popularBrands").querySelectorAll(".brand-pick").forEach(b => {
+    const selected = b.dataset.brand === $("brand").value;
+    b.classList.toggle("selected", selected);
+    b.setAttribute("aria-pressed", String(selected));
+  });
+  setStep(1);
 });
+
+$("nextVehicle").addEventListener("click", () => {
+  if (!$("model").value || !DB.models[$("model").value]) return;
+  navigateStep(2);
+});
+$("backVehicle").addEventListener("click", () => navigateStep(1));
+$("backDetails").addEventListener("click", () => navigateStep(2));
 
 $("model").addEventListener("change", async () => {
   const modelName = $("model").value;
@@ -948,8 +991,6 @@ $("model").addEventListener("change", async () => {
     $("out").innerHTML = "";
     enableSpecs(false);
     clearSpecs();
-    $("specCard").classList.remove("in");
-    document.body.classList.remove("show-sticky");
     setStep(1);
     return;
   }
@@ -957,8 +998,7 @@ $("model").addEventListener("change", async () => {
   DB.spec_keys.forEach((k, i) => spec[k] = entry.s[i]);
   clearSpecs();
   Object.entries(spec).forEach(([key, value]) => { $(key).value = value ?? ""; });
-  enableSpecs(true); setStep(2);
-  document.body.classList.add("show-sticky");
+  enableSpecs(true); $("nextVehicle").disabled = false;
   $("match").hidden = false;
   $("match").innerHTML = `<strong>Matched vehicle:</strong> ${modelName}`;
   $("specCopy").textContent = "Typical details for this model are filled in. Update the year, kilometres, and condition to match your car.";
@@ -985,6 +1025,7 @@ $("go").addEventListener("click", async () => {
     }
   }
   const goLabel = go.textContent;
+  $("specErr").hidden = true;
   go.disabled = true; go.setAttribute("aria-busy", "true"); go.textContent = "Estimating…";
   const car = { name: $("model").value };
   SPEC_IDS.forEach(k => {
@@ -1000,7 +1041,9 @@ $("go").addEventListener("click", async () => {
     if (!r.ok) throw new Error(res.error || "prediction failed");
   } catch (e) {
     go.disabled = false; go.removeAttribute("aria-busy"); go.textContent = goLabel;
-    $("out").innerHTML = `<p class="err shake" role="alert">${e.message}</p>`; return;
+    $("specErr").textContent = e.message;
+    $("specErr").hidden = false;
+    return;
   }
 
   $("out").innerHTML = `
@@ -1020,6 +1063,7 @@ $("go").addEventListener("click", async () => {
       <p id="wOut"></p>
     </div>`;
   toast(`Estimate ready — ${fmtIN(res.predicted_price)}`);
+  $("estimateCar").textContent = `${car.year} ${car.name} · ${car.km_driven.toLocaleString("en-IN")} km`;
   countUp($("priceOut"), res.predicted_price, fmtIN);
   $("priceLive").textContent = `Estimated resale value ${fmtIN(res.predicted_price)}.`;
   requestAnimationFrame(() => requestAnimationFrame(() => {
@@ -1027,7 +1071,7 @@ $("go").addEventListener("click", async () => {
   }));
   go.disabled = false; go.removeAttribute("aria-busy");
   go.textContent = goLabel;
-  setStep(3);
+  navigateStep(3);
   const upd = async () => {
     const c2 = {...car, year:+$("wYear").value, km_driven:+$("wKm").value};
     const r = await (await fetch("/api/predict", { method:"POST",
