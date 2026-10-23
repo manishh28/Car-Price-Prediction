@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="theme-color" content="#1b1712" />
+<meta name="theme-color" content="#f5f1e8" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
@@ -633,16 +633,18 @@
     #specCard .grid3 > *, #specCard .grid4 > *, #specCard .go { opacity: 1; transform: none; }
   }
   /* Guided estimator design inspired by the supplied reference */
-  :root { --ink:#f2e9d8; --muted:#b5a692; --canvas:#1b1712; --line:#4a4135;
-    --teal:#82bba7; --teal-dark:#9bcbb9; --coral:#82bba7; --cta:#82bba7;
-    --card-shadow:8px 8px 0 #e9dfce; }
+  :root { --ink:#2b261f; --muted:#726c63; --canvas:#f5f1e8; --line:#ddd4c6;
+    --teal:#527a63; --teal-dark:#3f644d; --coral:#527a63; --cta:#527a63;
+    --card-shadow:4px 4px 0 #ded4c6; }
   *, *::before, *::after { animation:none !important; }
   html { scroll-behavior:auto; }
   body, input, select, button { font-family:"DM Sans","Segoe UI",sans-serif; }
-  body { background:#1b1712; color:var(--ink); }
+  body { background:#f5f1e8; color:var(--ink); }
   .bg { display:none; }
   .wrap { max-width:1120px; padding:48px 28px 80px; }
-  .kicker { color:var(--muted); letter-spacing:.16em; font-size:.75rem; font-weight:500; }
+  .kicker { display:inline-block; color:#5d6d5c; letter-spacing:.16em; font-size:.75rem; font-weight:600; text-decoration:none; }
+  .kicker:hover { text-decoration:underline; text-underline-offset:4px; }
+  .kicker:focus-visible { outline:2px solid var(--teal); outline-offset:4px; }
   h1.hero { max-width:760px; font:400 clamp(3rem,7vw,5.1rem)/.99 "DM Serif Display",Georgia,serif; letter-spacing:-.035em; }
   h1.hero::after { content:""; display:block; width:180px; height:3px; margin-top:12px; background:var(--teal); }
   h1.hero .w:last-child { color:var(--ink); background:none; }
@@ -657,43 +659,45 @@
   .steps li::before { content:""; display:block; width:100%; height:3px; margin-bottom:9px; background:var(--line); }
   .steps li.on,.steps li.done { color:var(--ink); }
   .steps li.on::before,.steps li.done::before { background:var(--teal); }
-  .card { margin:0; padding:clamp(24px,4vw,40px); border:1px solid var(--ink); border-radius:11px; background:#211c16; box-shadow:var(--card-shadow); }
+  .card { margin:0; padding:clamp(24px,4vw,40px); border:1px solid #d8cebf; border-radius:11px; background:#fffdf8; box-shadow:var(--card-shadow); }
   #specCard .grid3 > *,#specCard .grid4 > *,#specCard .go { opacity:1; transform:none; }
   h2 { font:400 clamp(1.55rem,3vw,2rem)/1.2 "DM Serif Display",Georgia,serif; letter-spacing:-.015em; }
   .copy { margin:8px 0 20px; color:var(--muted); font-size:.98rem; }
   label { color:var(--ink); font-size:.84rem; font-weight:500; }
-  input,select { border:1px solid #685d4d; border-radius:7px; min-height:48px; padding:11px 13px; background:#1b1712; color:var(--ink); }
-  input:focus,select:focus { border-color:var(--teal); outline:2px solid rgba(130,187,167,.2); }
+  input,select { border:1px solid #cfc5b7; border-radius:7px; min-height:48px; padding:11px 13px; background:#fffefa; color:var(--ink); }
+  input:focus,select:focus { border-color:var(--teal); outline:2px solid rgba(82,122,99,.18); }
   input:disabled,select:disabled { opacity:.55; }
-  .match { background:#29362e; color:var(--ink); border-color:var(--teal); border-radius:5px; }
-  button.go,.flow-btn { background:var(--teal); color:#1b1712; border:1px solid var(--teal); border-radius:7px; min-height:50px; padding:0 22px; font:700 .96rem "DM Sans",sans-serif; cursor:pointer; }
-  button.go:hover:not(:disabled),.flow-btn:hover:not(:disabled) { background:#a1ceb9; }
-  button.go:disabled,.flow-btn:disabled { background:#48564f; border-color:#766f63; color:#b8ad9e; opacity:1; }
+  .match { background:#edf3e9; color:var(--ink); border-color:var(--teal); border-radius:5px; }
+  button.go,.flow-btn { background:var(--teal); color:#fffdf8; border:1px solid var(--teal); border-radius:7px; min-height:50px; padding:0 22px; font:700 .96rem "DM Sans",sans-serif; cursor:pointer; }
+  button.go:hover:not(:disabled),.flow-btn:hover:not(:disabled) { background:#42634f; }
+  button.go:disabled,.flow-btn:disabled { background:#e7e3da; border-color:#d6d0c4; color:#817c73; opacity:1; }
   .flow-actions { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:34px; }
   .flow-actions .go { width:auto; margin:0; }
   .text-btn { border:0; background:transparent; color:var(--muted); padding:12px 0; cursor:pointer; font:600 .9rem "DM Sans",sans-serif; }
   .text-btn:hover { color:var(--ink); }
   .popular-label { color:var(--muted); font-size:.78rem; font-weight:600; text-transform:uppercase; letter-spacing:.09em; margin:26px 0 12px; }
   .popular-brands { display:flex; flex-wrap:wrap; gap:9px; }
-  .brand-pick { border:1px solid #766b5b; border-radius:6px; background:transparent; color:var(--ink); padding:11px 16px; cursor:pointer; font:500 .95rem "DM Sans",sans-serif; }
-  .brand-pick:hover,.brand-pick.selected { border-color:var(--teal); background:#2a352e; }
+  .brand-pick { border:1px solid #c9beaf; border-radius:6px; background:#fffdf8; color:var(--ink); padding:11px 16px; cursor:pointer; font:500 .95rem "DM Sans",sans-serif; }
+  .brand-pick:hover,.brand-pick.selected { border-color:var(--teal); background:#e8eee5; }
   .brand-pick,.flow-btn,.text-btn { transition:background-color .16s ease,border-color .16s ease,color .16s ease; }
   .vehicle-fields { margin-top:28px; }
   .field-caption { color:var(--muted); font-size:.84rem; margin:12px 0 0; }
-  .result { background:#272119; border:1px solid #716453; border-top:3px solid var(--teal); border-radius:10px; box-shadow:var(--card-shadow); }
+  .result { background:#f2eee5; border:1px solid #d8cebf; border-top:3px solid var(--teal); border-radius:10px; box-shadow:var(--card-shadow); }
   .result .lbl { color:var(--muted); }
   .price { color:var(--ink); font:400 clamp(2.8rem,7vw,4.5rem)/1.1 "DM Serif Display",Georgia,serif; }
   .result .note { color:var(--muted); }
+  .result .gauge-wrap { color:var(--muted); }
+  #out > .card { margin-top:18px; padding:24px; box-shadow:none; }
   .note { line-height:1.7; color:var(--muted); }
-  .combo-box { border-radius:8px; background:#2a241d; border-color:#766b5b; }
-  .combo-opt.active { background:#34473e; color:var(--ink); }
+  .combo-box { border-radius:8px; background:#fffdf8; border-color:#cfc5b7; }
+  .combo-opt.active { background:#e8eee5; color:var(--ink); }
   .combo-opt mark { color:var(--teal); }
   .combo-empty { color:var(--muted); }
-  .field-err,.err { color:#f2a99a; }
+  .field-err,.err { color:#a13d32; }
   [hidden] { display:none !important; }
-  .gauge { background:#51483d; }
+  .gauge { background:#ddd6ca; }
   .gauge > i { background:var(--teal); }
-  #toast { background:#e9dfce; color:#1b1712; box-shadow:none; border-radius:7px; }
+  #toast { background:#2b261f; color:#fffdf8; box-shadow:none; border-radius:7px; }
   @media (max-width:720px) {
     .wrap { padding:32px 20px 64px; }
     .stats { gap:20px; justify-content:space-between; margin-bottom:38px; }
@@ -714,7 +718,7 @@
   </div>
 
 <div class="wrap">
-  <div class="kicker">AutoValue India</div>
+  <a class="kicker" href="/" aria-label="AutoValue India home">AutoValue India</a>
   <h1 class="hero" id="hero">What’s your old car really worth?</h1>
   <p class="intro" id="intro">Pick your car, answer a few questions, and get a fair resale price before you talk to any dealer.</p>
   <div class="accent"></div>
