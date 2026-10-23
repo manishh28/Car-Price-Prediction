@@ -116,20 +116,6 @@
       Array.from({ length: new Date().getFullYear() - db.year_min + 1 }, (_, i) => new Date().getFullYear() - i)
         .map((value) => `<option value="${value}">${value}</option>`).join("");
 
-    const popular = ["Maruti", "Hyundai", "Honda", "Toyota", "Mahindra", "Tata"]
-      .filter((name) => db.models_by_brand[name]);
-    if (!popular.length) popular.push(...db.brands.slice(0, 6));
-    $("popular-brands").innerHTML = popular.map((name) =>
-      `<button type="button" class="brand-pick" data-brand="${name}">${name}</button>`).join("");
-    $("popular-brands").addEventListener("click", (event) => {
-      const choice = event.target.closest("[data-brand]");
-      if (!choice) return;
-      brand.value = choice.dataset.brand;
-      syncModelList();
-      brand.dispatchEvent(new Event("change", { bubbles: true }));
-      model.focus();
-    });
-
     $("foot-stats").textContent =
       `Prices are estimates, not offers. Based on ${db.n_listings.toLocaleString("en-IN")} used-car listings. ` +
       "Check the car in person before you pay.";
@@ -147,6 +133,7 @@
     error.hidden = true;
     form.querySelectorAll(".invalid").forEach((field) => field.classList.remove("invalid"));
 
+    if (!db) return showError("The vehicle list is unavailable right now. Please try again shortly.");
     const matchedBrand = findBrand(brand.value);
     if (!matchedBrand) return showError("Choose a brand from the suggestions.", brand);
     const entry = db.models[model.value];
@@ -199,8 +186,7 @@
   });
 
   loadData().catch((exception) => {
-    console.error("Vehicle data failed to load:", exception);
+    console.error("Vehicle data could not be initialized:", exception);
     showError("We couldn't load the vehicle list. Please try again in a moment.");
-    button.disabled = true;
   });
 })();
