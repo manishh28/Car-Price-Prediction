@@ -1163,8 +1163,7 @@ $("go").addEventListener("click", async () => {
     $("bar2").style.width = (100 * med / max) + "%";
   }));
   go.disabled = false; go.removeAttribute("aria-busy");
-  go.textContent = "✓ Estimated";
-  setTimeout(() => { go.textContent = goLabel; }, 1600);
+  go.textContent = goLabel;
   setStep(3);
   const upd = async () => {
     const c2 = {...car, year:+$("wYear").value, km_driven:+$("wKm").value};
