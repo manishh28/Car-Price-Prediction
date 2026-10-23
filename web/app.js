@@ -2,6 +2,7 @@
   "use strict";
 
   const $ = (id) => document.getElementById(id);
+  const scriptUrl = document.currentScript?.src || window.location.href;
   const form = $("form");
   const brand = $("brand");
   const model = $("model");
@@ -13,8 +14,7 @@
     "1": "First Owner",
     "2": "Second Owner",
     "3": "Third Owner",
-    "4": "Fourth & Above Owner",
-    "5": "Test Drive Car"
+    "4": "Fourth & Above Owner"
   };
   let db;
 
@@ -36,6 +36,7 @@
   }
 
   function findBrand(value) {
+    if (!db) return null;
     const normalized = value.trim().toLocaleLowerCase();
     return db.brands.find((item) => item.toLocaleLowerCase() === normalized) || null;
   }
@@ -47,7 +48,6 @@
     choose("owner", "1");
     choose("fuel", "Petrol");
     choose("gear", "Manual");
-    choose("seller", "Individual");
   }
 
   function syncModelList() {
@@ -73,6 +73,7 @@
   }
 
   function loadModelDetails() {
+    if (!db) return;
     const entry = db.models[model.value];
     if (!entry || entry.b !== findBrand(brand.value)) {
       clearModelDetails();
@@ -87,7 +88,6 @@
     choose("owner", Object.keys(owners).find((key) => owners[key] === spec.owner) || "1");
     choose("fuel", spec.fuel || "Petrol");
     choose("gear", spec.transmission || "Manual");
-    choose("seller", spec.seller_type || "Individual");
   }
 
   function showError(message, field) {
@@ -100,9 +100,12 @@
   }
 
   async function loadData() {
-    const response = await fetch("data.json");
-    if (!response.ok) throw new Error("Could not load vehicle listings.");
+    const response = await fetch(new URL("data.json", scriptUrl), { cache: "no-cache" });
+    if (!response.ok) throw new Error(`Vehicle data request failed (${response.status}).`);
     db = await response.json();
+    if (!Array.isArray(db.brands) || !db.models_by_brand || !db.models || !Array.isArray(db.spec_keys)) {
+      throw new Error("Vehicle data file is incomplete.");
+    }
 
     $("brand-list").replaceChildren(...db.brands.map((name) => {
       const option = document.createElement("option");
@@ -136,7 +139,7 @@
   brand.addEventListener("change", syncModelList);
   model.addEventListener("change", loadModelDetails);
   model.addEventListener("input", () => {
-    if (db.models[model.value]) loadModelDetails();
+    if (db?.models[model.value]) loadModelDetails();
   });
 
   form.addEventListener("submit", async (event) => {
@@ -159,7 +162,6 @@
       km_driven: Number(km.value),
       owner: owners[selected("owner")] || "First Owner",
       fuel: selected("fuel") || "Petrol",
-      seller_type: selected("seller") || "Individual",
       transmission: selected("gear") || "Manual",
       mileage_value: form.elements.mileage.value ? Number(form.elements.mileage.value) : null,
       engine_value: form.elements.cc.value ? Number(form.elements.cc.value) : null,
@@ -196,8 +198,9 @@
     }
   });
 
-  loadData().catch(() => {
-    showError("Vehicle data could not be loaded. Reload the page and try again.");
+  loadData().catch((exception) => {
+    console.error("Vehicle data failed to load:", exception);
+    showError("We couldn't load the vehicle list. Please try again in a moment.");
     button.disabled = true;
   });
 })();
