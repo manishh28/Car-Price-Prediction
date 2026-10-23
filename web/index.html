@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#f5f7fa" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" />
 <title>Used Car Value Estimator | AutoValue India</title>
 <style>
   :root {
@@ -631,6 +635,59 @@
     .gal-img.kb { animation: none !important; }
     #specCard .grid3 > *, #specCard .grid4 > *, #specCard .go { opacity: 1; transform: none; }
   }
+  /* Quiet, professional estimator styling */
+  :root {
+    --ink: #17212f;
+    --muted: #667386;
+    --canvas: #f5f7fa;
+    --line: #dce3eb;
+    --teal: #176b63;
+    --teal-dark: #10534d;
+    --coral: #176b63;
+    --cta: #176b63;
+    --card-shadow: 0 10px 30px rgba(25, 42, 62, .06);
+  }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  html { scroll-behavior: auto; }
+  body, input, select, button { font-family: "DM Sans", "Segoe UI", sans-serif; }
+  body { background: #f5f7fa; color: var(--ink); }
+  .bg { display: none; }
+  .wrap { max-width: 1080px; padding: 56px 28px 80px; }
+  .kicker { color: #176b63; letter-spacing: .12em; font-size: .72rem; }
+  h1.hero { max-width: none; font: 800 clamp(2.25rem, 5vw, 3.5rem)/1.08 "Manrope", "Segoe UI", sans-serif; letter-spacing: -.045em; }
+  h1.hero .w:last-child { color: var(--ink); background: none; }
+  .intro { max-width: none; margin-top: 12px; font-size: 1rem; }
+  .accent { height: 1px; background: var(--line); margin: 24px 0; }
+  .stats { gap: 16px; margin: 0 0 24px; }
+  .stat { border-radius: 14px; box-shadow: none; padding: 18px 20px; }
+  .stat .k, .metric .k { letter-spacing: .06em; font-size: .7rem; }
+  .stat .v { font: 750 1.6rem/1.2 "Manrope", "Segoe UI", sans-serif; }
+  .marquee { overflow: visible; margin: 0 0 24px; mask-image: none; -webkit-mask-image: none; }
+  .mq-track { width: 100%; flex-wrap: wrap; animation: none !important; }
+  .mq-item { background: #fff; border-radius: 999px; padding: 7px 13px; font-size: .78rem; }
+  .steps { gap: 16px; margin: 26px 0 12px; }
+  .steps li { border-top-width: 2px; font-size: .78rem; }
+  .card { padding: 26px; margin-top: 16px; border-radius: 14px; box-shadow: var(--card-shadow); }
+  #specCard .grid3 > *, #specCard .grid4 > *, #specCard .go { opacity: 1; transform: none; }
+  h2 { font: 750 1.12rem/1.35 "Manrope", "Segoe UI", sans-serif; letter-spacing: -.02em; }
+  .copy { margin-top: 5px; line-height: 1.55; }
+  label { color: #354154; font-size: .8rem; font-weight: 650; }
+  input, select { border-radius: 9px; min-height: 46px; padding: 11px 13px; }
+  input:focus, select:focus { outline: 3px solid rgba(23,107,99,.14); }
+  .match { background: #f0f7f5; border-color: var(--teal); border-radius: 8px; }
+  button.go { background: var(--teal); border-radius: 9px; min-height: 50px; font: 700 .96rem "DM Sans", sans-serif; }
+  button.go:hover:not(:disabled) { background: var(--teal-dark); }
+  .result { background: #17212f; border: 0; border-top: 4px solid var(--teal); border-radius: 14px; box-shadow: var(--card-shadow); }
+  .price { font: 800 clamp(2.3rem, 6vw, 3.7rem)/1.1 "Manrope", "Segoe UI", sans-serif; letter-spacing: -.04em; }
+  .note { line-height: 1.7; }
+  .combo-box { border-radius: 10px; box-shadow: 0 14px 32px rgba(25,42,62,.12); }
+  #toast { border-radius: 9px; box-shadow: 0 8px 24px rgba(25,42,62,.16); }
+  @media (max-width: 720px) {
+    .wrap { padding: 34px 16px 72px; }
+    .stats { gap: 10px; }
+    .stat { padding: 15px 16px; }
+    .card { padding: 20px; }
+  }
 </style>
 </head>
 <body>
@@ -654,57 +711,6 @@
     <div class="stat"><div class="k">Listings analysed</div><div class="v skel" id="stList">—</div></div>
     <div class="stat"><div class="k">Makes covered</div><div class="v skel" id="stMakes">—</div></div>
     <div class="stat"><div class="k">Model accuracy (R²)</div><div class="v skel" id="stR2">—</div></div>
-  </div>
-
-  <div class="marquee" aria-hidden="true"><div class="mq-track" id="mqTrack"></div></div>
-
-  <!-- Exterior showcase (photos only) -->
-  <div class="c24-card" id="carStudioCard">
-    <h2 id="showcaseH" class="sr-only">Scenic preview</h2>
-    <div class="c24-header">
-      <div class="c24-studio-tag">Scenic drive · animated</div>
-      <div class="c24-elite">COMPCARS VERIFIED</div>
-    </div>
-
-    <!-- Sunset ocean highway: pure-CSS animated traffic scene, no photos -->
-    <div class="drive" id="drive" aria-hidden="true">
-      <div class="dsky"></div>
-      <div class="dsun"></div>
-      <div class="dcity"></div>
-      <div class="dsea"><div class="glitter"></div></div>
-      <div class="dhwy">
-        <div class="lane l1"></div>
-        <div class="lane l2"></div>
-        <div class="lane l3"></div>
-        <div class="car" style="--c:#3b82c4;--t:6%;--d:11s;--dl:-2s;"></div>
-        <div class="car" style="--c:#e0a32e;--t:2%;--d:14s;--dl:-7s;"></div>
-        <div class="car" style="--c:#c43d2e;--t:10%;--d:9s;--dl:-4s;"></div>
-        <div class="car" style="--c:#e8e9eb;--t:38%;--d:12s;--dl:-1s;"></div>
-        <div class="car" style="--c:#2e9e6b;--t:34%;--d:15s;--dl:-9s;"></div>
-        <div class="car" style="--c:#1f4e8c;--t:42%;--d:10s;--dl:-6s;"></div>
-        <div class="car" style="--c:#8a6d3b;--t:68%;--d:13s;--dl:-3s;"></div>
-        <div class="car" style="--c:#b9c0c7;--t:64%;--d:16s;--dl:-11s;"></div>
-        <div class="car hero" id="heroCar" style="--t:72%;--d:8s;--dl:-5s;"></div>
-      </div>
-      <div class="dshade"></div>
-      <div class="vis-tag" id="sceneTag">Sunset drive · pick a car to personalize</div>
-    </div>
-
-    <!-- Vehicle Details & Specs -->
-    <div class="c24-info">
-      <div class="c24-model-title" id="c24Title">Select a Brand & Model Below</div>
-      <div class="c24-model-sub" id="c24Sub">CompCars Multi-View Studio & Real-Time Price Estimator</div>
-      <div class="c24-tags" id="c24Tags">
-        <span class="c24-tag-item" id="tagKm">— km</span>
-        <span class="c24-tag-sep">•</span>
-        <span class="c24-tag-item" id="tagFuel">—</span>
-        <span class="c24-tag-sep">•</span>
-        <span class="c24-tag-item" id="tagTrans">—</span>
-        <span class="c24-tag-sep">•</span>
-        <span class="c24-tag-item" id="tagReg">Reg —</span>
-      </div>
-      <div class="c24-badge-drop" id="c24PriceBadge">Verified Specs & Negotiation Benchmark</div>
-    </div>
   </div>
 
   <!-- Step indicator -->
@@ -768,45 +774,17 @@
 <script>
 let DB = null;
 const $ = id => document.getElementById(id);
-/* hero word-rise (sheen CSS finishes the last word) */
-(function(){
-  const h = $("hero");
-  if (h && !h.querySelector(".w")) {
-    const words = h.textContent.trim().split(/\s+/);
-    h.innerHTML = words.map((w,i)=>`<span class="w" style="animation-delay:${.08*i+.1}s">${w}</span>`).join(" ");
-  }
-})();
 function toast(msg) {
   const t = $("toast");
   t.textContent = msg; t.classList.add("show");
   clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), 2600);
 }
-/* subtle 3D tilt on stat cards (fine pointers only) */
-if (matchMedia("(pointer:fine)").matches && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
-  document.querySelectorAll(".stat").forEach(card => {
-    card.addEventListener("pointermove", e => {
-      const r = card.getBoundingClientRect();
-      const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
-      card.style.transform = `perspective(700px) rotateX(${(-y*5).toFixed(2)}deg) rotateY(${(x*6).toFixed(2)}deg) translateY(-3px)`;
-    });
-    card.addEventListener("pointerleave", () => card.style.transform = "");
-  });
-}
 const fmtIN = n => "INR " + Math.round(n).toLocaleString("en-IN");
 const SPEC_IDS = ["year","km_driven","owner","fuel","transmission","seller_type",
                   "mileage_value","engine_value","max_power_value","seats"];
 
-function countUp(el, target, fmt, from) {
-  const dur = reducedMotion ? 1 : 1100, start = performance.now();
-  from = (typeof from === "number" && isFinite(from)) ? from : 0;
-  function tick(now) {
-    const p = Math.min(1, (now - start) / dur);
-    const e = 1 + 2.2 * Math.pow(p - 1, 3) + 1.2 * Math.pow(p - 1, 2); // easeOutBack: slight overshoot
-    el.textContent = fmt(from + (target - from) * e);
-    if (p < 1) requestAnimationFrame(tick);
-    else el.textContent = fmt(target);
-  }
-  requestAnimationFrame(tick);
+function countUp(el, target, fmt) {
+  el.textContent = fmt(target);
 }
 
 function enableSpecs(on) { SPEC_IDS.forEach(k => $(k).disabled = !on); $("go").disabled = !on; }
@@ -817,28 +795,6 @@ function clearSpecs() {
     $(k).removeAttribute("aria-describedby");
   });
   $("specErr").hidden = true;
-  $("tagKm").textContent = "— km";
-}
-
-/* Scenic drive banner state (pure CSS/SVG motion, no photos) */
-let lastPrice = 0;
-
-/* Scenic drive banner: paint + caption adapt to the selected car (no photos) */
-const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
-const SCENIC_PAINTS = ["#e8e9eb","#b9c0c7","#1c1f24","#b3282d","#1f4e8c","#146c63",
-  "#8a6d3b","#6e1423","#6b7280","#1f3350","#2e6b4f","#c9bfae"];
-function paintFor(s) {
-  let h = 0; const str = String(s || "AutoValue");
-  for (const c of str) h = (h * 31 + c.charCodeAt(0)) >>> 0;
-  return SCENIC_PAINTS[h % SCENIC_PAINTS.length];
-}
-function setScene(spec, brand, modelName) {
-  const d = $("drive");
-  if (!d) return;
-  d.style.setProperty("--hero-paint", paintFor(brand + "|" + ((spec && spec.fuel) || "")));
-  $("sceneTag").textContent = modelName
-    ? `Sunset drive · ${brand} ${modelName}`
-    : "Sunset drive · pick a car to personalize";
 }
 
 /* Step indicator: 1 Vehicle → 2 Condition → 3 Estimate */
@@ -852,57 +808,6 @@ function setStep(n) {
     else el.removeAttribute("aria-current");
   });
 }
-/* Staggered reveal of condition fields */
-function staggerSpecs() {
-  const card = $("specCard");
-  if (!card) return;
-  const kids = card.querySelectorAll(".grid3 > *, .grid4 > *, .go");
-  kids.forEach((el, i) => { el.style.transitionDelay = (i * 55) + "ms"; });
-  requestAnimationFrame(() => requestAnimationFrame(() => card.classList.add("in")));
-}
-
-/* (Gallery controls removed with the photo section — scenic banner is CSS-only.) */
-/* Parallax background: transform-only, desktop fine pointers, motion-safe */
-(function(){
-  if (reducedMotion) return;
-  const bg = document.querySelector(".bg");
-  if (!bg) return;
-  let ticking = false;
-  addEventListener("scroll", () => {
-    if (ticking) return; ticking = true;
-    requestAnimationFrame(() => {
-      bg.style.transform = `translateY(${Math.round(scrollY * -0.06)}px)`;
-      ticking = false;
-    });
-  }, { passive: true });
-  if (matchMedia("(pointer:fine)").matches) {
-    addEventListener("pointermove", e => {
-      const x = (e.clientX / innerWidth - .5) * 22, y = (e.clientY / innerHeight - .5) * 14;
-      bg.style.translate = `${x.toFixed(1)}px ${y.toFixed(1)}px`;
-    }, { passive: true });
-  }
-})();
-
-function updateC24Tags() {
-  const kmValue = $("km_driven").value;
-  const km = kmValue === "" ? null : Number(kmValue);
-  const yr = $("year").value;
-  const fuel = $("fuel").value;
-  const trans = $("transmission").value;
-  const model = $("model").value;
-
-  $("tagKm").textContent = km === null || !Number.isFinite(km) ? "— km" : km.toLocaleString("en-IN") + " km";
-  $("tagFuel").textContent = fuel || "—";
-  $("tagTrans").textContent = trans || "—";
-  $("tagReg").textContent = `Reg ${yr || "—"}`;
-  $("c24Title").textContent = model ? `${yr || "—"} ${model}` : "Select a Brand & Model Below";
-}
-
-SPEC_IDS.forEach(id => {
-  $(id).addEventListener("input", updateC24Tags);
-  $(id).addEventListener("change", updateC24Tags);
-});
-
 fetch("data.json").then(r => r.json()).then(db => {
   DB = db;
   $("intro").textContent =
@@ -914,9 +819,6 @@ fetch("data.json").then(r => r.json()).then(db => {
   fill("seller_type", ["Individual","Dealer","Trustmark Dealer"]);
   fill("owner", ["First Owner","Second Owner","Third Owner","Fourth & Above Owner","Test Drive Car"]);
   ["stList","stMakes","stR2"].forEach(id => $(id).classList.remove("skel"));
-  const top = Object.entries(db.brand_stats).sort((a,b) => b[1].n - a[1].n).slice(0, 16);
-  const items = top.map(([b, s]) => `<span class="mq-item">${b} · ${s.n.toLocaleString("en-IN")} cars</span>`).join("");
-  $("mqTrack").innerHTML = items + items;
   countUp($("stList"), db.n_listings, v => Math.round(v).toLocaleString("en-IN"));
   countUp($("stMakes"), db.n_makes, v => Math.round(v).toString());
   countUp($("stR2"), db.metrics.r2, v => v.toFixed(2));
@@ -925,8 +827,6 @@ fetch("data.json").then(r => r.json()).then(db => {
     `accident history, modifications, or current local demand. Holdout model score: R² ${db.metrics.r2.toFixed(2)}; ` +
     `median absolute error benchmark: ${fmtIN(db.metrics.mae)}.`;
 
-  // Default scenic banner (decorative; personalized once a car is picked)
-  setScene({ seats: 5, engine_value: 1200, fuel: "Petrol" }, "", "");
   setStep(1);
 })
 .catch(() => {
@@ -1035,23 +935,19 @@ $("brand").addEventListener("change", () => {
   $("model").placeholder = models.length ? `Type to search ${models.length} ${b} models` : "Choose a brand first";
   $("match").hidden = true; $("out").innerHTML = ""; enableSpecs(false);
   clearSpecs();
-  setScene({ seats: 5, engine_value: 1200, fuel: "Petrol" }, "", "");
   $("specCard").classList.remove("in");
   document.body.classList.remove("show-sticky");
   setStep(models.length ? 1 : 0);
-  updateC24Tags();
 });
 
 $("model").addEventListener("change", async () => {
   const modelName = $("model").value;
-  const brandName = $("brand").value;
   const entry = DB && DB.models[ modelName ];
   if (!entry) {
     $("match").hidden = true;
     $("out").innerHTML = "";
     enableSpecs(false);
     clearSpecs();
-    setScene({ seats: 5, engine_value: 1200, fuel: "Petrol" }, "", "");
     $("specCard").classList.remove("in");
     document.body.classList.remove("show-sticky");
     setStep(1);
@@ -1061,19 +957,13 @@ $("model").addEventListener("change", async () => {
   DB.spec_keys.forEach((k, i) => spec[k] = entry.s[i]);
   clearSpecs();
   Object.entries(spec).forEach(([key, value]) => { $(key).value = value ?? ""; });
-  enableSpecs(true); updateC24Tags();
-  staggerSpecs(); setStep(2);
+  enableSpecs(true); setStep(2);
   document.body.classList.add("show-sticky");
   $("match").hidden = false;
   $("match").innerHTML = `<strong>Matched vehicle:</strong> ${modelName}`;
   $("specCopy").textContent = "Typical details for this model are filled in. Update the year, kilometres, and condition to match your car.";
   $("out").innerHTML = "";
 
-  // Personalize the scenic banner for the matched car (decorative, no photos)
-  $("c24Sub").textContent = `${spec.engine_value || 1498} cc • ${spec.max_power_value || 100} bhp • ${spec.seats || 5} Seats`;
-  setScene(spec, brandName, modelName);
-
-  $("carStudioCard").scrollIntoView({ behavior:"smooth", block:"nearest" });
 });
 
 $("go").addEventListener("click", async () => {
@@ -1113,10 +1003,6 @@ $("go").addEventListener("click", async () => {
     $("out").innerHTML = `<p class="err shake" role="alert">${e.message}</p>`; return;
   }
 
-  const entry = DB.models[car.name];
-  // Update Cars24 badge with estimated price
-  $("c24PriceBadge").textContent = `Estimated Value: ${fmtIN(res.predicted_price)}`;
-
   $("out").innerHTML = `
     <div class="result" role="region" aria-label="Estimate result"><div class="lbl">Estimated resale value</div>
       <div class="price pop" id="priceOut">…</div>
@@ -1134,8 +1020,7 @@ $("go").addEventListener("click", async () => {
       <p id="wOut"></p>
     </div>`;
   toast(`Estimate ready — ${fmtIN(res.predicted_price)}`);
-  countUp($("priceOut"), res.predicted_price, fmtIN, lastPrice);
-  lastPrice = res.predicted_price;
+  countUp($("priceOut"), res.predicted_price, fmtIN);
   $("priceLive").textContent = `Estimated resale value ${fmtIN(res.predicted_price)}.`;
   requestAnimationFrame(() => requestAnimationFrame(() => {
     $("gaugeFill").style.width = (DB.metrics.r2 * 100).toFixed(1) + "%";

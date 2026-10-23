@@ -8,8 +8,7 @@ Live as a static frontend + Python serverless API on Vercel.
 - Two searchable suggestion dropdowns for brand and model
 - Correct handling for multi-word brands such as Land Rover and Ashok Leyland
 - Typical specifications filled from comparable listings
-- Studio visual per car: verified photos for covered families, illustration otherwise
-- Estimated price, comparable median, and market range
+- Personalized estimated resale price
 - What-if explorer for year and kilometres
 - Responsive desktop and mobile interface
 
@@ -17,7 +16,7 @@ Live as a static frontend + Python serverless API on Vercel.
 
 ```text
 web/
-  index.html      Static frontend (search, specs, listing card, animations)
+  index.html      Static frontend (search, specifications, and estimate)
   data.json       Brands, models, typical specs, price stats, metrics
   api/
     predict.py    Serverless prediction endpoint (stdlib only, no ML deps)
