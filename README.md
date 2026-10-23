@@ -1,4 +1,4 @@
-# Used Car Value Estimator
+# carpricedekhoo
 
 A web app that estimates the resale value of a used car from 8,000+ listing records.
 Live as a static frontend + Python serverless API on Vercel.
@@ -7,16 +7,20 @@ Live as a static frontend + Python serverless API on Vercel.
 
 - Two searchable suggestion dropdowns for brand and model
 - Correct handling for multi-word brands such as Land Rover and Ashok Leyland
-- Typical specifications filled from comparable listings
-- Personalized estimated resale price
-- What-if explorer for year and kilometres
+- Typical engine specifications filled from the selected model
+- Personalized estimated resale price from the trained prediction model
+- Compact vehicle detail choices and optional engine specifications
 - Responsive desktop and mobile interface
 
 ## Project layout
 
 ```text
 web/
-  index.html      Static frontend (search, specifications, and estimate)
+  index.html      carpricedekhoo estimator page
+  style.css       Brand styles, local fonts, and responsive layout
+  app.js          Vehicle picker and live model prediction flow
+  assets/         Logo and favicon
+  fonts/          Bonum and Inter font files
   data.json       Brands, models, typical specs, price stats, metrics
   api/
     predict.py    Serverless prediction endpoint (stdlib only, no ML deps)
@@ -43,8 +47,3 @@ Prediction calls (`POST /api/predict`) need `vercel dev` or the deployed site.
 
 Regenerate `web/api/model.json` + `web/data.json` from `car details.csv`
 with the export script, then commit and push — Vercel redeploys automatically.
-
-## Photo credits
-
-Family photos come from Wikimedia Commons; per-photo author credits are
-stored alongside each model in `web/data.json` and shown under the image.
