@@ -36,13 +36,13 @@ img { max-width: 100%; display: block; }
 .bar__logo img { height: 52px; width: auto; }
 
 /* ---------- hero ---------- */
-.hero { max-width: 1260px; margin: 0 auto; padding: clamp(32px, 6vw, 72px) clamp(16px, 4vw, 40px) clamp(40px, 6vw, 80px); }
-.hero__copy { max-width: 46rem; margin-bottom: clamp(28px, 4vw, 48px); }
+.hero { max-width: 1260px; margin: 0 auto; padding: clamp(24px, 3.5vw, 44px) clamp(16px, 4vw, 40px) clamp(28px, 4vw, 52px); }
+.hero__copy { max-width: 62rem; margin-bottom: clamp(20px, 2.5vw, 32px); }
 h1 {
   margin: 0 0 16px;
   font-family: var(--display);
   font-weight: 700;
-  font-size: clamp(2.4rem, 6vw, 4.4rem);
+  font-size: clamp(2.3rem, 4.2vw, 3.7rem);
   line-height: 1.03;
   letter-spacing: -0.015em;
   text-wrap: balance;
